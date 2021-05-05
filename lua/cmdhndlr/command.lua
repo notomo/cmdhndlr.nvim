@@ -33,10 +33,14 @@ function Command.run(opts)
     return nil, err
   end
 
-  View.open()
+  local view = View.open()
+  local result, exec_err = runner:execute()
+  if exec_err ~= nil then
+    return exec_err
+  end
+  view:set_lines(result.output)
 
-  -- TODO: show sync command output
-  return runner:execute()
+  return result, nil
 end
 
 return M

@@ -15,4 +15,12 @@ function View.open()
   return setmetatable(tbl, View)
 end
 
+function View.set_lines(self, output)
+  vim.validate({output = {output, "string", true}})
+  if output == nil then
+    return
+  end
+  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, true, vim.split(output, "\n", true))
+end
+
 return M

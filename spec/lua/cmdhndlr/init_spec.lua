@@ -7,7 +7,7 @@ describe("cmdhndlr.run()", function()
   after_each(helper.after_each)
 
   it("can run sync command", function()
-    local result = cmdhndlr.run({
+    cmdhndlr.run({
       name = "_test/file",
       runner_opts = {
         f = function()
@@ -15,7 +15,7 @@ describe("cmdhndlr.run()", function()
         end,
       },
     })
-    assert.equal([[ok]], result.output)
+    assert.exists_pattern("ok")
   end)
 
   it("can run async command", function()
