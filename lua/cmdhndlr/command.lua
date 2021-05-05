@@ -36,7 +36,7 @@ function Command.run(opts)
   local view = View.open()
   local result, exec_err = runner:execute()
   if exec_err ~= nil then
-    return exec_err
+    return nil, exec_err
   end
   view:set_lines(result.output)
 

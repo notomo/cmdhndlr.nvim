@@ -46,4 +46,16 @@ describe("cmdhndlr.run()", function()
     assert.exists_message([[not found runner: invalid]])
   end)
 
+  it("raises error if the runner raises an error", function()
+    cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function()
+          return nil, "runner specific error!"
+        end,
+      },
+    })
+    assert.exists_message([[runner specific error!]])
+  end)
+
 end)
