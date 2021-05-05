@@ -34,6 +34,14 @@ function M.search(pattern)
   return result
 end
 
+function M.wait(job)
+  job:wait(1000)
+  -- wait for terminal output
+  return vim.wait(1000, function()
+    return vim.fn.search("Process exited") ~= 0
+  end, 10)
+end
+
 local asserts = require("vusted.assert").asserts
 
 asserts.create("tab_count"):register_eq(function()

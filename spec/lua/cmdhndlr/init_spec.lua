@@ -27,9 +27,9 @@ describe("cmdhndlr.run()", function()
         end,
       },
     })
-    job:wait(100)
-    assert.is_false(job:is_running())
-    -- TODO
+    helper.wait(job)
+
+    assert.exists_pattern("ok")
   end)
 
   it("raises error if there is no runner", function()
