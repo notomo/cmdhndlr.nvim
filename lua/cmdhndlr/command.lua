@@ -1,5 +1,6 @@
 local View = require("cmdhndlr.view").View
 local Runner = require("cmdhndlr.core.runner").Runner
+local TestRunner = require("cmdhndlr.core.test_runner").TestRunner
 local messagelib = require("cmdhndlr.lib.message")
 
 local M = {}
@@ -35,6 +36,26 @@ function Command.run(opts)
 
   local view = View.open()
   local result, exec_err = runner:execute()
+  if exec_err ~= nil then
+    return nil, exec_err
+  end
+  view:set_lines(result.output)
+
+  return result, nil
+end
+
+function Command.test(opts)
+  vim.validate({opts = {opts, "table", true}})
+  opts = opts or {}
+
+  local bufnr = vim.api.nvim_get_current_buf()
+  local test_runner, err = TestRunner.dispatch(bufnr, opts.name, opts.runner_opts)
+  if err ~= nil then
+    return nil, err
+  end
+
+  local view = View.open()
+  local result, exec_err = test_runner:execute()
   if exec_err ~= nil then
     return nil, exec_err
   end
