@@ -1,5 +1,6 @@
 local JobFactory = require("cmdhndlr.core.job_factory").JobFactory
 local modulelib = require("cmdhndlr.lib.module")
+local filelib = require("cmdhndlr.lib.file")
 
 local M = {}
 
@@ -20,6 +21,7 @@ function Handler.new(typ, name, opts)
     name = name,
     opts = vim.tbl_extend("force", handler.opts or {}, opts or {}),
     job_factory = JobFactory.new(),
+    filelib = filelib,
     _handler = handler,
   }
   return setmetatable(tbl, Handler)
