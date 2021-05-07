@@ -2,6 +2,7 @@ local View = require("cmdhndlr.view").View
 local Runner = require("cmdhndlr.core.runner").Runner
 local TestRunner = require("cmdhndlr.core.test_runner").TestRunner
 local messagelib = require("cmdhndlr.lib.message")
+local modelib = require("cmdhndlr.lib.mode")
 
 local M = {}
 
@@ -34,8 +35,9 @@ function Command.run(opts)
     return nil, err
   end
 
+  local range = modelib.visual_range()
   local view = View.open()
-  local result, exec_err = runner:execute()
+  local result, exec_err = runner:execute(range)
   if exec_err ~= nil then
     return nil, exec_err
   end

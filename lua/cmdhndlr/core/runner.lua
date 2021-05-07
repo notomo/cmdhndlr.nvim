@@ -27,12 +27,20 @@ function Runner.__index(self, k)
   return rawget(Runner, k) or self._handler[k]
 end
 
-function Runner.execute(self)
+function Runner.execute(self, range)
   local path = vim.api.nvim_buf_get_name(self._bufnr)
-  local output, err = self:run_file(path)
+
+  local output, err
+  if range ~= nil then
+    local str = table.concat(vim.api.nvim_buf_get_lines(self._bufnr, range.first - 1, range.last, false), "\n")
+    output, err = self:run_string(str)
+  else
+    output, err = self:run_file(path)
+  end
   if err ~= nil then
     return nil, err
   end
+
   return RunnerResult.new(output)
 end
 

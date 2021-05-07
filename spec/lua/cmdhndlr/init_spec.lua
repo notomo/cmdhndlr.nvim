@@ -18,6 +18,25 @@ describe("cmdhndlr.run()", function()
     assert.exists_pattern("ok")
   end)
 
+  it("can run with range", function()
+    helper.set_lines([[
+hoge
+]])
+
+    vim.cmd("normal! v")
+    vim.cmd("normal! $")
+
+    cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(_, str)
+          return str .. "_foo"
+        end,
+      },
+    })
+    assert.exists_pattern("hoge_foo")
+  end)
+
   it("can run async command", function()
     local job = cmdhndlr.run({
       name = "_test/file",
