@@ -65,6 +65,20 @@ hoge
     assert.exists_pattern("ok")
   end)
 
+  it("moves cursor to the bottom", function()
+    cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function()
+          return [[
+foo
+bar]]
+        end,
+      },
+    })
+    assert.current_line("bar")
+  end)
+
   it("raises error if command is not found", function()
     cmdhndlr.run({
       name = "_test/file",
@@ -145,6 +159,20 @@ describe("cmdhndlr.test()", function()
     })
 
     assert.exists_pattern("default")
+  end)
+
+  it("moves cursor to the bottom", function()
+    cmdhndlr.test({
+      name = "_test/file",
+      runner_opts = {
+        f = function()
+          return [[
+foo
+bar]]
+        end,
+      },
+    })
+    assert.current_line("bar")
   end)
 
   it("raises error if there is no test runner", function()

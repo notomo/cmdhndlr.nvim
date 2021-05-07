@@ -43,6 +43,7 @@ function Command.run(opts)
     return nil, exec_err
   end
   view:set_lines(result.output)
+  view:cursor_to_bottom()
 
   return result, nil
 end
@@ -63,6 +64,7 @@ function Command.test(opts)
     return nil, exec_err
   end
   view:set_lines(result.output)
+  view:cursor_to_bottom()
 
   return result, nil
 end
