@@ -79,7 +79,16 @@ hoge
     assert.exists_message([[not found handler: runner.invalid]])
   end)
 
-  it("raises error if the runner raises an error", function()
+  it("raises error if the runner does not support range", function()
+    vim.cmd("normal! v")
+
+    local result = cmdhndlr.run({name = "_test/no_range"})
+
+    assert.is_nil(result)
+    assert.exists_message([[`_test/no_range` runner does not support range]])
+  end)
+
+  it("shows error if the runner raises an error", function()
     cmdhndlr.run({
       name = "_test/file",
       runner_opts = {
@@ -88,7 +97,7 @@ hoge
         end,
       },
     })
-    assert.exists_message([[runner specific error!]])
+    assert.exists_pattern([[runner specific error!]])
   end)
 
 end)
@@ -140,7 +149,7 @@ describe("cmdhndlr.test()", function()
     assert.exists_message([[not found handler: test_runner.invalid]])
   end)
 
-  it("raises error if the test runner raises an error", function()
+  it("shows error if the test runner raises an error", function()
     cmdhndlr.test({
       name = "_test/file",
       runner_opts = {
@@ -149,7 +158,7 @@ describe("cmdhndlr.test()", function()
         end,
       },
     })
-    assert.exists_message([[test_runner specific error!]])
+    assert.exists_pattern([[test_runner specific error!]])
   end)
 
 end)

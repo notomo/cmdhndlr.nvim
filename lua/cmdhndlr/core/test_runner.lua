@@ -31,9 +31,9 @@ function TestRunner.execute(self)
   local path = vim.api.nvim_buf_get_name(self._bufnr)
   local output, err = self:run_file(path)
   if err ~= nil then
-    return nil, err
+    return RunnerResult.new(err), nil
   end
-  return RunnerResult.new(output)
+  return RunnerResult.new(output), nil
 end
 
 return M

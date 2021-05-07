@@ -28,20 +28,32 @@ function Runner.__index(self, k)
 end
 
 function Runner.execute(self, range)
-  local path = vim.api.nvim_buf_get_name(self._bufnr)
+  vim.validate({range = {range, "table", true}})
 
   local output, err
   if range ~= nil then
-    local str = table.concat(vim.api.nvim_buf_get_lines(self._bufnr, range.first - 1, range.last, false), "\n")
-    output, err = self:run_string(str)
+    output, err = self:_run_range(range)
   else
+    local path = vim.api.nvim_buf_get_name(self._bufnr)
     output, err = self:run_file(path)
   end
+
   if err ~= nil then
-    return nil, err
+    if type(err) == "table" then
+      return nil, err.msg
+    end
+    return RunnerResult.new(err), nil
+  end
+  return RunnerResult.new(output), nil
+end
+
+function Runner._run_range(self, range)
+  if not self.run_string then
+    return nil, {msg = ("`%s` runner does not support range"):format(self.name)}
   end
 
-  return RunnerResult.new(output)
+  local str = table.concat(vim.api.nvim_buf_get_lines(self._bufnr, range.first - 1, range.last, false), "\n")
+  return self:run_string(str)
 end
 
 return M

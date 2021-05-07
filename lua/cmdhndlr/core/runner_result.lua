@@ -12,7 +12,7 @@ function RunnerResult.new(runner_output)
     job = runner_output
   end
   local tbl = {output = output, _job = job}
-  return setmetatable(tbl, RunnerResult), nil
+  return setmetatable(tbl, RunnerResult)
 end
 
 function RunnerResult.__index(self, k)
