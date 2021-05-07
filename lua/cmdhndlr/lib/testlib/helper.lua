@@ -66,6 +66,7 @@ end)
 asserts.create("exists_pattern"):register(function(self)
   return function(_, args)
     local pattern = args[1]
+    pattern = pattern:gsub("\n", "\\n")
     local result = vim.fn.search(pattern, "n")
     self:set_positive(("`%s` not found"):format(pattern))
     self:set_negative(("`%s` found"):format(pattern))

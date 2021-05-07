@@ -34,8 +34,7 @@ function Runner.execute(self, range)
   if range ~= nil then
     output, err = self:_run_range(range)
   else
-    local path = vim.api.nvim_buf_get_name(self._bufnr)
-    output, err = self:run_file(path)
+    output, err = self:_run_buffer()
   end
 
   if err ~= nil then
@@ -54,6 +53,16 @@ function Runner._run_range(self, range)
 
   local str = table.concat(vim.api.nvim_buf_get_lines(self._bufnr, range.first - 1, range.last, false), "\n")
   return self:run_string(str)
+end
+
+function Runner._run_buffer(self)
+  local path = vim.api.nvim_buf_get_name(self._bufnr)
+  if path ~= "" then
+    return self:run_file(path)
+  end
+
+  local range = {first = 1, last = vim.api.nvim_buf_line_count(self._bufnr)}
+  return self:_run_range(range)
 end
 
 return M

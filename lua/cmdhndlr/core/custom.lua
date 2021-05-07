@@ -1,7 +1,7 @@
 local M = {}
 
 M.config = {
-  runner = {default = {lua = "vim/lua", go = "go/go", sh = "shell/bash"}},
+  runner = {default = {lua = "vim/lua", go = "go/go", sh = "shell/bash", vim = "vim/source"}},
   test_runner = {default = {lua = "lua/busted"}},
 }
 
