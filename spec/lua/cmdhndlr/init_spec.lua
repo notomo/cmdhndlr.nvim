@@ -36,14 +36,14 @@ describe("cmdhndlr.run()", function()
     local result = cmdhndlr.run()
 
     assert.is_nil(result)
-    assert.exists_message([[no runner]])
+    assert.exists_message([[no handler]])
   end)
 
   it("raises error if the runner is not found", function()
     local result = cmdhndlr.run({name = "invalid"})
 
     assert.is_nil(result)
-    assert.exists_message([[not found runner: invalid]])
+    assert.exists_message([[not found handler: runner.invalid]])
   end)
 
   it("raises error if the runner raises an error", function()
@@ -83,14 +83,14 @@ describe("cmdhndlr.test()", function()
     local result = cmdhndlr.test()
 
     assert.is_nil(result)
-    assert.exists_message([[no runner]])
+    assert.exists_message([[no handler]])
   end)
 
   it("raises error if the test runner is not found", function()
     local result = cmdhndlr.test({name = "invalid"})
 
     assert.is_nil(result)
-    assert.exists_message([[not found test runner: invalid]])
+    assert.exists_message([[not found handler: test_runner.invalid]])
   end)
 
   it("raises error if the test runner raises an error", function()

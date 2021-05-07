@@ -29,7 +29,7 @@ function Command.run(opts)
   opts = opts or {}
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local runner, err = Runner.dispatch(bufnr, opts.name, opts.runner_opts)
+  local runner, err = Runner:dispatch(bufnr, opts.name, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end
@@ -49,7 +49,7 @@ function Command.test(opts)
   opts = opts or {}
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local test_runner, err = TestRunner.dispatch(bufnr, opts.name, opts.runner_opts)
+  local test_runner, err = TestRunner:dispatch(bufnr, opts.name, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end
