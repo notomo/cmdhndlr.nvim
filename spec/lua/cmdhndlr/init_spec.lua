@@ -37,6 +37,20 @@ hoge
     assert.exists_pattern("hoge_foo")
   end)
 
+  it("can run default runner", function()
+    cmdhndlr.setup({runner = {default = {[""] = "_test/file"}}})
+
+    cmdhndlr.run({
+      runner_opts = {
+        f = function()
+          return "default"
+        end,
+      },
+    })
+
+    assert.exists_pattern("default")
+  end)
+
   it("can run async command", function()
     local job = cmdhndlr.run({
       name = "_test/file",
@@ -96,6 +110,20 @@ describe("cmdhndlr.test()", function()
     helper.wait(job)
 
     assert.exists_pattern("ok")
+  end)
+
+  it("can run default test runner", function()
+    cmdhndlr.setup({test_runner = {default = {[""] = "_test/file"}}})
+
+    cmdhndlr.test({
+      runner_opts = {
+        f = function()
+          return "default"
+        end,
+      },
+    })
+
+    assert.exists_pattern("default")
   end)
 
   it("raises error if there is no test runner", function()

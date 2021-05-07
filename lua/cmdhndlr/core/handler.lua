@@ -5,6 +5,7 @@ local M = {}
 
 local Handler = {}
 M.Handler = Handler
+Handler.type = "not_implemented"
 
 function Handler.new(typ, name, opts)
   vim.validate({type = {typ, "string"}, name = {name, "string"}, opts = {opts, "table", true}})
@@ -28,15 +29,13 @@ function Handler.__index(self, k)
   return rawget(Handler, k) or self._handler[k]
 end
 
-Handler.default = {}
-
 function Handler.dispatch(Class, bufnr, name, ...)
   if name ~= nil then
     return Class.new(bufnr, name, ...)
   end
 
   local filetype = vim.bo[bufnr].filetype
-  local default = Class.default[filetype]
+  local default = require("cmdhndlr.core.custom").config[Class.type].default[filetype]
   if default ~= nil then
     return Class.new(bufnr, default, ...)
   end

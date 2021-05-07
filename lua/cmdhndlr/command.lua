@@ -1,6 +1,7 @@
-local View = require("cmdhndlr.view").View
 local Runner = require("cmdhndlr.core.runner").Runner
 local TestRunner = require("cmdhndlr.core.test_runner").TestRunner
+local custom = require("cmdhndlr.core.custom")
+local View = require("cmdhndlr.view").View
 local messagelib = require("cmdhndlr.lib.message")
 local modelib = require("cmdhndlr.lib.mode")
 
@@ -64,6 +65,11 @@ function Command.test(opts)
   view:set_lines(result.output)
 
   return result, nil
+end
+
+function Command.setup(config)
+  vim.validate({config = {config, "table"}})
+  custom.set(config)
 end
 
 return M
