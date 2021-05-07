@@ -5,7 +5,7 @@ local M = {}
 
 local TestRunner = {}
 M.TestRunner = TestRunner
-TestRunner.type = "test_runner"
+TestRunner.handler_type = "test_runner"
 
 function TestRunner.dispatch(Class, bufnr, name, opts)
   return Handler.dispatch(Class, bufnr, name, opts)
@@ -14,7 +14,7 @@ end
 function TestRunner.new(bufnr, name, opts)
   vim.validate({bufnr = {bufnr, "number"}, name = {name, "string"}, opts = {opts, "table", true}})
 
-  local handler, err = Handler.new(TestRunner.type, name, opts)
+  local handler, err = Handler.new(TestRunner.handler_type, name, opts)
   if err ~= nil then
     return nil, err
   end
