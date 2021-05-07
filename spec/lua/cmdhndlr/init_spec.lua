@@ -65,6 +65,18 @@ hoge
     assert.exists_pattern("ok")
   end)
 
+  it("raises error if command is not found", function()
+    cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"invalid_cmd"})
+        end,
+      },
+    })
+    assert.exists_pattern([['invalid_cmd' is not executable]])
+  end)
+
   it("raises error if there is no runner", function()
     local result = cmdhndlr.run()
 

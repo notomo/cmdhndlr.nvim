@@ -5,10 +5,12 @@ Job.__index = Job
 M.Job = Job
 
 function Job.new(cmd, opts)
-  local id = vim.fn.termopen(cmd, opts)
-  -- TODO: error handling
-  local tbl = {_id = id}
-  return setmetatable(tbl, Job)
+  local ok, result = pcall(vim.fn.termopen, cmd, opts)
+  if not ok then
+    return nil, result
+  end
+  local tbl = {_id = result}
+  return setmetatable(tbl, Job), nil
 end
 
 function Job.is_running(self)
