@@ -1,6 +1,6 @@
 local helper = require("cmdhndlr.lib.testlib.helper")
 local cmdhndlr = helper.require("cmdhndlr")
-local handler_name = "vim/source"
+local handler_name = "vim/lua"
 
 describe(handler_name .. " runner", function()
 
@@ -9,33 +9,33 @@ describe(handler_name .. " runner", function()
 
   it("can run buffer source", function()
     helper.set_lines([[
-echomsg 'source'
-echomsg 'source'
+print("lua")
+print("lua")
 ]])
 
     cmdhndlr.run({name = handler_name})
 
     assert.exists_pattern([[
-source
-source]])
+lua
+lua]])
   end)
 
   it("can run with range", function()
     helper.set_lines([[
-echomsg 'source'
-echomsg 'source'
+print("lua")
+print("lua")
 ]])
     vim.cmd("normal! v$")
 
     cmdhndlr.run({name = handler_name})
 
     assert.exists_pattern([[
-source]])
+lua]])
   end)
 
   it("shows error on error", function()
     helper.set_lines([[
-echoerr 'error!'
+error("error!")
 ]])
 
     cmdhndlr.run({name = handler_name})
