@@ -9,6 +9,7 @@ M.config = {
       vim = "vim/source",
       python = "python/python",
       make = "make/make",
+      javascript = "javascript/node",
     },
   },
   test_runner = {default = {lua = "lua/busted"}},
