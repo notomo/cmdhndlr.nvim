@@ -27,14 +27,16 @@ local JobFactory = {}
 JobFactory.__index = JobFactory
 M.JobFactory = JobFactory
 
-function JobFactory.new()
-  local tbl = {}
+function JobFactory.new(default_cwd)
+  vim.validate({default_cwd = {default_cwd, "string"}})
+  local tbl = {_default_cwd = default_cwd}
   return setmetatable(tbl, JobFactory)
 end
 
-function JobFactory.create(_, cmd, opts)
+function JobFactory.create(self, cmd, opts)
   vim.validate({cmd = {cmd, "table"}, opts = {opts, "table", true}})
   opts = opts or {stderr_buffered = false}
+  opts.cwd = opts.cwd or self._default_cwd
   return Job.new(cmd, opts)
 end
 

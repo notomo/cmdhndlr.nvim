@@ -6,12 +6,13 @@ local View = {}
 View.__index = View
 M.View = View
 
-function View.open()
+function View.open(working_dir)
   local bufnr = vim.api.nvim_create_buf(false, true)
 
   -- TODO
   vim.cmd("botright split")
   vim.cmd("buffer " .. bufnr)
+  working_dir:set_current()
 
   local tbl = {_bufnr = bufnr, _window_id = vim.api.nvim_get_current_win()}
   return setmetatable(tbl, View)

@@ -31,13 +31,13 @@ function Command.run(opts)
   opts = opts or {}
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local runner, err = Runner:dispatch(bufnr, opts.name, opts.runner_opts)
+  local runner, err = Runner:dispatch(bufnr, opts.name, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end
 
   local range = modelib.visual_range()
-  local view = View.open()
+  local view = View.open(runner.working_dir)
   local result, exec_err = runner:execute(range)
   if exec_err ~= nil then
     return nil, exec_err
@@ -53,12 +53,12 @@ function Command.test(opts)
   opts = opts or {}
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local test_runner, err = TestRunner:dispatch(bufnr, opts.name, opts.runner_opts)
+  local test_runner, err = TestRunner:dispatch(bufnr, opts.name, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end
 
-  local view = View.open()
+  local view = View.open(test_runner.working_dir)
   local result, exec_err = test_runner:execute()
   if exec_err ~= nil then
     return nil, exec_err

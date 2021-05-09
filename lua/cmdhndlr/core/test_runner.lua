@@ -7,14 +7,14 @@ local TestRunner = {}
 M.TestRunner = TestRunner
 TestRunner.handler_type = "test_runner"
 
-function TestRunner.dispatch(Class, bufnr, name, opts)
-  return Handler.dispatch(Class, bufnr, name, opts)
+function TestRunner.dispatch(Class, bufnr, name, ...)
+  return Handler.dispatch(Class, bufnr, name, ...)
 end
 
-function TestRunner.new(bufnr, name, opts)
-  vim.validate({bufnr = {bufnr, "number"}, name = {name, "string"}, opts = {opts, "table", true}})
+function TestRunner.new(bufnr, name, raw_working_dir, opts)
+  vim.validate({bufnr = {bufnr, "number"}})
 
-  local handler, err = Handler.new(TestRunner.handler_type, name, opts)
+  local handler, err = Handler.new(TestRunner.handler_type, name, raw_working_dir, opts)
   if err ~= nil then
     return nil, err
   end

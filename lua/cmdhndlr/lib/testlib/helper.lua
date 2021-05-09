@@ -6,6 +6,10 @@ M.root = M.find_plugin_root(plugin_name)
 function M.before_each()
   vim.cmd("filetype on")
   vim.cmd("syntax enable")
+  M.test_data_path = "spec/test_data/" .. math.random(1, 2 ^ 30) .. "/"
+  M.test_data_dir = M.root .. "/" .. M.test_data_path
+  M.new_directory("")
+  vim.api.nvim_set_current_dir(M.test_data_dir)
 end
 
 function M.after_each()
@@ -15,6 +19,7 @@ function M.after_each()
   vim.cmd("filetype off")
   vim.cmd("syntax off")
   M.cleanup_loaded_modules(plugin_name)
+  vim.fn.delete(M.root .. "/spec/test_data", "rf")
   print(" ")
 end
 
@@ -40,6 +45,22 @@ function M.wait(job)
   return vim.wait(1000, function()
     return vim.fn.search("Process exited") ~= 0
   end, 10)
+end
+
+function M.new_file(path, ...)
+  local f = io.open(M.test_data_dir .. path, "w")
+  for _, line in ipairs({...}) do
+    f:write(line .. "\n")
+  end
+  f:close()
+end
+
+function M.new_directory(path)
+  vim.fn.mkdir(M.test_data_dir .. path, "p")
+end
+
+function M.cd(path)
+  vim.api.nvim_set_current_dir(M.test_data_dir .. path)
 end
 
 local asserts = require("vusted.assert").asserts

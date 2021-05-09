@@ -51,6 +51,16 @@ hoge
     assert.exists_pattern("default")
   end)
 
+  it("can run with runner's working_dir", function()
+    helper.new_directory("root/dir")
+    helper.new_directory("root/dir2")
+    helper.cd("root/dir")
+
+    cmdhndlr.run({name = "_test/working_dir"})
+
+    assert.exists_pattern(helper.test_data_path .. "root$")
+  end)
+
   it("can run async command", function()
     local job = cmdhndlr.run({
       name = "_test/file",
