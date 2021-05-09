@@ -6,7 +6,7 @@ end
 
 function M.run_string(self, str)
   local path = self.filelib.temporary(str)
-  return self.job_factory:create({"python", path})
+  return self:run_file(path)
 end
 
 return M
