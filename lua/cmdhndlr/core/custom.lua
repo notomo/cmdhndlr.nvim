@@ -10,9 +10,10 @@ M.config = {
       python = "python/python",
       make = "make/make",
       javascript = "javascript/node",
+      dart = "dart/dart",
     },
   },
-  test_runner = {default = {lua = "lua/busted"}},
+  test_runner = {default = {lua = "lua/busted", go = "go/go", python = "python/pytest"}},
 }
 
 function M.set(config)
