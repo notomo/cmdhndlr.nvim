@@ -1,4 +1,5 @@
 local RunnerResult = require("cmdhndlr.core.runner_result").RunnerResult
+local BufferRange = require("cmdhndlr.core.buffer_range").BufferRange
 local Handler = require("cmdhndlr.core.handler").Handler
 
 local M = {}
@@ -18,6 +19,10 @@ function Runner.new(bufnr, name, raw_working_dir, opts)
   if err ~= nil then
     return nil, err
   end
+  vim.validate({
+    run_file = {handler.run_file, "function"},
+    run_string = {handler.run_string, "function", true},
+  })
 
   local tbl = {_bufnr = bufnr, _handler = handler}
   return setmetatable(tbl, Runner)
@@ -51,7 +56,7 @@ function Runner._run_range(self, range)
     return nil, {msg = ("`%s` runner does not support range"):format(self.name)}
   end
 
-  local str = table.concat(vim.api.nvim_buf_get_lines(self._bufnr, range.first - 1, range.last, false), "\n")
+  local str = BufferRange.new(self._bufnr, range):to_string()
   return self:run_string(str)
 end
 
@@ -61,8 +66,12 @@ function Runner._run_buffer(self)
     return self:run_file(path)
   end
 
-  local range = {first = 1, last = vim.api.nvim_buf_line_count(self._bufnr)}
-  return self:_run_range(range)
+  local str = BufferRange.entire(self._bufnr):to_string()
+  if self.run_string then
+    return self:run_string(str)
+  end
+
+  return self:run_file(self.filelib.temporary(str))
 end
 
 return M

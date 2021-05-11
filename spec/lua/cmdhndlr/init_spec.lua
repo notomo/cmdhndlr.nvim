@@ -124,6 +124,12 @@ bar]]
     assert.exists_message([[`_test/no_range` runner does not support range]])
   end)
 
+  it("can use runner that is not supported range in nofile buffer", function()
+    cmdhndlr.run({name = "_test/no_range"})
+
+    assert.exists_pattern([[run_file]])
+  end)
+
   it("shows error if the runner raises an error", function()
     cmdhndlr.run({
       name = "_test/file",

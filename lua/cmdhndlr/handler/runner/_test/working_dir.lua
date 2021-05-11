@@ -1,5 +1,8 @@
 local M = {}
 
+function M.run_file()
+end
+
 function M.run_string(self)
   return self.working_dir:get()
 end
