@@ -25,4 +25,12 @@ function M.find_upward_dir(child_pattern)
   return nil
 end
 
+function M.find_upward_file(child_pattern)
+  local found_file = vim.fn.findfile(child_pattern, ".;")
+  if found_file ~= "" then
+    return vim.fn.fnamemodify(found_file, ":p")
+  end
+  return nil
+end
+
 return M

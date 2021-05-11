@@ -112,7 +112,7 @@ bar]]
     local result = cmdhndlr.run({name = "invalid"})
 
     assert.is_nil(result)
-    assert.exists_message([[not found handler: runner.invalid]])
+    assert.exists_message([[not found handler: runner/invalid]])
   end)
 
   it("raises error if the runner does not support range", function()
@@ -196,7 +196,7 @@ bar]]
     local result = cmdhndlr.test({name = "invalid"})
 
     assert.is_nil(result)
-    assert.exists_message([[not found handler: test_runner.invalid]])
+    assert.exists_message([[not found handler: test_runner/invalid]])
   end)
 
   it("shows error if the test runner raises an error", function()

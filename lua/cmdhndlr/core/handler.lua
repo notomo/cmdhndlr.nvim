@@ -17,13 +17,13 @@ function Handler.new(typ, name, raw_working_dir, opts)
     opts = {opts, "table", true},
   })
 
-  local path = ("%s.%s"):format(typ, name)
+  local path = ("%s/%s"):format(typ, name)
   local handler = modulelib.find("cmdhndlr.handler." .. path)
   if not handler then
     return nil, "not found handler: " .. path
   end
 
-  local working_dir = WorkingDir.new(raw_working_dir or handler.working_dir)
+  local working_dir = WorkingDir.new(raw_working_dir or handler.working_dir, handler.working_dir_marker)
   local tbl = {
     name = name,
     opts = vim.tbl_extend("force", handler.opts or {}, opts or {}),
