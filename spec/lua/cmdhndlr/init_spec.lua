@@ -3,7 +3,39 @@ local cmdhndlr = helper.require("cmdhndlr")
 
 describe("cmdhndlr.run()", function()
 
-  before_each(helper.before_each)
+  before_each(function()
+    helper.before_each()
+
+    helper.register_runner("_test/file", {
+      opts = {
+        f = function()
+          return "not implemented"
+        end,
+      },
+      run_file = function(self, path)
+        return self.opts.f(self, path)
+      end,
+      run_string = function(self, str)
+        return self.opts.f(self, str)
+      end,
+    })
+
+    helper.register_runner("_test/no_range", {
+      run_file = function()
+        return "run_file"
+      end,
+    })
+
+    helper.register_runner("_test/working_dir", {
+      run_file = function()
+      end,
+      run_string = function(self)
+        return self.working_dir:get()
+      end,
+      working_dir = require("cmdhndlr.util").working_dir.upward_pattern("dir1", "dir2"),
+    })
+
+  end)
   after_each(helper.after_each)
 
   it("can run sync command", function()
@@ -146,7 +178,20 @@ end)
 
 describe("cmdhndlr.test()", function()
 
-  before_each(helper.before_each)
+  before_each(function()
+    helper.before_each()
+
+    helper.register_test_runner("_test/file", {
+      opts = {
+        f = function()
+          return "not implemented"
+        end,
+      },
+      run_file = function(self, path)
+        return self.opts.f(self, path)
+      end,
+    })
+  end)
   after_each(helper.after_each)
 
   it("can test async", function()

@@ -5,7 +5,9 @@ local filelib = require("cmdhndlr.lib.file")
 
 local M = {}
 
-local Handler = {}
+M.registered = {}
+
+local Handler = {registered = {}}
 M.Handler = Handler
 Handler.handler_type = "not_implemented"
 
@@ -17,10 +19,9 @@ function Handler.new(typ, name, raw_working_dir, opts)
     opts = {opts, "table", true},
   })
 
-  local path = ("%s/%s"):format(typ, name)
-  local handler = modulelib.find("cmdhndlr.handler." .. path)
-  if not handler then
-    return nil, "not found handler: " .. path
+  local handler, err = Handler._find(typ, name)
+  if err then
+    return nil, err
   end
 
   local working_dir = WorkingDir.new(raw_working_dir or handler.working_dir, handler.working_dir_marker)
@@ -33,6 +34,22 @@ function Handler.new(typ, name, raw_working_dir, opts)
     _handler = handler,
   }
   return setmetatable(tbl, Handler)
+end
+
+function Handler._find(typ, name)
+  local path = M.path(typ, name)
+
+  local registered = M.registered[path]
+  if registered then
+    return registered, nil
+  end
+
+  local handler = modulelib.find("cmdhndlr.handler." .. path)
+  if handler then
+    return handler, nil
+  end
+
+  return nil, "not found handler: " .. path
 end
 
 function Handler.__index(self, k)
@@ -51,6 +68,14 @@ function Handler.dispatch(Class, bufnr, name, ...)
   end
 
   return nil, "no handler"
+end
+
+function M.path(typ, name)
+  return ("%s/%s"):format(typ, name:gsub("%.", "/"))
+end
+
+function M.register(typ, name, handler)
+  M.registered[M.path(typ, name)] = handler
 end
 
 return M
