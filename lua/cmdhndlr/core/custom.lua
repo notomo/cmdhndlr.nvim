@@ -11,9 +11,19 @@ M.config = {
       make = "make/make",
       javascript = "javascript/node",
       dart = "dart/dart",
+      rust = "rust/cargo",
     },
   },
-  test_runner = {default = {lua = "lua/busted", go = "go/go", python = "python/pytest"}},
+  test_runner = {
+    default = {
+      lua = "lua/busted",
+      go = "go/go",
+      python = "python/pytest",
+      rust = "rust/cargo",
+      javascript = "javascript/jest",
+      typescript = "javascript/jest",
+    },
+  },
 }
 
 function M.set(config)
