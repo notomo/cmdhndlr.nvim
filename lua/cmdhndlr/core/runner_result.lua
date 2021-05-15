@@ -1,34 +1,53 @@
 local M = {}
 
-local RunnerOutput = {}
+local RunnerRawOutput = {}
+RunnerRawOutput.__index = RunnerRawOutput
 
-function RunnerOutput.new(output, job, is_error)
+function RunnerRawOutput.new(hooks, output, is_error)
   vim.validate({
-    output = {output, "string", true},
-    job = {job, "table", true},
+    hooks = {hooks, "table"},
+    output = {output, "string"},
     is_error = {is_error, "boolean", true},
   })
-  local tbl = {output = output, _job = job or {}, is_error = is_error or false}
-  return setmetatable(tbl, RunnerOutput)
+  local tbl = {_hooks = hooks, output = output, is_error = is_error or false}
+  return setmetatable(tbl, RunnerRawOutput)
 end
 
-function RunnerOutput.__index(self, k)
-  return rawget(RunnerOutput, k) or self._job[k]
+function RunnerRawOutput.hook(self)
+  if self.is_error then
+    return self._hooks.failure()
+  end
+  return self._hooks.success()
+end
+
+local RunnerJobOutput = {}
+
+function RunnerJobOutput.new(job)
+  vim.validate({job = {job, "table"}})
+  local tbl = {output = nil, _job = job}
+  return setmetatable(tbl, RunnerJobOutput)
+end
+
+function RunnerJobOutput.__index(self, k)
+  return rawget(RunnerJobOutput, k) or self._job[k]
+end
+
+function RunnerJobOutput.hook()
+  -- nop
 end
 
 local RunnerResult = {}
 M.RunnerResult = RunnerResult
 
-function RunnerResult.ok(output)
+function RunnerResult.ok(hooks, output)
   if type(output) == "string" then
-    return RunnerOutput.new(output, nil)
+    return RunnerRawOutput.new(hooks, output)
   end
-  return RunnerOutput.new(nil, output)
+  return RunnerJobOutput.new(output)
 end
 
-function RunnerResult.error(err)
-  vim.validate({err = {err, "string"}})
-  return RunnerOutput.new(err, nil, true)
+function RunnerResult.error(hooks, err)
+  return RunnerRawOutput.new(hooks, err, true)
 end
 
 return M

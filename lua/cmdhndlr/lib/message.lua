@@ -12,4 +12,13 @@ function M.warn(msg)
   vim.api.nvim_echo({{prefix .. msg, "WarningMsg"}}, true, {})
 end
 
+function M.echo(msg, hl_group)
+  vim.validate({msg = {msg, "string"}, hl_group = {hl_group, "string", true}})
+  local chunk = {prefix .. msg}
+  if hl_group then
+    table.insert(chunk, hl_group)
+  end
+  vim.api.nvim_echo({chunk}, true, {})
+end
+
 return M

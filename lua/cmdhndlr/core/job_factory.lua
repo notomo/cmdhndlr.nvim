@@ -27,9 +27,9 @@ local JobFactory = {}
 JobFactory.__index = JobFactory
 M.JobFactory = JobFactory
 
-function JobFactory.new(default_cwd)
-  vim.validate({default_cwd = {default_cwd, "string"}})
-  local tbl = {_default_cwd = default_cwd}
+function JobFactory.new(hooks, default_cwd)
+  vim.validate({hooks = {hooks, "table"}, default_cwd = {default_cwd, "string"}})
+  local tbl = {_default_cwd = default_cwd, _hooks = hooks}
   return setmetatable(tbl, JobFactory)
 end
 
@@ -37,6 +37,18 @@ function JobFactory.create(self, cmd, opts)
   vim.validate({cmd = {cmd, "table"}, opts = {opts, "table", true}})
   opts = opts or {stderr_buffered = false}
   opts.cwd = opts.cwd or self._default_cwd
+
+  local on_exit = opts.on_exit or function()
+  end
+  opts.on_exit = function(job_id, exit_code)
+    on_exit(job_id, exit_code)
+    if exit_code == 0 then
+      self._hooks.success()
+    else
+      self._hooks.failure()
+    end
+  end
+
   return Job.new(cmd, opts)
 end
 

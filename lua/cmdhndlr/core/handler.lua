@@ -11,10 +11,11 @@ local Handler = {registered = {}}
 M.Handler = Handler
 Handler.handler_type = "not_implemented"
 
-function Handler.new(typ, name, raw_working_dir, opts)
+function Handler.new(typ, name, hooks, raw_working_dir, opts)
   vim.validate({
     type = {typ, "string"},
     name = {name, "string"},
+    hooks = {hooks, "table"},
     working_dir = {raw_working_dir, "function", true},
     opts = {opts, "table", true},
   })
@@ -28,7 +29,8 @@ function Handler.new(typ, name, raw_working_dir, opts)
   local tbl = {
     name = name,
     opts = vim.tbl_extend("force", handler.opts or {}, opts or {}),
-    job_factory = JobFactory.new(working_dir:get()),
+    job_factory = JobFactory.new(hooks, working_dir:get()),
+    hooks = hooks,
     working_dir = working_dir,
     filelib = filelib,
     _handler = handler,

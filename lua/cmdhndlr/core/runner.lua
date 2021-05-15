@@ -46,9 +46,9 @@ function Runner.execute(self, range)
     if type(err) == "table" then
       return nil, err.msg
     end
-    return RunnerResult.error(err), nil
+    return RunnerResult.error(self.hooks, err), nil
   end
-  return RunnerResult.ok(output), nil
+  return RunnerResult.ok(self.hooks, output), nil
 end
 
 function Runner._run_range(self, range)
