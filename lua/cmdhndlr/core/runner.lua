@@ -8,14 +8,14 @@ local Runner = {}
 M.Runner = Runner
 Runner.handler_type = "runner"
 
-function Runner.dispatch(Class, bufnr, name, ...)
-  return Handler.dispatch(Class, bufnr, name, ...)
+function Runner.dispatch(Class, ...)
+  return Handler.dispatch(Class, ...)
 end
 
-function Runner.new(bufnr, name, raw_working_dir, opts)
+function Runner.new(bufnr, ...)
   vim.validate({bufnr = {bufnr, "number"}})
 
-  local handler, err = Handler.new(Runner.handler_type, name, raw_working_dir, opts)
+  local handler, err = Handler.new(Runner.handler_type, ...)
   if err ~= nil then
     return nil, err
   end
@@ -46,9 +46,9 @@ function Runner.execute(self, range)
     if type(err) == "table" then
       return nil, err.msg
     end
-    return RunnerResult.new(err), nil
+    return RunnerResult.error(err), nil
   end
-  return RunnerResult.new(output), nil
+  return RunnerResult.ok(output), nil
 end
 
 function Runner._run_range(self, range)

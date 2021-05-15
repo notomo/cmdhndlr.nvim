@@ -7,14 +7,14 @@ local TestRunner = {}
 M.TestRunner = TestRunner
 TestRunner.handler_type = "test_runner"
 
-function TestRunner.dispatch(Class, bufnr, name, ...)
-  return Handler.dispatch(Class, bufnr, name, ...)
+function TestRunner.dispatch(Class, ...)
+  return Handler.dispatch(Class, ...)
 end
 
-function TestRunner.new(bufnr, name, raw_working_dir, opts)
+function TestRunner.new(bufnr, ...)
   vim.validate({bufnr = {bufnr, "number"}})
 
-  local handler, err = Handler.new(TestRunner.handler_type, name, raw_working_dir, opts)
+  local handler, err = Handler.new(TestRunner.handler_type, ...)
   if err ~= nil then
     return nil, err
   end
@@ -31,9 +31,9 @@ function TestRunner.execute(self)
   local path = vim.api.nvim_buf_get_name(self._bufnr)
   local output, err = self:run_file(path)
   if err ~= nil then
-    return RunnerResult.new(err), nil
+    return RunnerResult.error(err), nil
   end
-  return RunnerResult.new(output), nil
+  return RunnerResult.ok(output), nil
 end
 
 return M
