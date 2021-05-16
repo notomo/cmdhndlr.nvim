@@ -31,7 +31,8 @@ function Command.run(opts)
   vim.validate({opts = {opts, "table", true}})
   opts = opts or {}
 
-  local hooks = Hooks.new()
+  opts.hooks = opts.hooks or {}
+  local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
 
   local bufnr = vim.api.nvim_get_current_buf()
   local runner, err = Runner:dispatch(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)

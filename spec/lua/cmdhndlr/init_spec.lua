@@ -50,6 +50,41 @@ describe("cmdhndlr.run()", function()
     assert.exists_pattern("ok")
   end)
 
+  it("can hook sync command success", function()
+    local hooked = false
+
+    cmdhndlr.run({
+      name = "_test/file",
+      hooks = {
+        success = function()
+          hooked = true
+        end,
+      },
+    })
+
+    assert.is_true(hooked)
+  end)
+
+  it("can hook sync command failure", function()
+    local hooked = false
+
+    cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function()
+          return nil, "err"
+        end,
+      },
+      hooks = {
+        failure = function()
+          hooked = true
+        end,
+      },
+    })
+
+    assert.is_true(hooked)
+  end)
+
   it("can run with range", function()
     helper.set_lines([[
 hoge
@@ -105,6 +140,48 @@ hoge
     helper.wait(job)
 
     assert.exists_pattern("ok")
+  end)
+
+  it("can hook async command success", function()
+    local hooked = false
+
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"echo", "ok"})
+        end,
+      },
+      hooks = {
+        success = function()
+          hooked = true
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.is_true(hooked)
+  end)
+
+  it("can hook async command failure", function()
+    local hooked = false
+
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"cat", "not_found"})
+        end,
+      },
+      hooks = {
+        failure = function()
+          hooked = true
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.is_true(hooked)
   end)
 
   it("moves cursor to the bottom", function()
@@ -206,6 +283,49 @@ describe("cmdhndlr.test()", function()
     helper.wait(job)
 
     assert.exists_pattern("ok")
+    assert.exists_message("SUCCESS")
+  end)
+
+  it("can hook async command success", function()
+    local hooked = false
+
+    local job = cmdhndlr.test({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"echo", "ok"})
+        end,
+      },
+      hooks = {
+        success = function()
+          hooked = true
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.is_true(hooked)
+  end)
+
+  it("can hook async command failure", function()
+    local hooked = false
+
+    local job = cmdhndlr.test({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"cat", "not_found"})
+        end,
+      },
+      hooks = {
+        failure = function()
+          hooked = true
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.is_true(hooked)
   end)
 
   it("can run default test runner", function()
