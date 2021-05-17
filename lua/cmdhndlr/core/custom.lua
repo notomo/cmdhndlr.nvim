@@ -25,6 +25,7 @@ M.config = {
       typescript = "javascript/jest",
     },
   },
+  build_runner = {default = {go = "go/go"}},
 }
 
 function M.set(config)

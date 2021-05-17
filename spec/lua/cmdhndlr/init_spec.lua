@@ -383,3 +383,38 @@ bar]]
   end)
 
 end)
+
+describe("cmdhndlr.build()", function()
+
+  before_each(function()
+    helper.before_each()
+
+    helper.register_build_runner("_test/file", {
+      opts = {
+        f = function()
+          return "not implemented"
+        end,
+      },
+      build = function(self, path)
+        return self.opts.f(self, path)
+      end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("can build async", function()
+    local job = cmdhndlr.build({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"echo", "ok"})
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.exists_pattern("ok")
+    assert.exists_message("SUCCESS")
+  end)
+
+end)

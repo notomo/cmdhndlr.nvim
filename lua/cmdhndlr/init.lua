@@ -10,6 +10,10 @@ function M.test(opts)
   return Command.new("test", opts)
 end
 
+function M.build(opts)
+  return Command.new("build", opts)
+end
+
 function M.setup(config)
   return Command.new("setup", config)
 end

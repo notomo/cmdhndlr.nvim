@@ -48,6 +48,10 @@ function M.register_test_runner(name, handler)
   require("cmdhndlr.core.handler").register("test_runner", name, handler)
 end
 
+function M.register_build_runner(name, handler)
+  require("cmdhndlr.core.handler").register("build_runner", name, handler)
+end
+
 function M.wait(job)
   job:wait(1000)
   -- wait for terminal output
