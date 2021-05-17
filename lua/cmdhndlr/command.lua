@@ -60,10 +60,10 @@ function Command.test(opts)
 
   opts.hooks = opts.hooks or {}
   opts.hooks.success = opts.hooks.success or function()
-    messagelib.echo("SUCCESS", "Search")
+    messagelib.echo("SUCCESS", "CmdhndlrSuccess")
   end
   opts.hooks.failure = opts.hooks.failure or function()
-    messagelib.echo("FAILURE", "TODO")
+    messagelib.echo("FAILURE", "CmdhndlrFailure")
   end
   local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
 
@@ -90,5 +90,8 @@ function Command.setup(config)
   vim.validate({config = {config, "table"}})
   custom.set(config)
 end
+
+vim.cmd("highlight default link CmdhndlrSuccess Search")
+vim.cmd("highlight default link CmdhndlrFailure Todo")
 
 return M
