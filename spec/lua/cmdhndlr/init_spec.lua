@@ -418,3 +418,45 @@ describe("cmdhndlr.build()", function()
   end)
 
 end)
+
+describe("cmdhndlr.retry()", function()
+
+  before_each(function()
+    helper.before_each()
+
+    helper.register_build_runner("_test/file", {
+      opts = {
+        f = function()
+          return "not implemented"
+        end,
+      },
+      build = function(self, path)
+        return self.opts.f(self, path)
+      end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("can retry", function()
+    local job1 = cmdhndlr.build({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"echo", "ok"})
+        end,
+      },
+    })
+    helper.wait(job1)
+    assert.exists_pattern("ok")
+
+    local job2 = cmdhndlr.retry()
+    helper.wait(job2)
+    assert.exists_pattern("ok")
+  end)
+
+  it("raises error if not plugin buffer", function()
+    cmdhndlr.retry()
+    assert.exists_message([[not cmdhndlr buffer]])
+  end)
+
+end)

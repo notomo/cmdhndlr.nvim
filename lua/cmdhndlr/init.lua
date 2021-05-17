@@ -14,6 +14,10 @@ function M.build(opts)
   return Command.new("build", opts)
 end
 
+function M.retry()
+  return Command.new("retry")
+end
+
 function M.setup(config)
   return Command.new("setup", config)
 end

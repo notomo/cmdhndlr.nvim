@@ -1,3 +1,4 @@
+local Layout = require("cmdhndlr.view.layout").Layout
 local cursorlib = require("cmdhndlr.lib.cursor")
 
 local M = {}
@@ -6,15 +7,16 @@ local View = {}
 View.__index = View
 M.View = View
 
-function View.open(working_dir)
-  local bufnr = vim.api.nvim_create_buf(false, true)
+function View.open(working_dir, layout_opts)
+  vim.validate({working_dir = {working_dir, "table"}, layout_opts = {layout_opts, "table", true}})
+  layout_opts = layout_opts or {type = "horizontal"}
 
-  -- TODO
-  vim.cmd("botright split")
-  vim.cmd("buffer " .. bufnr)
+  local bufnr = vim.api.nvim_create_buf(false, true)
+  vim.bo[bufnr].filetype = "cmdhndlr"
+  Layout.new(layout_opts):open(bufnr)
   working_dir:set_current()
 
-  local tbl = {_bufnr = bufnr, _window_id = vim.api.nvim_get_current_win()}
+  local tbl = {bufnr = bufnr, _window_id = vim.api.nvim_get_current_win()}
   return setmetatable(tbl, View)
 end
 
@@ -23,11 +25,11 @@ function View.set_lines(self, output)
   if output == nil then
     return
   end
-  vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, true, vim.split(output, "\n", true))
+  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, vim.split(output, "\n", true))
 end
 
 function View.cursor_to_bottom(self)
-  cursorlib.to_bottom(self._bufnr, self._window_id)
+  cursorlib.to_bottom(self.bufnr, self._window_id)
 end
 
 return M

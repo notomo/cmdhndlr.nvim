@@ -1,3 +1,4 @@
+local Context = require("cmdhndlr.core.context").Context
 local Runner = require("cmdhndlr.core.runner").Runner
 local TestRunner = require("cmdhndlr.core.test_runner").TestRunner
 local BuildRunner = require("cmdhndlr.core.build_runner").BuildRunner
@@ -49,6 +50,7 @@ function Command.run(opts)
   end
   view:set_lines(result.output)
   view:cursor_to_bottom()
+  Context.set(view.bufnr, runner, {range})
 
   result:hook()
 
@@ -69,18 +71,19 @@ function Command.test(opts)
   local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local test_runner, err = TestRunner:dispatch(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  local runner, err = TestRunner:dispatch(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end
 
-  local view = View.open(test_runner.working_dir)
-  local result, exec_err = test_runner:execute()
+  local view = View.open(runner.working_dir)
+  local result, exec_err = runner:execute()
   if exec_err ~= nil then
     return nil, exec_err
   end
   view:set_lines(result.output)
   view:cursor_to_bottom()
+  Context.set(view.bufnr, runner)
 
   result:hook()
 
@@ -101,13 +104,33 @@ function Command.build(opts)
   local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local build_runner, err = BuildRunner:dispatch(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  local runner, err = BuildRunner:dispatch(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end
 
-  local view = View.open(build_runner.working_dir)
-  local result, exec_err = build_runner:execute()
+  local view = View.open(runner.working_dir)
+  local result, exec_err = runner:execute()
+  if exec_err ~= nil then
+    return nil, exec_err
+  end
+  view:set_lines(result.output)
+  view:cursor_to_bottom()
+  Context.set(view.bufnr, runner)
+
+  result:hook()
+
+  return result, nil
+end
+
+function Command.retry()
+  local ctx, err = Context.get()
+  if err then
+    return nil, "not cmdhndlr buffer: " .. err
+  end
+
+  local view = View.open(ctx.runner.working_dir, {type = "no"})
+  local result, exec_err = ctx.runner:execute(unpack(ctx.args))
   if exec_err ~= nil then
     return nil, exec_err
   end
@@ -117,6 +140,10 @@ function Command.build(opts)
   result:hook()
 
   return result, nil
+end
+
+function Command.delete(bufnr)
+  return nil, Context.delete_from(bufnr)
 end
 
 function Command.setup(config)
