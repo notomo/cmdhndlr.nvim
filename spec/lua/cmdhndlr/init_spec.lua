@@ -6,7 +6,7 @@ describe("cmdhndlr.run()", function()
   before_each(function()
     helper.before_each()
 
-    helper.register_runner("_test/file", {
+    helper.register_normal_runner("_test/file", {
       opts = {
         f = function()
           return "not implemented"
@@ -20,13 +20,13 @@ describe("cmdhndlr.run()", function()
       end,
     })
 
-    helper.register_runner("_test/no_range", {
+    helper.register_normal_runner("_test/no_range", {
       run_file = function()
         return "run_file"
       end,
     })
 
-    helper.register_runner("_test/working_dir", {
+    helper.register_normal_runner("_test/working_dir", {
       run_file = function()
       end,
       run_string = function(self)
@@ -105,7 +105,7 @@ hoge
   end)
 
   it("can run default runner", function()
-    cmdhndlr.setup({runner = {default = {[""] = "_test/file"}}})
+    cmdhndlr.setup({normal_runner = {default = {[""] = "_test/file"}}})
 
     cmdhndlr.run({
       runner_opts = {
@@ -221,7 +221,7 @@ bar]]
     local result = cmdhndlr.run({name = "invalid"})
 
     assert.is_nil(result)
-    assert.exists_message([[not found handler: runner/invalid]])
+    assert.exists_message([[not found handler: normal_runner/invalid]])
   end)
 
   it("raises error if the runner does not support range", function()

@@ -40,8 +40,8 @@ function M.search(pattern)
   return result
 end
 
-function M.register_runner(name, handler)
-  require("cmdhndlr.core.handler").register("runner", name, handler)
+function M.register_normal_runner(name, handler)
+  require("cmdhndlr.core.handler").register("normal_runner", name, handler)
 end
 
 function M.register_test_runner(name, handler)

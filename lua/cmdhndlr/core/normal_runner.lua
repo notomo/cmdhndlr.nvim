@@ -4,11 +4,11 @@ local Handler = require("cmdhndlr.core.handler").Handler
 
 local M = {}
 
-local Runner = {}
-M.Runner = Runner
+local NormalRunner = {}
+M.NormalRunner = NormalRunner
 
-function Runner.new(bufnr, ...)
-  local handler, err = Handler.new("runner", bufnr, ...)
+function NormalRunner.new(bufnr, ...)
+  local handler, err = Handler.new("normal_runner", bufnr, ...)
   if err ~= nil then
     return nil, err
   end
@@ -18,14 +18,14 @@ function Runner.new(bufnr, ...)
   })
 
   local tbl = {_bufnr = bufnr, _handler = handler}
-  return setmetatable(tbl, Runner)
+  return setmetatable(tbl, NormalRunner)
 end
 
-function Runner.__index(self, k)
-  return rawget(Runner, k) or self._handler[k]
+function NormalRunner.__index(self, k)
+  return rawget(NormalRunner, k) or self._handler[k]
 end
 
-function Runner.execute(self, range)
+function NormalRunner.execute(self, range)
   vim.validate({range = {range, "table", true}})
 
   local output, err
@@ -44,7 +44,7 @@ function Runner.execute(self, range)
   return RunnerResult.ok(self.hooks, output), nil
 end
 
-function Runner._run_range(self, range)
+function NormalRunner._run_range(self, range)
   if not self.run_string then
     return nil, {msg = ("`%s` runner does not support range"):format(self.name)}
   end
@@ -53,7 +53,7 @@ function Runner._run_range(self, range)
   return self:run_string(str)
 end
 
-function Runner._run_buffer(self)
+function NormalRunner._run_buffer(self)
   local path = vim.api.nvim_buf_get_name(self._bufnr)
   if path ~= "" then
     return self:run_file(path)

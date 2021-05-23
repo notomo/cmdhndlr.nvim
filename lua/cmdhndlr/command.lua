@@ -1,5 +1,5 @@
 local Context = require("cmdhndlr.core.context").Context
-local Runner = require("cmdhndlr.core.runner").Runner
+local NormalRunner = require("cmdhndlr.core.normal_runner").NormalRunner
 local TestRunner = require("cmdhndlr.core.test_runner").TestRunner
 local BuildRunner = require("cmdhndlr.core.build_runner").BuildRunner
 local Hooks = require("cmdhndlr.core.hook").Hooks
@@ -37,7 +37,7 @@ function Command.run(opts)
   local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local runner, err = Runner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  local runner, err = NormalRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end
