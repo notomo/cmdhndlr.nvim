@@ -37,7 +37,7 @@ function Command.run(opts)
   local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local runner, err = Runner:dispatch(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  local runner, err = Runner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end
@@ -71,7 +71,7 @@ function Command.test(opts)
   local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local runner, err = TestRunner:dispatch(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  local runner, err = TestRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end
@@ -104,7 +104,7 @@ function Command.build(opts)
   local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
 
   local bufnr = vim.api.nvim_get_current_buf()
-  local runner, err = BuildRunner:dispatch(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  local runner, err = BuildRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
   end

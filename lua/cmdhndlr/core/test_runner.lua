@@ -5,19 +5,13 @@ local M = {}
 
 local TestRunner = {}
 M.TestRunner = TestRunner
-TestRunner.handler_type = "test_runner"
-
-function TestRunner.dispatch(Class, ...)
-  return Handler.dispatch(Class, ...)
-end
 
 function TestRunner.new(bufnr, ...)
-  vim.validate({bufnr = {bufnr, "number"}})
-
-  local handler, err = Handler.new(TestRunner.handler_type, ...)
+  local handler, err = Handler.new("test_runner", bufnr, ...)
   if err ~= nil then
     return nil, err
   end
+  vim.validate({run_file = {handler.run_file, "function"}})
 
   local tbl = {_bufnr = bufnr, _handler = handler}
   return setmetatable(tbl, TestRunner)

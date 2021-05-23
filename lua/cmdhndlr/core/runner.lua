@@ -6,16 +6,9 @@ local M = {}
 
 local Runner = {}
 M.Runner = Runner
-Runner.handler_type = "runner"
-
-function Runner.dispatch(Class, ...)
-  return Handler.dispatch(Class, ...)
-end
 
 function Runner.new(bufnr, ...)
-  vim.validate({bufnr = {bufnr, "number"}})
-
-  local handler, err = Handler.new(Runner.handler_type, ...)
+  local handler, err = Handler.new("runner", bufnr, ...)
   if err ~= nil then
     return nil, err
   end

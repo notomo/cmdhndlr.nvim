@@ -9,16 +9,25 @@ M.registered = {}
 
 local Handler = {registered = {}}
 M.Handler = Handler
-Handler.handler_type = "not_implemented"
 
-function Handler.new(typ, name, hooks, raw_working_dir, opts)
+function Handler.new(typ, bufnr, name, hooks, raw_working_dir, opts)
   vim.validate({
     type = {typ, "string"},
-    name = {name, "string"},
+    bufnr = {bufnr, "number"},
+    name = {name, "string", true},
     hooks = {hooks, "table"},
     working_dir = {raw_working_dir, "function", true},
     opts = {opts, "table", true},
   })
+
+  local filetype = vim.bo[bufnr].filetype
+  local default = require("cmdhndlr.core.custom").config[typ].default[filetype]
+  if default ~= nil then
+    name = default
+  end
+  if not name then
+    return nil, "no handler"
+  end
 
   local handler, err = Handler._find(typ, name)
   if err then
@@ -35,11 +44,11 @@ function Handler.new(typ, name, hooks, raw_working_dir, opts)
     filelib = filelib,
     _handler = handler,
   }
-  return setmetatable(tbl, Handler)
+  return setmetatable(tbl, Handler), nil
 end
 
 function Handler._find(typ, name)
-  local path = M.path(typ, name)
+  local path = M._path(typ, name)
 
   local registered = M.registered[path]
   if registered then
@@ -58,26 +67,12 @@ function Handler.__index(self, k)
   return rawget(Handler, k) or self._handler[k]
 end
 
-function Handler.dispatch(Class, bufnr, name, ...)
-  if name ~= nil then
-    return Class.new(bufnr, name, ...)
-  end
-
-  local filetype = vim.bo[bufnr].filetype
-  local default = require("cmdhndlr.core.custom").config[Class.handler_type].default[filetype]
-  if default ~= nil then
-    return Class.new(bufnr, default, ...)
-  end
-
-  return nil, "no handler"
-end
-
-function M.path(typ, name)
+function M._path(typ, name)
   return ("%s/%s"):format(typ, name:gsub("%.", "/"))
 end
 
 function M.register(typ, name, handler)
-  M.registered[M.path(typ, name)] = handler
+  M.registered[M._path(typ, name)] = handler
 end
 
 return M

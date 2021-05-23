@@ -5,16 +5,9 @@ local M = {}
 
 local BuildRunner = {}
 M.BuildRunner = BuildRunner
-BuildRunner.handler_type = "build_runner"
-
-function BuildRunner.dispatch(Class, ...)
-  return Handler.dispatch(Class, ...)
-end
 
 function BuildRunner.new(bufnr, ...)
-  vim.validate({bufnr = {bufnr, "number"}})
-
-  local handler, err = Handler.new(BuildRunner.handler_type, ...)
+  local handler, err = Handler.new("build_runner", bufnr, ...)
   if err ~= nil then
     return nil, err
   end
