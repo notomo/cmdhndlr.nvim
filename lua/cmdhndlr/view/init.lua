@@ -26,9 +26,6 @@ function View.set_lines(self, output)
     return
   end
   vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, vim.split(output, "\n", true))
-end
-
-function View.cursor_to_bottom(self)
   cursorlib.to_bottom(self.bufnr, self._window_id)
 end
 

@@ -7,6 +7,7 @@ local custom = require("cmdhndlr.core.custom")
 local View = require("cmdhndlr.view").View
 local messagelib = require("cmdhndlr.lib.message")
 local modelib = require("cmdhndlr.lib.mode")
+local hookutil = require("cmdhndlr.util.hook")
 
 local M = {}
 
@@ -33,10 +34,8 @@ function Command.run(opts)
   vim.validate({opts = {opts, "table", true}})
   opts = opts or {}
 
-  opts.hooks = opts.hooks or {}
-  local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
-
   local bufnr = vim.api.nvim_get_current_buf()
+  local hooks = Hooks.from(opts.hooks)
   local runner, err = NormalRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
@@ -49,28 +48,20 @@ function Command.run(opts)
     return nil, exec_err
   end
   view:set_lines(result.output)
-  view:cursor_to_bottom()
   Context.set(view.bufnr, runner, {range})
 
-  result:hook()
-
-  return result, nil
+  return result:return_output()
 end
 
 function Command.test(opts)
   vim.validate({opts = {opts, "table", true}})
   opts = opts or {}
 
-  opts.hooks = opts.hooks or {}
-  opts.hooks.success = opts.hooks.success or function()
-    messagelib.echo("SUCCESS", "CmdhndlrSuccess")
-  end
-  opts.hooks.failure = opts.hooks.failure or function()
-    messagelib.echo("FAILURE", "CmdhndlrFailure")
-  end
-  local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
-
   local bufnr = vim.api.nvim_get_current_buf()
+  local hooks = Hooks.from(opts.hooks, {
+    success = hookutil.echo_success(),
+    failure = hookutil.echo_failure(),
+  })
   local runner, err = TestRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
@@ -82,28 +73,20 @@ function Command.test(opts)
     return nil, exec_err
   end
   view:set_lines(result.output)
-  view:cursor_to_bottom()
   Context.set(view.bufnr, runner)
 
-  result:hook()
-
-  return result, nil
+  return result:return_output()
 end
 
 function Command.build(opts)
   vim.validate({opts = {opts, "table", true}})
   opts = opts or {}
 
-  opts.hooks = opts.hooks or {}
-  opts.hooks.success = opts.hooks.success or function()
-    messagelib.echo("SUCCESS", "CmdhndlrSuccess")
-  end
-  opts.hooks.failure = opts.hooks.failure or function()
-    messagelib.echo("FAILURE", "CmdhndlrFailure")
-  end
-  local hooks = Hooks.new(opts.hooks.success, opts.hooks.failure)
-
   local bufnr = vim.api.nvim_get_current_buf()
+  local hooks = Hooks.from(opts.hooks, {
+    success = hookutil.echo_success(),
+    failure = hookutil.echo_failure(),
+  })
   local runner, err = BuildRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
   if err ~= nil then
     return nil, err
@@ -115,12 +98,9 @@ function Command.build(opts)
     return nil, exec_err
   end
   view:set_lines(result.output)
-  view:cursor_to_bottom()
   Context.set(view.bufnr, runner)
 
-  result:hook()
-
-  return result, nil
+  return result:return_output()
 end
 
 function Command.retry()
@@ -135,11 +115,8 @@ function Command.retry()
     return nil, exec_err
   end
   view:set_lines(result.output)
-  view:cursor_to_bottom()
 
-  result:hook()
-
-  return result, nil
+  return result:return_output()
 end
 
 function Command.delete(bufnr)
@@ -150,8 +127,5 @@ function Command.setup(config)
   vim.validate({config = {config, "table"}})
   custom.set(config)
 end
-
-vim.cmd("highlight default link CmdhndlrSuccess Search")
-vim.cmd("highlight default link CmdhndlrFailure Todo")
 
 return M

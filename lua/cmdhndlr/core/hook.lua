@@ -18,4 +18,12 @@ function Hooks.new(on_success, on_failure)
   return setmetatable(tbl, Hooks)
 end
 
+function Hooks.from(raw_hooks, default)
+  vim.validate({raw_hooks = {raw_hooks, "table", true}, default = {default, "table", true}})
+  raw_hooks = raw_hooks or {}
+  default = default or {}
+  local hooks = vim.tbl_extend("force", default, raw_hooks)
+  return Hooks.new(hooks.success, hooks.failure)
+end
+
 return M

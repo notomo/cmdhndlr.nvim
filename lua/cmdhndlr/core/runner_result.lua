@@ -1,45 +1,57 @@
 local M = {}
 
+local RunnerOutput = {}
+RunnerOutput.__index = RunnerOutput
+
+function RunnerOutput.new(hook)
+  vim.validate({hook = {hook, "function", true}})
+  local tbl = {
+    _hook = hook or function()
+    end,
+  }
+  return setmetatable(tbl, RunnerOutput)
+end
+
+function RunnerOutput.return_output(self)
+  self._hook()
+  return self, nil
+end
+
 local RunnerRawOutput = {}
 RunnerRawOutput.__index = RunnerRawOutput
 
 function RunnerRawOutput.new(hook, output)
-  vim.validate({hook = {hook, "function"}, output = {output, "string"}})
-  local tbl = {_hook = hook, output = output, is_error = false}
+  vim.validate({output = {output, "string"}})
+  local tbl = {output = output, is_error = false, _output = RunnerOutput.new(hook)}
   return setmetatable(tbl, RunnerRawOutput)
 end
 
-function RunnerRawOutput.hook(self)
-  return self._hook()
+function RunnerRawOutput.__index(self, k)
+  return rawget(RunnerRawOutput, k) or self._output[k]
 end
 
 local RunnerRawError = {}
-RunnerRawError.__index = RunnerRawError
 
 function RunnerRawError.new(hook, err)
-  vim.validate({hook = {hook, "function"}, err = {err, "string"}})
-  local tbl = {_hook = hook, output = err, is_error = true}
+  vim.validate({err = {err, "string"}})
+  local tbl = {output = err, is_error = true, _output = RunnerOutput.new(hook)}
   return setmetatable(tbl, RunnerRawError)
 end
 
-function RunnerRawError.hook(self)
-  return self._hook()
+function RunnerRawError.__index(self, k)
+  return rawget(RunnerRawError, k) or self._output[k]
 end
 
 local RunnerJobOutput = {}
 
 function RunnerJobOutput.new(job)
   vim.validate({job = {job, "table"}})
-  local tbl = {output = nil, _job = job}
+  local tbl = {output = nil, _job = job, _output = RunnerOutput.new()}
   return setmetatable(tbl, RunnerJobOutput)
 end
 
 function RunnerJobOutput.__index(self, k)
-  return rawget(RunnerJobOutput, k) or self._job[k]
-end
-
-function RunnerJobOutput.hook()
-  -- nop
+  return rawget(RunnerJobOutput, k) or self._output[k] or self._job[k]
 end
 
 local RunnerResult = {}
