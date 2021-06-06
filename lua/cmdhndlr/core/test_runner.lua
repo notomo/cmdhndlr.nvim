@@ -11,7 +11,10 @@ function TestRunner.new(bufnr, ...)
   if err ~= nil then
     return nil, err
   end
-  vim.validate({run_file = {handler.run_file, "function"}})
+  vim.validate({
+    run_file = {handler.run_file, "function"},
+    run_position_scope = {handler.run_position_scope, "function", true},
+  })
 
   local tbl = {_bufnr = bufnr, _handler = handler}
   return setmetatable(tbl, TestRunner)
@@ -21,9 +24,17 @@ function TestRunner.__index(self, k)
   return rawget(TestRunner, k) or self._handler[k]
 end
 
-function TestRunner.execute(self)
+function TestRunner.execute(self, scope)
+  vim.validate({scope = {scope, "table", true}})
   local path = vim.api.nvim_buf_get_name(self._bufnr)
-  local output, err = self:run_file(path)
+
+  local output, err
+  if scope.cursor then
+    output, err = self:run_position_scope(self._bufnr, path, scope.cursor)
+  else
+    output, err = self:run_file(path)
+  end
+
   if err ~= nil then
     return RunnerResult.error(self.hooks, err), nil
   end

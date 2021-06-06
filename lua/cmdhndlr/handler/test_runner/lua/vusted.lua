@@ -1,9 +1,11 @@
 local M = {}
 
-function M.run_file(self, path)
-  return self.job_factory:create({"vusted", path})
-end
-
+M.cmd = "vusted"
 M.working_dir = require("cmdhndlr.util").working_dir.upward_pattern(".git")
 
-return M
+local handler = require("cmdhndlr.handler.test_runner.lua.busted")
+return setmetatable(M, {
+  __index = function(_, k)
+    return rawget(M, k) or handler[k]
+  end,
+})

@@ -22,7 +22,7 @@ function Handler.new(typ, bufnr, name, hooks, raw_working_dir, opts)
 
   local filetype = vim.bo[bufnr].filetype
   local default = require("cmdhndlr.core.custom").config[typ].default[filetype]
-  if default ~= nil then
+  if not name and default ~= nil then
     name = default
   end
   if not name then
