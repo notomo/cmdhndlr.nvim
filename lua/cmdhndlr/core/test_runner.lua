@@ -1,6 +1,7 @@
 local RunnerResult = require("cmdhndlr.core.runner_result").RunnerResult
 local Handler = require("cmdhndlr.core.handler").Handler
 local Parser = require("cmdhndlr.core.parser").Parser
+local NodeJointer = require("cmdhndlr.core.parser").NodeJointer
 
 local M = {}
 
@@ -17,7 +18,12 @@ function TestRunner.new(bufnr, ...)
     run_position_scope = {handler.run_position_scope, "function", true},
   })
 
-  local tbl = {_bufnr = bufnr, _handler = handler, parser = Parser.new(bufnr)}
+  local tbl = {
+    _bufnr = bufnr,
+    _handler = handler,
+    parser = Parser.new(bufnr),
+    NodeJointer = NodeJointer,
+  }
   return setmetatable(tbl, TestRunner)
 end
 

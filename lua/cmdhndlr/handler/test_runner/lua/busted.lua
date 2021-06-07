@@ -32,7 +32,7 @@ function M.run_position_scope(self, bufnr, path, position)
 ]])
 
   local it = query:iter_matches(root, bufnr, 0, position[1])
-  local tests = {}
+  local tests = self.NodeJointer.new()
   for _, match, metadata in it do
     local test = {}
     local is_it = false
@@ -52,19 +52,10 @@ function M.run_position_scope(self, bufnr, path, position)
       table.insert(test, {name = name, id = node:id(), is_it = is_it})
       ::continue::
     end
-
-    local current_first = test[1]
-    local before_test = tests[#tests] or {}
-    local before_last = before_test[#before_test]
-    if current_first and before_last and current_first.id == before_last.id then
-      table.remove(test, 1)
-      vim.list_extend(tests[#tests], test)
-    else
-      table.insert(tests, test)
-    end
+    tests:add(test)
   end
 
-  local test = tests[#tests]
+  local test = tests:last()
   if not test then
     return self:run_file(path)
   end

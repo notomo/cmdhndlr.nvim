@@ -41,7 +41,7 @@ function M._find_test(_, root, bufnr, position)
 end
 
 -- TODO: refactor nested query
-function M._find_test_run(_, test, root, bufnr, position)
+function M._find_test_run(self, test, root, bufnr, position)
   local query = vim.treesitter.parse_query(lang, [[
 (call_expression
     function: (selector_expression
@@ -109,7 +109,7 @@ function M._find_test_run(_, test, root, bufnr, position)
     )
 )
 ]])
-  local test_runs = {}
+  local test_runs = self.NodeJointer.new()
   local it = query:iter_matches(root, bufnr, test.row, position[1])
   for _, match, metadata in it do
     local test_run = {}
@@ -123,19 +123,10 @@ function M._find_test_run(_, test, root, bufnr, position)
       table.insert(test_run, {name = name, id = node:id()})
       ::continue::
     end
-
-    local current_first = test_run[1]
-    local before_test_run = test_runs[#test_runs] or {}
-    local before_last = before_test_run[#before_test_run]
-    if current_first and before_last and current_first.id == before_last.id then
-      table.remove(test_run, 1)
-      vim.list_extend(test_runs[#test_runs], test_run)
-    else
-      table.insert(test_runs, test_run)
-    end
+    test_runs:add(test_run)
   end
 
-  local test_run = test_runs[#test_runs]
+  local test_run = test_runs:last()
   if not test_run then
     return nil
   end
