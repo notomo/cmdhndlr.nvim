@@ -17,7 +17,7 @@ M.config = {
   },
   test_runner = {
     default = {
-      lua = "lua/busted",
+      lua = "lua/vusted",
       go = "go/go",
       python = "python/pytest",
       rust = "rust/cargo",
