@@ -22,10 +22,9 @@ end
 
 function View.set_lines(self, output)
   vim.validate({output = {output, "string", true}})
-  if output == nil then
-    return
+  if output then
+    vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, vim.split(output, "\n", true))
   end
-  vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, vim.split(output, "\n", true))
   cursorlib.to_bottom(self.bufnr, self._window_id)
 end
 

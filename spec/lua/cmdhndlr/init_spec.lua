@@ -184,7 +184,7 @@ hoge
     assert.is_true(hooked)
   end)
 
-  it("moves cursor to the bottom", function()
+  it("moves cursor to the bottom with sync command", function()
     cmdhndlr.run({
       name = "_test/file",
       runner_opts = {
@@ -196,6 +196,18 @@ bar]]
       },
     })
     assert.current_line("bar")
+  end)
+
+  it("moves cursor to the bottom with async command", function()
+    cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"echo", "hoge"})
+        end,
+      },
+    })
+    assert.equals(vim.fn.line("$"), vim.fn.line("."))
   end)
 
   it("raises error if command is not found", function()
