@@ -2,6 +2,7 @@ local RunnerResult = require("cmdhndlr.core.runner_result").RunnerResult
 local Handler = require("cmdhndlr.core.handler").Handler
 local Parser = require("cmdhndlr.core.parser").Parser
 local NodeJointer = require("cmdhndlr.core.parser").NodeJointer
+local StringUnwrapper = require("cmdhndlr.lib.string_unwrapper").StringUnwrapper
 
 local M = {}
 
@@ -23,6 +24,7 @@ function TestRunner.new(bufnr, ...)
     _handler = handler,
     parser = Parser.new(bufnr),
     NodeJointer = NodeJointer,
+    StringUnwrapper = StringUnwrapper,
   }
   return setmetatable(tbl, TestRunner)
 end

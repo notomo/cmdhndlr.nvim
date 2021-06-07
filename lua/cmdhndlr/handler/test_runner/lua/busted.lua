@@ -60,8 +60,9 @@ function M.run_position_scope(self, bufnr, path, position)
     return self:run_file(path)
   end
 
+  local unwrapper = self.StringUnwrapper.for_lua()
   local pattern = table.concat(vim.tbl_map(function(case)
-    return M._unwrap_string(case.name)
+    return unwrapper:unwrap(case.name)
   end, test), " ")
   if test[#test].is_it then
     pattern = pattern .. "$"
@@ -69,22 +70,6 @@ function M.run_position_scope(self, bufnr, path, position)
   pattern = pattern:gsub("%(", "%%("):gsub("%)", "%%)"):gsub("%-", "%%-")
 
   return self.job_factory:create({self.cmd, "--filter", pattern, path})
-end
-
-function M._unwrap_string(str)
-  if vim.startswith(str, "'") then
-    local res = str:gsub("^'", ""):gsub("'$", "")
-    return res
-  end
-  if vim.startswith(str, "\"") then
-    local res = str:gsub("^\"", ""):gsub("\"$", "")
-    return res
-  end
-  if vim.startswith(str, "[") then
-    local res = str:gsub("^%[=*%[", ""):gsub("%]=*%]$", "")
-    return res
-  end
-  error("gave up _unwrap_string(): " .. str)
 end
 
 return M

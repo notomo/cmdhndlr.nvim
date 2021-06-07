@@ -131,8 +131,9 @@ function M._find_test_run(self, test, root, bufnr, position)
     return nil
   end
 
+  local unwrapper = self.StringUnwrapper.for_go()
   local names = vim.tbl_map(function(case)
-    return M._unwrap_string(case.name)
+    return unwrapper:unwrap(case.name)
   end, test_run)
   return {names = names}
 end
@@ -157,22 +158,6 @@ function M.run_position_scope(self, bufnr, path, position)
   end
 
   return self.job_factory:create({"go", "test", "-v", "--run=" .. pattern})
-end
-
-function M._unwrap_string(str)
-  if vim.startswith(str, "'") then
-    local res = str:gsub("^'", ""):gsub("'$", "")
-    return res
-  end
-  if vim.startswith(str, "\"") then
-    local res = str:gsub("^\"", ""):gsub("\"$", "")
-    return res
-  end
-  if vim.startswith(str, "`") then
-    local res = str:gsub("^`", ""):gsub("`$", "")
-    return res
-  end
-  error("gave up _unwrap_string(): " .. str)
 end
 
 return M
