@@ -263,6 +263,19 @@ bar]]
     assert.exists_pattern([[runner specific error!]])
   end)
 
+  it("can open in tab", function()
+    cmdhndlr.run({
+      name = "_test/file",
+      layout = {type = "tab"},
+      runner_opts = {
+        f = function()
+          return "tab"
+        end,
+      },
+    })
+    assert.tab_count(2)
+  end)
+
 end)
 
 describe("cmdhndlr.test()", function()

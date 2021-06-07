@@ -43,7 +43,7 @@ function Command.run(opts)
   end
 
   local range = modelib.visual_range()
-  local view = View.open(runner.working_dir)
+  local view = View.open(runner.working_dir, opts.layout)
   local result, exec_err = runner:execute(range)
   if exec_err ~= nil then
     return nil, exec_err
@@ -69,7 +69,7 @@ function Command.test(opts)
   end
 
   local scope = ExecuteScope.new(opts.scope)
-  local view = View.open(runner.working_dir)
+  local view = View.open(runner.working_dir, opts.layout)
   local result, exec_err = runner:execute(scope)
   if exec_err ~= nil then
     return nil, exec_err
@@ -94,7 +94,7 @@ function Command.build(opts)
     return nil, err
   end
 
-  local view = View.open(runner.working_dir)
+  local view = View.open(runner.working_dir, opts.layout)
   local result, exec_err = runner:execute()
   if exec_err ~= nil then
     return nil, exec_err
