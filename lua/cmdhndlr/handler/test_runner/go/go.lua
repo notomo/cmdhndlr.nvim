@@ -6,7 +6,7 @@ end
 
 local lang = "go"
 
-function M._find_test(_, bufnr, position)
+function M._find_test(_, root, bufnr, position)
   local query = vim.treesitter.parse_query(lang, [[
 (function_declaration
     name: (identifier) @name (match? @name "^Test")
@@ -23,10 +23,7 @@ function M._find_test(_, bufnr, position)
     )
 )
 ]])
-  local parser = vim.treesitter.get_parser(bufnr, lang)
-  local trees, _ = parser:parse()
-
-  local it = query:iter_matches(trees[1]:root(), bufnr, 0, position[1])
+  local it = query:iter_matches(root, bufnr, 0, position[1])
   local tests = {}
   for _, match, metadata in it do
     for id, node in pairs(match) do
@@ -44,7 +41,7 @@ function M._find_test(_, bufnr, position)
 end
 
 -- TODO: refactor nested query
-function M._find_test_run(_, test, bufnr, position)
+function M._find_test_run(_, test, root, bufnr, position)
   local query = vim.treesitter.parse_query(lang, [[
 (call_expression
     function: (selector_expression
@@ -112,11 +109,8 @@ function M._find_test_run(_, test, bufnr, position)
     )
 )
 ]])
-  local parser = vim.treesitter.get_parser(bufnr, lang)
-  local trees, _ = parser:parse()
-
   local test_runs = {}
-  local it = query:iter_matches(trees[1]:root(), bufnr, test.row, position[1])
+  local it = query:iter_matches(root, bufnr, test.row, position[1])
   for _, match, metadata in it do
     local test_run = {}
     for id, node in pairs(match) do
@@ -153,16 +147,17 @@ function M._find_test_run(_, test, bufnr, position)
 end
 
 function M.run_position_scope(self, bufnr, path, position)
-  if not vim.treesitter.language.require_language("go", nil, true) then
-    return nil, "not found tree-sitter parser for " .. lang
+  local root, err = self.parser:parse(lang)
+  if err ~= nil then
+    return nil, err
   end
 
-  local test = self:_find_test(bufnr, position)
+  local test = self:_find_test(root, bufnr, position)
   if not test then
     return self:run_file(path)
   end
 
-  local test_run = self:_find_test_run(test, bufnr, position)
+  local test_run = self:_find_test_run(test, root, bufnr, position)
   local pattern
   if test_run then
     pattern = table.concat({test.name, unpack(test_run.names)}, "/")

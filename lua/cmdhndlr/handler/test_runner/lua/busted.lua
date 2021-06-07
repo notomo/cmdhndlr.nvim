@@ -8,8 +8,10 @@ end
 
 function M.run_position_scope(self, bufnr, path, position)
   local lang = "lua"
-  if not vim.treesitter.language.require_language("lua", nil, true) then
-    return nil, "not found tree-sitter parser for " .. lang
+
+  local root, err = self.parser:parse(lang)
+  if err ~= nil then
+    return nil, err
   end
 
   local query = vim.treesitter.parse_query(lang, [[
@@ -28,10 +30,8 @@ function M.run_position_scope(self, bufnr, path, position)
     )
 )
 ]])
-  local parser = vim.treesitter.get_parser(bufnr, lang)
-  local trees, _ = parser:parse()
 
-  local it = query:iter_matches(trees[1]:root(), bufnr, 0, position[1])
+  local it = query:iter_matches(root, bufnr, 0, position[1])
   local tests = {}
   for _, match, metadata in it do
     local test = {}
