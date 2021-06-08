@@ -6,7 +6,7 @@ function M.run_file(self, path)
   return self.job_factory:create({self.cmd, path})
 end
 
-function M.run_position_scope(self, _, path, position)
+function M.run_position_scope(self, path, position)
   local lang = "lua"
 
   local root, err = self.parser:parse(lang)

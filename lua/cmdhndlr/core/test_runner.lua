@@ -39,7 +39,7 @@ function TestRunner.execute(self, scope)
 
   local output, err
   if scope.cursor then
-    output, err = self:run_position_scope(self._bufnr, path, scope.cursor)
+    output, err = self:run_position_scope(path, scope.cursor)
   else
     output, err = self:run_file(path)
   end

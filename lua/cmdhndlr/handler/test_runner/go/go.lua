@@ -6,7 +6,7 @@ end
 
 local lang = "go"
 
-function M._find_test(_, root, _, position)
+function M._find_test(_, root, position)
   local query = vim.treesitter.parse_query(lang, [[
 (function_declaration
     name: (identifier) @name (match? @name "^Test")
@@ -38,7 +38,7 @@ function M._find_test(_, root, _, position)
 end
 
 -- TODO: refactor nested query
-function M._find_test_run(self, test, root, _, position)
+function M._find_test_run(self, test, root, position)
   local query = vim.treesitter.parse_query(lang, [[
 (call_expression
     function: (selector_expression
@@ -133,18 +133,18 @@ function M._find_test_run(self, test, root, _, position)
   return {names = names}
 end
 
-function M.run_position_scope(self, bufnr, path, position)
+function M.run_position_scope(self, path, position)
   local root, err = self.parser:parse(lang)
   if err ~= nil then
     return nil, err
   end
 
-  local test = self:_find_test(root, bufnr, position)
+  local test = self:_find_test(root, position)
   if not test then
     return self:run_file(path)
   end
 
-  local test_run = self:_find_test_run(test, root, bufnr, position)
+  local test_run = self:_find_test_run(test, root, position)
   local pattern
   if test_run then
     pattern = table.concat({test.name, unpack(test_run.names)}, "/")
