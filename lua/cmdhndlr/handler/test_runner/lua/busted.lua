@@ -29,6 +29,12 @@ function M.run_position_scope(self, _, path, position)
         )
     )
 )
+(function_call
+    (identifier) @describe (#eq? @describe "describe") (#set! @describe "ignore")
+    (arguments
+        (string) @describe_name
+    )
+)
 ]])
 
   local tests = self.NodeJointer.new()
