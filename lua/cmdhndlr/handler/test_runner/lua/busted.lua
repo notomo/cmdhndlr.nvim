@@ -23,7 +23,7 @@ function M.run_position_scope(self, _, path, position)
             (function_call
                 (identifier) @describe_or_it (#any-of? @describe_or_it "describe" "it") (#set! @describe_or_it "ignore")
                 (arguments
-                  (string) @describe_or_it_name
+                    (string) @describe_or_it_name
                 )
             )
         )

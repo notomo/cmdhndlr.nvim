@@ -46,7 +46,7 @@ function M._find_test_run(self, test, root, _, position)
         field: (field_identifier) @run (eq? @run "Run") (#set! @run "ignore")
     )
     arguments: (argument_list
-        (interpreted_string_literal) @test_run_name
+        [(interpreted_string_literal) (raw_string_literal)] @test_run_name
         (func_literal
             parameters: (parameter_list
                 (parameter_declaration
@@ -65,7 +65,7 @@ function M._find_test_run(self, test, root, _, position)
                         field: (field_identifier) @run (eq? @run "Run") (#set! @run "ignore")
                     )
                     arguments: (argument_list
-                        (interpreted_string_literal) @nested_test_run_name
+                        [(interpreted_string_literal) (raw_string_literal)] @nested_test_run_name
                         (func_literal
                             parameters: (parameter_list
                                 (parameter_declaration
@@ -90,7 +90,7 @@ function M._find_test_run(self, test, root, _, position)
         field: (field_identifier) @run (eq? @run "Run") (#set! @run "ignore")
     )
     arguments: (argument_list
-        (interpreted_string_literal) @test_run_name
+        [(interpreted_string_literal) (raw_string_literal)] @test_run_name
         (func_literal
             parameters: (parameter_list
                 (parameter_declaration
