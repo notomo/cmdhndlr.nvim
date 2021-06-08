@@ -151,6 +151,7 @@ function M.run_position_scope(self, path, position)
   else
     pattern = test.name
   end
+  pattern = ("^%s$"):format(pattern)
 
   return self.job_factory:create({"go", "test", "-v", "--run=" .. pattern})
 end
