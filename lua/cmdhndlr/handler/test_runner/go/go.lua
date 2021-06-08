@@ -6,7 +6,7 @@ end
 
 local lang = "go"
 
-function M._find_test(_, root, bufnr, position)
+function M._find_test(_, root, _, position)
   local query = vim.treesitter.parse_query(lang, [[
 (function_declaration
     name: (identifier) @name (match? @name "^Test")
@@ -23,17 +23,14 @@ function M._find_test(_, root, bufnr, position)
     )
 )
 ]])
-  local it = query:iter_matches(root, bufnr, 0, position[1])
   local tests = {}
-  for _, match, metadata in it do
-    for id, node in pairs(match) do
+  for _, match, metadata in root:iter_matches(query, 0, position[1]) do
+    for id, node in match:iter() do
       if metadata[id] and metadata[id] == "ignore" then
         goto continue
       end
 
-      local row_s, col_s, row_e, col_e = node:range()
-      local name = vim.api.nvim_buf_get_lines(bufnr, row_s, row_e + 1, false)[1]:sub(col_s + 1, col_e)
-      table.insert(tests, {name = name, id = node:id(), row = row_s})
+      table.insert(tests, {name = node:to_text(), id = node:id(), row = node:row()})
       ::continue::
     end
   end
@@ -41,7 +38,7 @@ function M._find_test(_, root, bufnr, position)
 end
 
 -- TODO: refactor nested query
-function M._find_test_run(self, test, root, bufnr, position)
+function M._find_test_run(self, test, root, _, position)
   local query = vim.treesitter.parse_query(lang, [[
 (call_expression
     function: (selector_expression
@@ -109,18 +106,16 @@ function M._find_test_run(self, test, root, bufnr, position)
     )
 )
 ]])
+
   local test_runs = self.NodeJointer.new()
-  local it = query:iter_matches(root, bufnr, test.row, position[1])
-  for _, match, metadata in it do
+  for _, match, metadata in root:iter_matches(query, test.row, position[1]) do
     local test_run = {}
-    for id, node in pairs(match) do
+    for id, node in match:iter() do
       if metadata[id] and metadata[id] == "ignore" then
         goto continue
       end
 
-      local row_s, col_s, row_e, col_e = node:range()
-      local name = vim.api.nvim_buf_get_lines(bufnr, row_s, row_e + 1, false)[1]:sub(col_s + 1, col_e)
-      table.insert(test_run, {name = name, id = node:id()})
+      table.insert(test_run, {name = node:to_text(), id = node:id()})
       ::continue::
     end
     test_runs:add(test_run)

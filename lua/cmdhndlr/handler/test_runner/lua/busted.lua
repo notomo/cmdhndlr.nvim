@@ -6,7 +6,7 @@ function M.run_file(self, path)
   return self.job_factory:create({self.cmd, path})
 end
 
-function M.run_position_scope(self, bufnr, path, position)
+function M.run_position_scope(self, _, path, position)
   local lang = "lua"
 
   local root, err = self.parser:parse(lang)
@@ -31,25 +31,20 @@ function M.run_position_scope(self, bufnr, path, position)
 )
 ]])
 
-  local it = query:iter_matches(root, bufnr, 0, position[1])
   local tests = self.NodeJointer.new()
-  for _, match, metadata in it do
+  for _, match, metadata in root:iter_matches(query, 0, position[1]) do
     local test = {}
     local is_it = false
-    for id, node in pairs(match) do
+    for id, node in match:iter() do
       if query.captures[id] == "describe_or_it" then
-        local row_s, col_s, row_e, col_e = node:range()
-        local name = vim.api.nvim_buf_get_lines(bufnr, row_s, row_e + 1, false)[1]:sub(col_s + 1, col_e)
-        is_it = name == "it"
+        is_it = node:to_text() == "it"
       end
 
       if metadata[id] and metadata[id] == "ignore" then
         goto continue
       end
 
-      local row_s, col_s, row_e, col_e = node:range()
-      local name = vim.api.nvim_buf_get_lines(bufnr, row_s, row_e + 1, false)[1]:sub(col_s + 1, col_e)
-      table.insert(test, {name = name, id = node:id(), is_it = is_it})
+      table.insert(test, {name = node:to_text(), id = node:id(), is_it = is_it})
       ::continue::
     end
     tests:add(test)
