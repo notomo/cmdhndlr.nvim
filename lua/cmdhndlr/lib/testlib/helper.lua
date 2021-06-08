@@ -2,6 +2,7 @@ local plugin_name = vim.split((...):gsub("%.", "/"), "/", true)[1]
 local M = require("vusted.helper")
 
 M.root = M.find_plugin_root(plugin_name)
+local runtimepath = vim.o.runtimepath
 
 function M.before_each()
   vim.cmd("filetype on")
@@ -10,6 +11,7 @@ function M.before_each()
   M.test_data_dir = M.root .. "/" .. M.test_data_path
   M.new_directory("")
   vim.api.nvim_set_current_dir(M.test_data_dir)
+  vim.o.runtimepath = runtimepath
 end
 
 function M.after_each()
@@ -22,6 +24,10 @@ function M.after_each()
   vim.fn.delete(M.root .. "/spec/test_data", "rf")
   vim.cmd("messages clear")
   print(" ")
+end
+
+function M.use_parsers()
+  vim.o.runtimepath = M.root .. "/script/nvim-treesitter," .. vim.o.runtimepath
 end
 
 function M.set_lines(lines)

@@ -45,6 +45,9 @@ function TestRunner.execute(self, scope)
   end
 
   if err ~= nil then
+    if type(err) == "table" then
+      return nil, err.msg
+    end
     return RunnerResult.error(self.hooks, err), nil
   end
   return RunnerResult.ok(self.hooks, output), nil

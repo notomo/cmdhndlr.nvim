@@ -106,7 +106,7 @@ function Parser.parse(self, lang)
   vim.validate({lang = {lang, "string"}})
 
   if not vim.treesitter.language.require_language(lang, nil, true) then
-    return nil, "not found tree-sitter parser for " .. lang
+    return nil, {msg = "not found tree-sitter parser for " .. lang}
   end
 
   local parser = vim.treesitter.get_parser(self._bufnr, lang)
