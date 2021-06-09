@@ -24,15 +24,11 @@ function M._find_test(_, root, position)
 )
 ]])
   local tests = {}
-  for _, match, metadata in root:iter_matches(query, 0, position[1]) do
-    for id, node in match:iter() do
-      if metadata[id] and metadata[id] == "ignore" then
-        goto continue
-      end
-
-      table.insert(tests, {name = node:to_text(), id = node:id(), row = node:row()})
-      ::continue::
-    end
+  for _, match in root:iter_matches(query, 0, position[1]) do
+    local test = match:map(function(node)
+      return {name = node:text(), id = node:id(), row = node:row()}
+    end)
+    vim.list_extend(tests, test)
   end
   return tests[#tests]
 end
@@ -108,16 +104,10 @@ function M._find_test_run(self, test, root, position)
 ]])
 
   local test_runs = self.NodeJointer.new()
-  for _, match, metadata in root:iter_matches(query, test.row, position[1]) do
-    local test_run = {}
-    for id, node in match:iter() do
-      if metadata[id] and metadata[id] == "ignore" then
-        goto continue
-      end
-
-      table.insert(test_run, {name = node:to_text(), id = node:id()})
-      ::continue::
-    end
+  for _, match in root:iter_matches(query, test.row, position[1]) do
+    local test_run = match:map(function(node)
+      return {name = node:text(), id = node:id()}
+    end)
     test_runs:add(test_run)
   end
 

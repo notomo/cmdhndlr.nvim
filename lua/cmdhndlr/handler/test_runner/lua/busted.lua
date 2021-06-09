@@ -38,20 +38,14 @@ function M.run_position_scope(self, path, position)
 ]])
 
   local tests = self.NodeJointer.new()
-  for _, match, metadata in root:iter_matches(query, 0, position[1]) do
+  for _, match in root:iter_matches(query, 0, position[1]) do
     local test = {}
     local is_it = false
-    for id, node in match:iter() do
-      if query.captures[id] == "describe_or_it" then
-        is_it = node:to_text() == "it"
-      end
-
-      if metadata[id] and metadata[id] == "ignore" then
-        goto continue
-      end
-
-      table.insert(test, {name = node:to_text(), id = node:id(), is_it = is_it})
-      ::continue::
+    local f = function(node)
+      is_it = node.capture_name == "describe_or_it" and node:text() == "it"
+    end
+    for _, node in match:iter(f) do
+      table.insert(test, {name = node:text(), id = node:id(), is_it = is_it})
     end
     tests:add(test)
   end
