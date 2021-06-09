@@ -103,7 +103,7 @@ function M._find_test_run(self, test, root, position)
 )
 ]])
 
-  local test_runs = self.NodeJointer.new()
+  local test_runs = self.TableJoiner.new()
   for _, match in root:iter_matches(query, test.row, position[1]) do
     local test_run = match:map(function(node)
       return {name = node:text(), id = node:id()}

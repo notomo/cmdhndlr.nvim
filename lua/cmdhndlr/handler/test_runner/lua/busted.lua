@@ -37,7 +37,7 @@ function M.run_position_scope(self, path, position)
 )
 ]])
 
-  local tests = self.NodeJointer.new()
+  local tests = self.TableJoiner.new()
   for _, match in root:iter_matches(query, 0, position[1]) do
     local test = {}
     local is_it = false
