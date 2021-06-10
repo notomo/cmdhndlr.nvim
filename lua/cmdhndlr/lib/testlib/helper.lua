@@ -59,11 +59,20 @@ function M.register_build_runner(name, handler)
 end
 
 function M.wait(job)
+  if not job.wait then
+    error("invalid job: " .. vim.inspect(job))
+  end
+
   job:wait(1000)
   -- wait for terminal output
-  return vim.wait(1000, function()
+
+  local ok = vim.wait(1000, function()
     return vim.fn.search("Process exited") ~= 0
   end, 10)
+  if not ok then
+    error("timeout: " .. vim.inspect(job))
+  end
+  return true
 end
 
 function M.new_file(path, ...)

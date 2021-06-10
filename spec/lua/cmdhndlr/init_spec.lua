@@ -479,6 +479,27 @@ describe("cmdhndlr.retry()", function()
     assert.exists_pattern("ok")
   end)
 
+  it("can call multiple", function()
+    local job1 = cmdhndlr.build({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"echo", "ok"})
+        end,
+      },
+    })
+    helper.wait(job1)
+    assert.exists_pattern("ok")
+
+    local job2 = cmdhndlr.retry()
+    helper.wait(job2)
+    assert.exists_pattern("ok")
+
+    local job3 = cmdhndlr.retry()
+    helper.wait(job3)
+    assert.exists_pattern("ok")
+  end)
+
   it("raises error if not plugin buffer", function()
     cmdhndlr.retry()
     assert.exists_message([[not cmdhndlr buffer]])

@@ -117,6 +117,7 @@ function Command.retry()
     return nil, exec_err
   end
   view:set_lines(result.output)
+  Context.set(view.bufnr, ctx.runner, ctx.args)
 
   return result:return_output()
 end

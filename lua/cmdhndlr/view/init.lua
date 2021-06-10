@@ -23,7 +23,9 @@ end
 function View.set_lines(self, output)
   vim.validate({output = {output, "string", true}})
   if output then
+    vim.bo[self.bufnr].modifiable = true
     vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, vim.split(output, "\n", true))
+    vim.bo[self.bufnr].modifiable = false
   end
   cursorlib.to_bottom(self.bufnr, self._window_id)
 end
