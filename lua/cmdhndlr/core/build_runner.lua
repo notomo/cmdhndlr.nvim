@@ -1,4 +1,3 @@
-local RunnerResult = require("cmdhndlr.core.runner_result").RunnerResult
 local Handler = require("cmdhndlr.core.handler").Handler
 
 local M = {}
@@ -24,10 +23,7 @@ end
 function BuildRunner.execute(self)
   local path = vim.api.nvim_buf_get_name(self._bufnr)
   local output, err = self:build(path)
-  if err ~= nil then
-    return RunnerResult.error(self.hooks, err), nil
-  end
-  return RunnerResult.ok(self.hooks, output), nil
+  return self:result(output, err)
 end
 
 return M

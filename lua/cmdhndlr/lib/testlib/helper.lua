@@ -97,6 +97,10 @@ asserts.create("tab_count"):register_eq(function()
   return vim.fn.tabpagenr("$")
 end)
 
+asserts.create("window_count"):register_eq(function()
+  return vim.fn.tabpagewinnr(vim.fn.tabpagenr(), "$")
+end)
+
 asserts.create("current_line"):register_eq(function()
   return vim.api.nvim_get_current_line()
 end)

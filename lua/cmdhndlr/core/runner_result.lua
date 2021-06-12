@@ -3,9 +3,10 @@ local M = {}
 local RunnerOutput = {}
 RunnerOutput.__index = RunnerOutput
 
-function RunnerOutput.new(hook)
-  vim.validate({hook = {hook, "function", true}})
+function RunnerOutput.new(bufnr, hook)
+  vim.validate({bufnr = {bufnr, "number"}, hook = {hook, "function", true}})
   local tbl = {
+    bufnr = bufnr,
     _hook = hook or function()
     end,
   }
@@ -20,9 +21,9 @@ end
 local RunnerRawOutput = {}
 RunnerRawOutput.__index = RunnerRawOutput
 
-function RunnerRawOutput.new(hook, output)
+function RunnerRawOutput.new(bufnr, hook, output)
   vim.validate({output = {output, "string"}})
-  local tbl = {output = output, is_error = false, _output = RunnerOutput.new(hook)}
+  local tbl = {output = output, is_error = false, _output = RunnerOutput.new(bufnr, hook)}
   return setmetatable(tbl, RunnerRawOutput)
 end
 
@@ -32,9 +33,9 @@ end
 
 local RunnerRawError = {}
 
-function RunnerRawError.new(hook, err)
+function RunnerRawError.new(bufnr, hook, err)
   vim.validate({err = {err, "string"}})
-  local tbl = {output = err, is_error = true, _output = RunnerOutput.new(hook)}
+  local tbl = {output = err, is_error = true, _output = RunnerOutput.new(bufnr, hook)}
   return setmetatable(tbl, RunnerRawError)
 end
 
@@ -44,9 +45,9 @@ end
 
 local RunnerJobOutput = {}
 
-function RunnerJobOutput.new(job)
+function RunnerJobOutput.new(bufnr, job)
   vim.validate({job = {job, "table"}})
-  local tbl = {output = nil, _job = job, _output = RunnerOutput.new()}
+  local tbl = {output = nil, _job = job, _output = RunnerOutput.new(bufnr)}
   return setmetatable(tbl, RunnerJobOutput)
 end
 
@@ -57,15 +58,15 @@ end
 local RunnerResult = {}
 M.RunnerResult = RunnerResult
 
-function RunnerResult.ok(hooks, output)
+function RunnerResult.ok(output_bufnr, hooks, output)
   if type(output) == "string" then
-    return RunnerRawOutput.new(hooks.success, output)
+    return RunnerRawOutput.new(output_bufnr, hooks.success, output)
   end
-  return RunnerJobOutput.new(output)
+  return RunnerJobOutput.new(output_bufnr, output)
 end
 
-function RunnerResult.error(hooks, err)
-  return RunnerRawError.new(hooks.failure, err)
+function RunnerResult.error(output_bufnr, hooks, err)
+  return RunnerRawError.new(output_bufnr, hooks.failure, err)
 end
 
 return M

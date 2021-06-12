@@ -1,4 +1,3 @@
-local RunnerResult = require("cmdhndlr.core.runner_result").RunnerResult
 local BufferRange = require("cmdhndlr.core.buffer_range").BufferRange
 local Handler = require("cmdhndlr.core.handler").Handler
 
@@ -35,13 +34,7 @@ function NormalRunner.execute(self, range)
     output, err = self:_run_buffer()
   end
 
-  if err ~= nil then
-    if type(err) == "table" then
-      return nil, err.msg
-    end
-    return RunnerResult.error(self.hooks, err), nil
-  end
-  return RunnerResult.ok(self.hooks, output), nil
+  return self:result(output, err)
 end
 
 function NormalRunner._run_range(self, range)

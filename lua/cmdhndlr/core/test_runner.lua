@@ -1,4 +1,3 @@
-local RunnerResult = require("cmdhndlr.core.runner_result").RunnerResult
 local Handler = require("cmdhndlr.core.handler").Handler
 local Parser = require("cmdhndlr.core.parser").Parser
 local TableJoiner = require("cmdhndlr.lib.table_joiner").TableJoiner
@@ -44,13 +43,7 @@ function TestRunner.execute(self, scope)
     output, err = self:run_file(path)
   end
 
-  if err ~= nil then
-    if type(err) == "table" then
-      return nil, err.msg
-    end
-    return RunnerResult.error(self.hooks, err), nil
-  end
-  return RunnerResult.ok(self.hooks, output), nil
+  return self:result(output, err)
 end
 
 return M

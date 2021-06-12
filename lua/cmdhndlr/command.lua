@@ -37,19 +37,22 @@ function Command.run(opts)
 
   local bufnr = vim.api.nvim_get_current_buf()
   local hooks = Hooks.from(opts.hooks)
-  local runner, err = NormalRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  local runner_factory = function()
+    return NormalRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  end
+
+  local runner, err = runner_factory()
   if err ~= nil then
     return nil, err
   end
 
   local range = modelib.visual_range()
-  local view = View.open(runner.working_dir, opts.layout)
   local result, exec_err = runner:execute(range)
   if exec_err ~= nil then
     return nil, exec_err
   end
-  view:set_lines(result.output)
-  Context.set(view.bufnr, runner, {range})
+  View.open(result, runner.working_dir, opts.layout)
+  Context.set(result.bufnr, runner_factory, {range})
 
   return result:return_output()
 end
@@ -63,19 +66,22 @@ function Command.test(opts)
     success = hookutil.echo_success(),
     failure = hookutil.echo_failure(),
   })
-  local runner, err = TestRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  local runner_factory = function()
+    return TestRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  end
+
+  local runner, err = runner_factory()
   if err ~= nil then
     return nil, err
   end
 
   local scope = ExecuteScope.new(opts.scope)
-  local view = View.open(runner.working_dir, opts.layout)
   local result, exec_err = runner:execute(scope)
   if exec_err ~= nil then
     return nil, exec_err
   end
-  view:set_lines(result.output)
-  Context.set(view.bufnr, runner, {scope})
+  View.open(result, runner.working_dir, opts.layout)
+  Context.set(result.bufnr, runner_factory, {scope})
 
   return result:return_output()
 end
@@ -89,18 +95,21 @@ function Command.build(opts)
     success = hookutil.echo_success(),
     failure = hookutil.echo_failure(),
   })
-  local runner, err = BuildRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  local runner_factory = function()
+    return BuildRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.runner_opts)
+  end
+
+  local runner, err = runner_factory()
   if err ~= nil then
     return nil, err
   end
 
-  local view = View.open(runner.working_dir, opts.layout)
   local result, exec_err = runner:execute()
   if exec_err ~= nil then
     return nil, exec_err
   end
-  view:set_lines(result.output)
-  Context.set(view.bufnr, runner)
+  View.open(result, runner.working_dir, opts.layout)
+  Context.set(result.bufnr, runner_factory)
 
   return result:return_output()
 end
@@ -111,13 +120,17 @@ function Command.retry()
     return nil, "not cmdhndlr buffer: " .. err
   end
 
-  local view = View.open(ctx.runner.working_dir, {type = "no"})
-  local result, exec_err = ctx.runner:execute(unpack(ctx.args))
+  local runner, factory_err = ctx.runner_factory()
+  if factory_err ~= nil then
+    return nil, factory_err
+  end
+
+  local result, exec_err = runner:execute(unpack(ctx.args))
   if exec_err ~= nil then
     return nil, exec_err
   end
-  view:set_lines(result.output)
-  Context.set(view.bufnr, ctx.runner, ctx.args)
+  View.open(result, runner.working_dir, {type = "no"})
+  Context.set(result.bufnr, ctx.runner_factory, ctx.args)
 
   return result:return_output()
 end

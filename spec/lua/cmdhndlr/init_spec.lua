@@ -245,6 +245,20 @@ bar]]
     assert.exists_message([[`_test/no_range` runner does not support range]])
   end)
 
+  it("raises error if the runner raises no output error", function()
+    helper.register_normal_runner("_test/no_output_error", {
+      run_file = function()
+        return nil, {msg = "not found parser"}
+      end,
+    })
+
+    local result = cmdhndlr.run({name = "_test/no_output_error"})
+
+    assert.is_nil(result)
+    assert.exists_message([[not found parser]])
+    assert.window_count(1)
+  end)
+
   it("can use runner that is not supported range in nofile buffer", function()
     cmdhndlr.run({name = "_test/no_range"})
 

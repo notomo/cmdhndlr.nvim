@@ -6,9 +6,13 @@ local Context = {}
 Context.__index = Context
 M.Context = Context
 
-function Context.set(bufnr, runner, args)
-  vim.validate({bufnr = {bufnr, "number"}, runner = {runner, "table"}, args = {args, "table", true}})
-  local tbl = {_bufnr = bufnr, runner = runner, args = args or {}}
+function Context.set(bufnr, runner_factory, args)
+  vim.validate({
+    bufnr = {bufnr, "number"},
+    runner_factory = {runner_factory, "function"},
+    args = {args, "table", true},
+  })
+  local tbl = {_bufnr = bufnr, runner_factory = runner_factory, args = args or {}}
   local self = setmetatable(tbl, Context)
   repository:set(bufnr, self)
   vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("cmdhndlr.command").Command.new("delete", %s)]]):format(bufnr, bufnr))

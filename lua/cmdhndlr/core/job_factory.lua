@@ -4,11 +4,17 @@ local Job = {}
 Job.__index = Job
 M.Job = Job
 
-function Job.new(cmd, opts)
-  local ok, result = pcall(vim.fn.termopen, cmd, opts)
+function Job.new(cmd, opts, output_bufnr)
+  local ok_result = vim.api.nvim_buf_call(output_bufnr, function()
+    local ok, result = pcall(vim.fn.termopen, cmd, opts)
+    return {ok, result}
+  end)
+
+  local ok, result = unpack(ok_result)
   if not ok then
     return nil, result
   end
+
   local tbl = {_id = result}
   return setmetatable(tbl, Job), nil
 end
@@ -27,9 +33,13 @@ local JobFactory = {}
 JobFactory.__index = JobFactory
 M.JobFactory = JobFactory
 
-function JobFactory.new(hooks, default_cwd)
-  vim.validate({hooks = {hooks, "table"}, default_cwd = {default_cwd, "string"}})
-  local tbl = {_default_cwd = default_cwd, _hooks = hooks}
+function JobFactory.new(output_bufnr, hooks, default_cwd)
+  vim.validate({
+    output_bufnr = {output_bufnr, "number"},
+    hooks = {hooks, "table"},
+    default_cwd = {default_cwd, "string"},
+  })
+  local tbl = {_output_bufnr = output_bufnr, _default_cwd = default_cwd, _hooks = hooks}
   return setmetatable(tbl, JobFactory)
 end
 
@@ -49,7 +59,7 @@ function JobFactory.create(self, cmd, opts)
     end
   end
 
-  return Job.new(cmd, opts)
+  return Job.new(cmd, opts, self._output_bufnr)
 end
 
 return M

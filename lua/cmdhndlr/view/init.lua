@@ -7,27 +7,35 @@ local View = {}
 View.__index = View
 M.View = View
 
-function View.open(working_dir, layout_opts)
-  vim.validate({working_dir = {working_dir, "table"}, layout_opts = {layout_opts, "table", true}})
+function View.open(result, working_dir, layout_opts)
+  vim.validate({
+    result = {result, "table"},
+    working_dir = {working_dir, "table"},
+    layout_opts = {layout_opts, "table", true},
+  })
   layout_opts = layout_opts or {type = "horizontal"}
 
-  local bufnr = vim.api.nvim_create_buf(false, true)
+  local bufnr = result.bufnr
   vim.bo[bufnr].filetype = "cmdhndlr"
   Layout.new(layout_opts):open(bufnr)
   working_dir:set_current()
 
-  local tbl = {bufnr = bufnr, _window_id = vim.api.nvim_get_current_win()}
-  return setmetatable(tbl, View)
+  local tbl = {_bufnr = bufnr, _window_id = vim.api.nvim_get_current_win()}
+  local self = setmetatable(tbl, View)
+
+  self:_set_lines(result.output)
+
+  return self
 end
 
-function View.set_lines(self, output)
+function View._set_lines(self, output)
   vim.validate({output = {output, "string", true}})
   if output then
-    vim.bo[self.bufnr].modifiable = true
-    vim.api.nvim_buf_set_lines(self.bufnr, 0, -1, true, vim.split(output, "\n", true))
-    vim.bo[self.bufnr].modifiable = false
+    vim.bo[self._bufnr].modifiable = true
+    vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, true, vim.split(output, "\n", true))
+    vim.bo[self._bufnr].modifiable = false
   end
-  cursorlib.to_bottom(self.bufnr, self._window_id)
+  cursorlib.to_bottom(self._bufnr, self._window_id)
 end
 
 return M
