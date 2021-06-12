@@ -30,7 +30,8 @@ function Handler.new(typ, bufnr, name, hooks, raw_working_dir, opts)
     return nil, "no handler"
   end
 
-  local handler, err = Handler._find(typ, name)
+  local path = M._path(typ, name)
+  local handler, err = Handler._find(path)
   if err then
     return nil, err
   end
@@ -39,6 +40,7 @@ function Handler.new(typ, bufnr, name, hooks, raw_working_dir, opts)
   local output_bunfr = vim.api.nvim_create_buf(false, true)
   local tbl = {
     name = name,
+    path = M._path(typ, name),
     opts = vim.tbl_extend("force", handler.opts or {}, opts or {}),
     job_factory = JobFactory.new(output_bunfr, hooks, working_dir:get()),
     working_dir = working_dir,
@@ -50,9 +52,7 @@ function Handler.new(typ, bufnr, name, hooks, raw_working_dir, opts)
   return setmetatable(tbl, Handler), nil
 end
 
-function Handler._find(typ, name)
-  local path = M._path(typ, name)
-
+function Handler._find(path)
   local registered = M.registered[path]
   if registered then
     return registered, nil

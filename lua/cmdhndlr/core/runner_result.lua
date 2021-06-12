@@ -18,6 +18,10 @@ function RunnerOutput.return_output(self)
   return self, nil
 end
 
+function RunnerOutput.input(_)
+  return "can't input"
+end
+
 local RunnerRawOutput = {}
 RunnerRawOutput.__index = RunnerRawOutput
 
@@ -53,6 +57,10 @@ end
 
 function RunnerJobOutput.__index(self, k)
   return rawget(RunnerJobOutput, k) or self._output[k] or self._job[k]
+end
+
+function RunnerJobOutput.input(self, text)
+  return self._job:input(text)
 end
 
 local RunnerResult = {}

@@ -520,3 +520,60 @@ describe("cmdhndlr.retry()", function()
   end)
 
 end)
+
+describe("cmdhndlr.input()", function()
+
+  before_each(function()
+    helper.before_each()
+
+    helper.register_normal_runner("_test/file", {
+      opts = {
+        f = function()
+          return "not implemented"
+        end,
+      },
+      run_file = function(self, path)
+        return self.opts.f(self, path)
+      end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("can input to stdin", function()
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"cat"})
+        end,
+      },
+    })
+    cmdhndlr.input("test_input", {name = "normal_runner/_test/file"})
+    cmdhndlr.input(vim.api.nvim_eval("\"\\<C-c>\""), {name = "normal_runner/_test/file"})
+
+    helper.wait(job)
+
+    assert.exists_pattern([[Process exited]])
+  end)
+
+  it("raises error if not plugin buffer", function()
+    cmdhndlr.input("test")
+    assert.exists_message([[not cmdhndlr buffer]])
+  end)
+
+  it("raises error if the command is not running", function()
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({"echo"})
+        end,
+      },
+    })
+    helper.wait(job)
+
+    cmdhndlr.input("test_input", {name = "normal_runner/_test/file"})
+    assert.exists_message([[job is not running]])
+  end)
+
+end)

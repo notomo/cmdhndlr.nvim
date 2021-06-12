@@ -18,6 +18,10 @@ function M.retry()
   return Command.new("retry")
 end
 
+function M.input(text, opts)
+  return Command.new("input", text, opts)
+end
+
 function M.setup(config)
   return Command.new("setup", config)
 end

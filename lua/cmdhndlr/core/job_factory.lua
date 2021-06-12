@@ -29,6 +29,19 @@ function Job.wait(self, ms)
   end, 10)
 end
 
+function Job.input(self, text)
+  if not self:is_running() then
+    return "job is not running"
+  end
+
+  local ok, err = pcall(vim.fn.chansend, self._id, text)
+  if not ok then
+    return err
+  end
+
+  return nil
+end
+
 local JobFactory = {}
 JobFactory.__index = JobFactory
 M.JobFactory = JobFactory

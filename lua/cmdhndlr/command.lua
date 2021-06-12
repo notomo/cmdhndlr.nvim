@@ -52,7 +52,7 @@ function Command.run(opts)
     return nil, exec_err
   end
   View.open(result, runner.working_dir, opts.layout)
-  Context.set(result.bufnr, runner_factory, {range})
+  Context.set(runner.path, result, runner_factory, {range})
 
   return result:return_output()
 end
@@ -81,7 +81,7 @@ function Command.test(opts)
     return nil, exec_err
   end
   View.open(result, runner.working_dir, opts.layout)
-  Context.set(result.bufnr, runner_factory, {scope})
+  Context.set(runner.path, result, runner_factory, {scope})
 
   return result:return_output()
 end
@@ -109,7 +109,7 @@ function Command.build(opts)
     return nil, exec_err
   end
   View.open(result, runner.working_dir, opts.layout)
-  Context.set(result.bufnr, runner_factory)
+  Context.set(runner.path, result, runner_factory)
 
   return result:return_output()
 end
@@ -130,9 +130,27 @@ function Command.retry()
     return nil, exec_err
   end
   View.open(result, runner.working_dir, {type = "no"})
-  Context.set(result.bufnr, ctx.runner_factory, ctx.args)
+  Context.set(runner.path, result, ctx.runner_factory, ctx.args)
 
   return result:return_output()
+end
+
+function Command.input(text, opts)
+  vim.validate({text = {text, "string"}, opts = {opts, "table", true}})
+  opts = opts or {}
+
+  local ctx, err = Context.find(opts.name)
+  if err then
+    return nil, "not cmdhndlr buffer: " .. err
+  end
+
+  local input_err = ctx.result:input(text)
+  if input_err ~= nil then
+    return nil, input_err
+  end
+  messagelib.echo(("sent to %s: %s"):format(ctx.name, text))
+
+  return nil, nil
 end
 
 function Command.delete(bufnr)
