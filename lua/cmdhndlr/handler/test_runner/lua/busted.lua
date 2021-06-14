@@ -38,16 +38,20 @@ function M.run_position_scope(self, path, position)
 ]])
 
   local tests = self.TableJoiner.new()
-  for _, match in root:iter_matches(query, 0, position[1]) do
+  local end_row = position[1]
+  for _, match in root:iter_matches(query, 0, end_row) do
     local test = {}
     local is_it = false
     local f = function(node)
       is_it = node.capture_name == "describe_or_it" and node:text() == "it"
     end
     for _, node in match:iter(f) do
-      table.insert(test, {name = node:text(), id = node:id(), is_it = is_it})
+      table.insert(test, {name = node:text(), id = node:id(), is_it = is_it, row = node:row()})
     end
-    tests:add(test)
+    -- HACK ?
+    if test[#test] and test[#test].row < end_row then
+      tests:add(test)
+    end
   end
 
   local test = tests:last()
