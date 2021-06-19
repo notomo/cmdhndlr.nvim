@@ -3,10 +3,11 @@ local M = {}
 local RunnerOutput = {}
 RunnerOutput.__index = RunnerOutput
 
-function RunnerOutput.new(bufnr, hook)
-  vim.validate({bufnr = {bufnr, "number"}, hook = {hook, "function", true}})
+function RunnerOutput.new(info, bufnr, hook)
+  vim.validate({info = {info, "table"}, bufnr = {bufnr, "number"}, hook = {hook, "function", true}})
   local tbl = {
     bufnr = bufnr,
+    _info = info,
     _hook = hook or function()
     end,
   }
@@ -14,7 +15,7 @@ function RunnerOutput.new(bufnr, hook)
 end
 
 function RunnerOutput.return_output(self)
-  self._hook()
+  self._hook(self._info)
   return self, nil
 end
 
@@ -25,9 +26,9 @@ end
 local RunnerRawOutput = {}
 RunnerRawOutput.__index = RunnerRawOutput
 
-function RunnerRawOutput.new(bufnr, hook, output)
-  vim.validate({output = {output, "string"}})
-  local tbl = {output = output, is_error = false, _output = RunnerOutput.new(bufnr, hook)}
+function RunnerRawOutput.new(output, raw_output)
+  vim.validate({output = {output, "table"}, raw_output = {raw_output, "string"}})
+  local tbl = {output = raw_output, is_error = false, _output = output}
   return setmetatable(tbl, RunnerRawOutput)
 end
 
@@ -37,9 +38,9 @@ end
 
 local RunnerRawError = {}
 
-function RunnerRawError.new(bufnr, hook, err)
-  vim.validate({err = {err, "string"}})
-  local tbl = {output = err, is_error = true, _output = RunnerOutput.new(bufnr, hook)}
+function RunnerRawError.new(output, err)
+  vim.validate({output = {output, "table"}, err = {err, "string"}})
+  local tbl = {output = err, is_error = true, _output = output}
   return setmetatable(tbl, RunnerRawError)
 end
 
@@ -49,9 +50,9 @@ end
 
 local RunnerJobOutput = {}
 
-function RunnerJobOutput.new(bufnr, job)
-  vim.validate({job = {job, "table"}})
-  local tbl = {output = nil, _job = job, _output = RunnerOutput.new(bufnr)}
+function RunnerJobOutput.new(output, job)
+  vim.validate({output = {output, "table"}, job = {job, "table"}})
+  local tbl = {output = nil, _job = job, _output = output}
   return setmetatable(tbl, RunnerJobOutput)
 end
 
@@ -66,15 +67,18 @@ end
 local RunnerResult = {}
 M.RunnerResult = RunnerResult
 
-function RunnerResult.ok(output_bufnr, hooks, output)
-  if type(output) == "string" then
-    return RunnerRawOutput.new(output_bufnr, hooks.success, output)
+function RunnerResult.ok(output_bufnr, hooks, info, raw_output)
+  if type(raw_output) == "string" then
+    local output = RunnerOutput.new(info, output_bufnr, hooks.success)
+    return RunnerRawOutput.new(output, raw_output)
   end
-  return RunnerJobOutput.new(output_bufnr, output)
+  local output = RunnerOutput.new(info, output_bufnr)
+  return RunnerJobOutput.new(output, raw_output)
 end
 
-function RunnerResult.error(output_bufnr, hooks, err)
-  return RunnerRawError.new(output_bufnr, hooks.failure, err)
+function RunnerResult.error(output_bufnr, hooks, info, err)
+  local output = RunnerOutput.new(info, output_bufnr, hooks.failure)
+  return RunnerRawError.new(output, err)
 end
 
 return M

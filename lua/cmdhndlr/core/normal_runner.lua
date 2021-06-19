@@ -27,6 +27,7 @@ end
 function NormalRunner.execute(self, range)
   vim.validate({range = {range, "table", true}})
 
+  local info_factory = self:info_factory()
   local output, err
   if range ~= nil then
     output, err = self:_run_range(range)
@@ -34,7 +35,7 @@ function NormalRunner.execute(self, range)
     output, err = self:_run_buffer()
   end
 
-  return self:result(output, err)
+  return self:result(info_factory, output, err)
 end
 
 function NormalRunner._run_range(self, range)

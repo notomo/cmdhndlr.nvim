@@ -63,12 +63,13 @@ function JobFactory.create(self, cmd, opts)
 
   local on_exit = opts.on_exit or function()
   end
+  local info_factory = self._hooks:info_factory()
   opts.on_exit = function(job_id, exit_code)
     on_exit(job_id, exit_code)
     if exit_code == 0 then
-      self._hooks.success()
+      self._hooks.success(info_factory())
     else
-      self._hooks.failure()
+      self._hooks.failure(info_factory())
     end
   end
 

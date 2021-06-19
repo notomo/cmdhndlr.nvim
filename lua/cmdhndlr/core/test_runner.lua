@@ -36,6 +36,7 @@ function TestRunner.execute(self, scope)
   vim.validate({scope = {scope, "table", true}})
   local path = vim.api.nvim_buf_get_name(self._bufnr)
 
+  local info_factory = self:info_factory()
   local output, err
   if scope.cursor then
     output, err = self:run_position_scope(path, scope.cursor)
@@ -43,7 +44,7 @@ function TestRunner.execute(self, scope)
     output, err = self:run_file(path)
   end
 
-  return self:result(output, err)
+  return self:result(info_factory, output, err)
 end
 
 return M

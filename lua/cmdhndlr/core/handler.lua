@@ -70,14 +70,19 @@ function Handler.__index(self, k)
   return rawget(Handler, k) or self._handler[k]
 end
 
-function Handler.result(self, output, err)
+function Handler.result(self, info_factory, output, err)
+  local info = info_factory()
   if err ~= nil then
     if type(err) == "table" then
       return nil, err.msg
     end
-    return RunnerResult.error(self._output_bufnr, self._hooks, err), nil
+    return RunnerResult.error(self._output_bufnr, self._hooks, info, err), nil
   end
-  return RunnerResult.ok(self._output_bufnr, self._hooks, output), nil
+  return RunnerResult.ok(self._output_bufnr, self._hooks, info, output), nil
+end
+
+function Handler.info_factory(self)
+  return self._hooks:info_factory()
 end
 
 function M._path(typ, name)
