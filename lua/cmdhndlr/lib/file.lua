@@ -35,4 +35,8 @@ function M.find_upward_file(child_pattern)
   return nil
 end
 
+function M.escape(path)
+  return ([[`='%s'`]]):format(path:gsub("'", "''"))
+end
+
 return M

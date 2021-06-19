@@ -1,7 +1,7 @@
 local M = {}
 
-function M.run_file(_, path)
-  local ok, result = pcall(vim.api.nvim_exec, "source " .. path, true)
+function M.run_file(self, path)
+  local ok, result = pcall(vim.api.nvim_exec, "source " .. self.filelib.escape(path), true)
   if not ok then
     return nil, result
   end
