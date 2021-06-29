@@ -26,4 +26,8 @@ function M.setup(config)
   return Command.new("setup", config)
 end
 
+function M.executed_runners()
+  return Command.new("executed_runners")
+end
+
 return M

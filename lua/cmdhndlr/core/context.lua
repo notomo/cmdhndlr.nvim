@@ -13,10 +13,17 @@ function Context.set(path, result, runner_factory, args)
     args = {args, "table", true},
   })
 
-  local tbl = {name = path, result = result, runner_factory = runner_factory, args = args or {}}
+  local bufnr = result.bufnr
+  local tbl = {
+    name = path,
+    bufnr = bufnr,
+    result = result,
+    runner_factory = runner_factory,
+    args = args or {},
+    _at = vim.fn.reltimestr(vim.fn.reltime()),
+  }
   local self = setmetatable(tbl, Context)
 
-  local bufnr = result.bufnr
   repository:set(bufnr, self)
   vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("cmdhndlr.command").Command.new("delete", %s)]]):format(bufnr, bufnr))
 
@@ -58,6 +65,17 @@ function Context.find(name)
     end
   end
   return nil, "no context"
+end
+
+function Context.all()
+  local all = {}
+  for _, ctx in repository:all() do
+    table.insert(all, ctx)
+  end
+  table.sort(all, function(a, b)
+    return a._at > b._at
+  end)
+  return all
 end
 
 return M

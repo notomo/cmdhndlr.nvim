@@ -577,3 +577,43 @@ describe("cmdhndlr.input()", function()
   end)
 
 end)
+
+describe("cmdhndlr.executed_runners()", function()
+
+  before_each(function()
+    helper.before_each()
+
+    helper.register_normal_runner("_test/file", {
+      opts = {
+        f = function()
+          return "not implemented"
+        end,
+      },
+      run_file = function(self, path)
+        return self.opts.f(self, path)
+      end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("returns empty if there is no context", function()
+    local actual = cmdhndlr.executed_runners()
+    assert.is_same({}, actual)
+  end)
+
+  it("returns executed runners", function()
+    cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function()
+          return "ok"
+        end,
+      },
+    })
+    local bufnr = vim.api.nvim_get_current_buf()
+
+    local actual = cmdhndlr.executed_runners()
+    assert.same({{name = "normal_runner/_test/file", bufnr = bufnr}}, actual)
+  end)
+
+end)

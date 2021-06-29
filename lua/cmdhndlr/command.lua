@@ -162,4 +162,12 @@ function Command.setup(config)
   custom.set(config)
 end
 
+function Command.executed_runners()
+  local items = {}
+  for _, ctx in ipairs(Context.all()) do
+    table.insert(items, {name = ctx.name, bufnr = ctx.bufnr})
+  end
+  return items
+end
+
 return M
