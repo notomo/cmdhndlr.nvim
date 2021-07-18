@@ -613,7 +613,7 @@ describe("cmdhndlr.executed_runners()", function()
     local bufnr = vim.api.nvim_get_current_buf()
 
     local actual = cmdhndlr.executed_runners()
-    assert.same({{name = "normal_runner/_test/file", bufnr = bufnr}}, actual)
+    assert.same({{name = "normal_runner/_test/file", bufnr = bufnr, is_running = false}}, actual)
   end)
 
 end)

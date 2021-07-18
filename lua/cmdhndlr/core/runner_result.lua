@@ -36,6 +36,10 @@ function RunnerRawOutput.__index(self, k)
   return rawget(RunnerRawOutput, k) or self._output[k]
 end
 
+function RunnerRawOutput.is_running(_)
+  return false
+end
+
 local RunnerRawError = {}
 
 function RunnerRawError.new(output, err)
@@ -46,6 +50,10 @@ end
 
 function RunnerRawError.__index(self, k)
   return rawget(RunnerRawError, k) or self._output[k]
+end
+
+function RunnerRawError.is_running(_)
+  return false
 end
 
 local RunnerJobOutput = {}

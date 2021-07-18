@@ -165,7 +165,7 @@ end
 function Command.executed_runners()
   local items = {}
   for _, ctx in ipairs(Context.all()) do
-    table.insert(items, {name = ctx.name, bufnr = ctx.bufnr})
+    table.insert(items, {name = ctx.name, bufnr = ctx.bufnr, is_running = ctx.result:is_running()})
   end
   return items
 end
