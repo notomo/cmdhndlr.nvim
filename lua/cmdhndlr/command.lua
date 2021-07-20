@@ -139,9 +139,11 @@ function Command.input(text, opts)
   vim.validate({text = {text, "string"}, opts = {opts, "table", true}})
   opts = opts or {}
 
-  local ctx, err = Context.find(opts.name)
+  local ctx, err = Context.find(opts.name, function(ctx)
+    return ctx.result:is_running()
+  end)
   if err then
-    return nil, "not cmdhndlr buffer: " .. err
+    return nil, "not found running buffer: " .. err
   end
 
   local input_err = ctx.result:input(text)

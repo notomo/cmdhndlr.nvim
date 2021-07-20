@@ -558,7 +558,7 @@ describe("cmdhndlr.input()", function()
 
   it("raises error if not plugin buffer", function()
     cmdhndlr.input("test")
-    assert.exists_message([[not cmdhndlr buffer]])
+    assert.exists_message([[not found running buffer]])
   end)
 
   it("raises error if the command is not running", function()
@@ -573,7 +573,7 @@ describe("cmdhndlr.input()", function()
     helper.wait(job)
 
     cmdhndlr.input("test_input", {name = "normal_runner/_test/file"})
-    assert.exists_message([[job is not running]])
+    assert.exists_message([[not found running buffer]])
   end)
 
 end)

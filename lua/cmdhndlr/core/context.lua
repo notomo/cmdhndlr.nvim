@@ -52,15 +52,18 @@ function Context.delete_from(bufnr)
   return ctx:delete()
 end
 
-function Context.find(name)
-  vim.validate({name = {name, "string", true}})
+function Context.find(name, predicate)
+  vim.validate({name = {name, "string", true}, predicate = {predicate, "function", true}})
+  predicate = predicate or function()
+    return true
+  end
 
   if not name then
     return Context.get()
   end
 
   for _, ctx in repository:all() do
-    if ctx.name == name then
+    if ctx.name == name and predicate(ctx) then
       return ctx, nil
     end
   end
