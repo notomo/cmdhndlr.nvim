@@ -5,15 +5,14 @@ Job.__index = Job
 M.Job = Job
 
 function Job.new(cmd, opts, output_bufnr)
-  local ok_result = vim.api.nvim_buf_call(output_bufnr, function()
-    local ok, result = pcall(vim.fn.termopen, cmd, opts)
-    return {ok, result}
+  local ok, result
+  vim.api.nvim_buf_call(output_bufnr, function()
+    ok, result = pcall(vim.fn.termopen, cmd, opts)
   end)
-
-  local ok, result = unpack(ok_result)
   if not ok then
     return nil, result
   end
+  vim.cmd("startinsert!")
 
   local tbl = {_id = result}
   return setmetatable(tbl, Job), nil
