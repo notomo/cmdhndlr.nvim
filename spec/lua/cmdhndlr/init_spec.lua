@@ -85,6 +85,20 @@ describe("cmdhndlr.run()", function()
     assert.is_true(hooked)
   end)
 
+  it("can pass environment variables", function()
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create("echo $HOGE $BAR")
+        end,
+      },
+      env = {HOGE = "FOO", BAR = "BAZ"},
+    })
+    helper.wait(job)
+    assert.exists_pattern("FOO BAZ")
+  end)
+
   it("can run with range", function()
     helper.set_lines([[
 hoge

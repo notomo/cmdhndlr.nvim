@@ -45,20 +45,27 @@ local JobFactory = {}
 JobFactory.__index = JobFactory
 M.JobFactory = JobFactory
 
-function JobFactory.new(output_bufnr, hooks, default_cwd)
+function JobFactory.new(output_bufnr, hooks, default_cwd, env)
   vim.validate({
     output_bufnr = {output_bufnr, "number"},
     hooks = {hooks, "table"},
     default_cwd = {default_cwd, "string"},
+    env = {env, "table", true},
   })
-  local tbl = {_output_bufnr = output_bufnr, _default_cwd = default_cwd, _hooks = hooks}
+  local tbl = {
+    _output_bufnr = output_bufnr,
+    _default_cwd = default_cwd,
+    _hooks = hooks,
+    _env = env or vim.empty_dict(),
+  }
   return setmetatable(tbl, JobFactory)
 end
 
 function JobFactory.create(self, cmd, opts)
-  vim.validate({cmd = {cmd, "table"}, opts = {opts, "table", true}})
-  opts = opts or {stderr_buffered = false}
+  vim.validate({opts = {opts, "table", true}})
+  opts = opts or vim.empty_dict()
   opts.cwd = opts.cwd or self._default_cwd
+  opts.env = vim.tbl_extend("force", self._env, opts.env or {})
 
   local on_exit = opts.on_exit or function()
   end

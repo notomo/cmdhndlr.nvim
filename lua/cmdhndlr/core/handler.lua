@@ -11,13 +11,14 @@ M.registered = {}
 local Handler = {registered = {}}
 M.Handler = Handler
 
-function Handler.new(typ, bufnr, name, hooks, raw_working_dir, opts)
+function Handler.new(typ, bufnr, name, hooks, raw_working_dir, env, opts)
   vim.validate({
     type = {typ, "string"},
     bufnr = {bufnr, "number"},
     name = {name, "string", true},
     hooks = {hooks, "table"},
     working_dir = {raw_working_dir, "function", true},
+    env = {env, "table", true},
     opts = {opts, "table", true},
   })
 
@@ -42,7 +43,7 @@ function Handler.new(typ, bufnr, name, hooks, raw_working_dir, opts)
     name = name,
     path = M._path(typ, name),
     opts = vim.tbl_extend("force", handler.opts or {}, opts or {}),
-    job_factory = JobFactory.new(output_bunfr, hooks, working_dir:get()),
+    job_factory = JobFactory.new(output_bunfr, hooks, working_dir:get(), env),
     working_dir = working_dir,
     filelib = filelib,
     _handler = handler,
