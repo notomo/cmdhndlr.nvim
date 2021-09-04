@@ -38,7 +38,7 @@ function Command.run(opts)
   local bufnr = vim.api.nvim_get_current_buf()
   local hooks = Hooks.from(opts.hooks)
   local runner_factory = function()
-    return NormalRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.env, opts.runner_opts)
+    return NormalRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.working_dir_marker, opts.env, opts.runner_opts)
   end
 
   local runner, err = runner_factory()
@@ -67,7 +67,7 @@ function Command.test(opts)
     failure = hookutil.echo_failure(),
   })
   local runner_factory = function()
-    return TestRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.env, opts.runner_opts)
+    return TestRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.working_dir_marker, opts.env, opts.runner_opts)
   end
 
   local runner, err = runner_factory()
@@ -96,7 +96,7 @@ function Command.build(opts)
     failure = hookutil.echo_failure(),
   })
   local runner_factory = function()
-    return BuildRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.env, opts.runner_opts)
+    return BuildRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.working_dir_marker, opts.env, opts.runner_opts)
   end
 
   local runner, err = runner_factory()
