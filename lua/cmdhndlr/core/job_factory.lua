@@ -12,7 +12,9 @@ function Job.new(cmd, opts, output_bufnr)
   if not ok then
     return nil, result
   end
-  vim.cmd("startinsert!")
+  vim.schedule(function()
+    vim.cmd("startinsert!")
+  end)
 
   local tbl = {_id = result}
   return setmetatable(tbl, Job), nil
