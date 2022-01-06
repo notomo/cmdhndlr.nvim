@@ -26,7 +26,7 @@ M.config = {
     },
   },
   build_runner = {
-    default = {go = "go/go", javascript = "javascript/npm", typescript = "javascript/npm"},
+    default = { go = "go/go", javascript = "javascript/npm", typescript = "javascript/npm" },
   },
 }
 

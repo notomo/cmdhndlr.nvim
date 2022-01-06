@@ -3,7 +3,6 @@ local cmdhndlr = helper.require("cmdhndlr")
 local handler_name = "shell/bash"
 
 describe(handler_name .. " runner", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -13,7 +12,7 @@ echo hoge
 echo hoge
 ]])
 
-    local job = cmdhndlr.run({name = handler_name})
+    local job = cmdhndlr.run({ name = handler_name })
     helper.wait(job)
 
     assert.exists_pattern([[
@@ -28,11 +27,10 @@ echo foo
 ]])
     vim.cmd("normal! v$")
 
-    local job = cmdhndlr.run({name = handler_name})
+    local job = cmdhndlr.run({ name = handler_name })
     helper.wait(job)
 
     assert.exists_pattern([[
 hoge]])
   end)
-
 end)

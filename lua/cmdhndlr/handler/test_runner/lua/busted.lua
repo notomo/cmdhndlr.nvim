@@ -3,7 +3,7 @@ local M = {}
 M.cmd = "busted"
 
 function M.run_file(self, path)
-  return self.job_factory:create({self.cmd, path})
+  return self.job_factory:create({ self.cmd, path })
 end
 
 function M.run_position_scope(self, path, position)
@@ -14,7 +14,9 @@ function M.run_position_scope(self, path, position)
     return nil, err
   end
 
-  local query = vim.treesitter.parse_query(lang, [[
+  local query = vim.treesitter.parse_query(
+    lang,
+    [[
 (function_call
     (identifier) @describe (#eq? @describe "describe") (#set! @describe "ignore")
     (arguments
@@ -35,7 +37,8 @@ function M.run_position_scope(self, path, position)
         (string) @describe_name
     )
 )
-]])
+]]
+  )
 
   local tests = self.TableJoiner.new()
   local end_row = position[1]
@@ -46,7 +49,7 @@ function M.run_position_scope(self, path, position)
       is_it = node.capture_name == "describe_or_it" and node:text() == "it"
     end
     for _, node in match:iter(f) do
-      table.insert(test, {name = node:text(), id = node:id(), is_it = is_it, row = node:row()})
+      table.insert(test, { name = node:text(), id = node:id(), is_it = is_it, row = node:row() })
     end
     -- HACK ?
     if test[#test] and test[#test].row < end_row then
@@ -60,15 +63,18 @@ function M.run_position_scope(self, path, position)
   end
 
   local unwrapper = self.StringUnwrapper.for_lua()
-  local pattern = table.concat(vim.tbl_map(function(case)
-    return unwrapper:unwrap(case.name)
-  end, test), " ")
+  local pattern = table.concat(
+    vim.tbl_map(function(case)
+      return unwrapper:unwrap(case.name)
+    end, test),
+    " "
+  )
   if test[#test].is_it then
     pattern = pattern .. "$"
   end
   pattern = pattern:gsub("%(", "%%("):gsub("%)", "%%)"):gsub("%-", "%%-")
 
-  return self.job_factory:create({self.cmd, "--filter", pattern, path})
+  return self.job_factory:create({ self.cmd, "--filter", pattern, path })
 end
 
 return M

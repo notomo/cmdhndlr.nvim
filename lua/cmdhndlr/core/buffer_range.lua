@@ -5,13 +5,13 @@ BufferRange.__index = BufferRange
 M.BufferRange = BufferRange
 
 function BufferRange.new(bufnr, raw_range)
-  vim.validate({bufnr = {bufnr, "number"}, raw_range = {raw_range, "table"}})
-  local tbl = {_bufnr = bufnr, _range = raw_range}
+  vim.validate({ bufnr = { bufnr, "number" }, raw_range = { raw_range, "table" } })
+  local tbl = { _bufnr = bufnr, _range = raw_range }
   return setmetatable(tbl, BufferRange)
 end
 
 function BufferRange.entire(bufnr)
-  return BufferRange.new(bufnr, {first = 1, last = vim.api.nvim_buf_line_count(bufnr)})
+  return BufferRange.new(bufnr, { first = 1, last = vim.api.nvim_buf_line_count(bufnr) })
 end
 
 function BufferRange.to_string(self)

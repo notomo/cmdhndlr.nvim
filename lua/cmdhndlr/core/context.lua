@@ -8,9 +8,9 @@ M.Context = Context
 
 function Context.set(path, result, runner_factory, args)
   vim.validate({
-    result = {result, "table"},
-    runner_factory = {runner_factory, "function"},
-    args = {args, "table", true},
+    result = { result, "table" },
+    runner_factory = { runner_factory, "function" },
+    args = { args, "table", true },
   })
 
   local bufnr = result.bufnr
@@ -25,13 +25,15 @@ function Context.set(path, result, runner_factory, args)
   local self = setmetatable(tbl, Context)
 
   repository:set(bufnr, self)
-  vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("cmdhndlr.command").Command.new("delete", %s)]]):format(bufnr, bufnr))
+  vim.cmd(
+    ([[autocmd BufWipeout <buffer=%s> lua require("cmdhndlr.command").Command.new("delete", %s)]]):format(bufnr, bufnr)
+  )
 
   return self
 end
 
 function Context.get(bufnr)
-  vim.validate({bufnr = {bufnr, "number", true}})
+  vim.validate({ bufnr = { bufnr, "number", true } })
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local ctx = repository:get(bufnr)
   if not ctx then
@@ -53,7 +55,7 @@ function Context.delete_from(bufnr)
 end
 
 function Context.find(name, predicate)
-  vim.validate({name = {name, "string", true}, predicate = {predicate, "function", true}})
+  vim.validate({ name = { name, "string", true }, predicate = { predicate, "function", true } })
   predicate = predicate or function()
     return true
   end

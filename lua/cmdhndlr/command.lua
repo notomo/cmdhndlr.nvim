@@ -17,7 +17,7 @@ Command.__index = Command
 M.Command = Command
 
 function Command.new(name, ...)
-  local args = {...}
+  local args = { ... }
   local f = function()
     return Command[name](unpack(args))
   end
@@ -32,13 +32,21 @@ function Command.new(name, ...)
 end
 
 function Command.run(opts)
-  vim.validate({opts = {opts, "table", true}})
+  vim.validate({ opts = { opts, "table", true } })
   opts = opts or {}
 
   local bufnr = vim.api.nvim_get_current_buf()
   local hooks = Hooks.from(opts.hooks)
   local runner_factory = function()
-    return NormalRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.working_dir_marker, opts.env, opts.runner_opts)
+    return NormalRunner.new(
+      bufnr,
+      opts.name,
+      hooks,
+      opts.working_dir,
+      opts.working_dir_marker,
+      opts.env,
+      opts.runner_opts
+    )
   end
 
   local runner, err = runner_factory()
@@ -52,13 +60,13 @@ function Command.run(opts)
     return nil, exec_err
   end
   View.open(result, runner.working_dir, opts.layout)
-  Context.set(runner.path, result, runner_factory, {range})
+  Context.set(runner.path, result, runner_factory, { range })
 
   return result:return_output()
 end
 
 function Command.test(opts)
-  vim.validate({opts = {opts, "table", true}})
+  vim.validate({ opts = { opts, "table", true } })
   opts = opts or {}
 
   local bufnr = vim.api.nvim_get_current_buf()
@@ -67,7 +75,15 @@ function Command.test(opts)
     failure = hookutil.echo_failure(),
   })
   local runner_factory = function()
-    return TestRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.working_dir_marker, opts.env, opts.runner_opts)
+    return TestRunner.new(
+      bufnr,
+      opts.name,
+      hooks,
+      opts.working_dir,
+      opts.working_dir_marker,
+      opts.env,
+      opts.runner_opts
+    )
   end
 
   local runner, err = runner_factory()
@@ -81,13 +97,13 @@ function Command.test(opts)
     return nil, exec_err
   end
   View.open(result, runner.working_dir, opts.layout)
-  Context.set(runner.path, result, runner_factory, {scope})
+  Context.set(runner.path, result, runner_factory, { scope })
 
   return result:return_output()
 end
 
 function Command.build(opts)
-  vim.validate({opts = {opts, "table", true}})
+  vim.validate({ opts = { opts, "table", true } })
   opts = opts or {}
 
   local bufnr = vim.api.nvim_get_current_buf()
@@ -96,7 +112,15 @@ function Command.build(opts)
     failure = hookutil.echo_failure(),
   })
   local runner_factory = function()
-    return BuildRunner.new(bufnr, opts.name, hooks, opts.working_dir, opts.working_dir_marker, opts.env, opts.runner_opts)
+    return BuildRunner.new(
+      bufnr,
+      opts.name,
+      hooks,
+      opts.working_dir,
+      opts.working_dir_marker,
+      opts.env,
+      opts.runner_opts
+    )
   end
 
   local runner, err = runner_factory()
@@ -129,14 +153,14 @@ function Command.retry()
   if exec_err ~= nil then
     return nil, exec_err
   end
-  View.open(result, runner.working_dir, {type = "no"})
+  View.open(result, runner.working_dir, { type = "no" })
   Context.set(runner.path, result, ctx.runner_factory, ctx.args)
 
   return result:return_output()
 end
 
 function Command.input(text, opts)
-  vim.validate({text = {text, "string"}, opts = {opts, "table", true}})
+  vim.validate({ text = { text, "string" }, opts = { opts, "table", true } })
   opts = opts or {}
 
   local ctx, err = Context.find(opts.name, function(ctx)
@@ -160,14 +184,14 @@ function Command.delete(bufnr)
 end
 
 function Command.setup(config)
-  vim.validate({config = {config, "table"}})
+  vim.validate({ config = { config, "table" } })
   custom.set(config)
 end
 
 function Command.executed_runners()
   local items = {}
   for _, ctx in ipairs(Context.all()) do
-    table.insert(items, {name = ctx.name, bufnr = ctx.bufnr, is_running = ctx.result:is_running()})
+    table.insert(items, { name = ctx.name, bufnr = ctx.bufnr, is_running = ctx.result:is_running() })
   end
   return items
 end

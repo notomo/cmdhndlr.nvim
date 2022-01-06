@@ -1,13 +1,15 @@
 local M = {}
 
 function M.run_file(self, _)
-  return self.job_factory:create({"go", "test", "-v"})
+  return self.job_factory:create({ "go", "test", "-v" })
 end
 
 local lang = "go"
 
 function M._find_test(_, root, position)
-  local query = vim.treesitter.parse_query(lang, [[
+  local query = vim.treesitter.parse_query(
+    lang,
+    [[
 (function_declaration
     name: (identifier) @name (match? @name "^Test")
     parameters: (parameter_list
@@ -22,11 +24,12 @@ function M._find_test(_, root, position)
         )
     )
 )
-]])
+]]
+  )
   local tests = {}
   for _, match in root:iter_matches(query, 0, position[1]) do
     local test = match:map(function(node)
-      return {name = node:text(), id = node:id(), row = node:row()}
+      return { name = node:text(), id = node:id(), row = node:row() }
     end)
     vim.list_extend(tests, test)
   end
@@ -35,7 +38,9 @@ end
 
 -- TODO: refactor nested query
 function M._find_test_run(self, test, root, position)
-  local query = vim.treesitter.parse_query(lang, [[
+  local query = vim.treesitter.parse_query(
+    lang,
+    [[
 (call_expression
     function: (selector_expression
         operand: (identifier) @t (eq? @t "t") (#set! @t "ignore")
@@ -101,12 +106,13 @@ function M._find_test_run(self, test, root, position)
         )
     )
 )
-]])
+]]
+  )
 
   local test_runs = self.TableJoiner.new()
   for _, match in root:iter_matches(query, test.row, position[1]) do
     local test_run = match:map(function(node)
-      return {name = node:text(), id = node:id()}
+      return { name = node:text(), id = node:id() }
     end)
     test_runs:add(test_run)
   end
@@ -120,7 +126,7 @@ function M._find_test_run(self, test, root, position)
   local names = vim.tbl_map(function(case)
     return unwrapper:unwrap(case.name)
   end, test_run)
-  return {names = names}
+  return { names = names }
 end
 
 function M.run_position_scope(self, path, position)
@@ -137,13 +143,13 @@ function M.run_position_scope(self, path, position)
   local test_run = self:_find_test_run(test, root, position)
   local pattern
   if test_run then
-    pattern = table.concat({test.name, unpack(test_run.names)}, "/")
+    pattern = table.concat({ test.name, unpack(test_run.names) }, "/")
   else
     pattern = test.name
   end
   pattern = ("^%s$"):format(pattern)
 
-  return self.job_factory:create({"go", "test", "-v", "--run=" .. pattern})
+  return self.job_factory:create({ "go", "test", "-v", "--run=" .. pattern })
 end
 
 return M

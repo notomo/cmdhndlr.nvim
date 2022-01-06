@@ -8,17 +8,17 @@ function M.error(err)
 end
 
 function M.warn(msg)
-  vim.validate({msg = {msg, "string"}})
-  vim.api.nvim_echo({{prefix .. msg, "WarningMsg"}}, true, {})
+  vim.validate({ msg = { msg, "string" } })
+  vim.api.nvim_echo({ { prefix .. msg, "WarningMsg" } }, true, {})
 end
 
 function M.echo(msg, hl_group)
-  vim.validate({msg = {msg, "string"}, hl_group = {hl_group, "string", true}})
-  local chunk = {prefix .. msg}
+  vim.validate({ msg = { msg, "string" }, hl_group = { hl_group, "string", true } })
+  local chunk = { prefix .. msg }
   if hl_group then
     table.insert(chunk, hl_group)
   end
-  vim.api.nvim_echo({chunk}, true, {})
+  vim.api.nvim_echo({ chunk }, true, {})
 end
 
 return M

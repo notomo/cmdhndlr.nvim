@@ -9,18 +9,18 @@ M.View = View
 
 function View.open(result, working_dir, layout_opts)
   vim.validate({
-    result = {result, "table"},
-    working_dir = {working_dir, "table"},
-    layout_opts = {layout_opts, "table", true},
+    result = { result, "table" },
+    working_dir = { working_dir, "table" },
+    layout_opts = { layout_opts, "table", true },
   })
-  layout_opts = layout_opts or {type = "horizontal"}
+  layout_opts = layout_opts or { type = "horizontal" }
 
   local bufnr = result.bufnr
   vim.bo[bufnr].filetype = "cmdhndlr"
   Layout.new(layout_opts):open(bufnr)
   working_dir:set_current()
 
-  local tbl = {_bufnr = bufnr, _window_id = vim.api.nvim_get_current_win()}
+  local tbl = { _bufnr = bufnr, _window_id = vim.api.nvim_get_current_win() }
   local self = setmetatable(tbl, View)
 
   self:_set_lines(result.output)
@@ -29,7 +29,7 @@ function View.open(result, working_dir, layout_opts)
 end
 
 function View._set_lines(self, output)
-  vim.validate({output = {output, "string", true}})
+  vim.validate({ output = { output, "string", true } })
   if output then
     vim.bo[self._bufnr].modifiable = true
     vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, true, vim.split(output, "\n", true))

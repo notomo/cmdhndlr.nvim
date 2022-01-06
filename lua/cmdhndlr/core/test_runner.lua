@@ -14,8 +14,8 @@ function TestRunner.new(bufnr, ...)
     return nil, err
   end
   vim.validate({
-    run_file = {handler.run_file, "function"},
-    run_position_scope = {handler.run_position_scope, "function", true},
+    run_file = { handler.run_file, "function" },
+    run_position_scope = { handler.run_position_scope, "function", true },
   })
 
   local tbl = {
@@ -33,7 +33,7 @@ function TestRunner.__index(self, k)
 end
 
 function TestRunner.execute(self, scope)
-  vim.validate({scope = {scope, "table", true}})
+  vim.validate({ scope = { scope, "table", true } })
   local path = vim.api.nvim_buf_get_name(self._bufnr)
 
   local info_factory = self:info_factory()

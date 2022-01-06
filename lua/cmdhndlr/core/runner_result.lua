@@ -4,12 +4,11 @@ local RunnerOutput = {}
 RunnerOutput.__index = RunnerOutput
 
 function RunnerOutput.new(info, bufnr, hook)
-  vim.validate({info = {info, "table"}, bufnr = {bufnr, "number"}, hook = {hook, "function", true}})
+  vim.validate({ info = { info, "table" }, bufnr = { bufnr, "number" }, hook = { hook, "function", true } })
   local tbl = {
     bufnr = bufnr,
     _info = info,
-    _hook = hook or function()
-    end,
+    _hook = hook or function() end,
   }
   return setmetatable(tbl, RunnerOutput)
 end
@@ -27,8 +26,8 @@ local RunnerRawOutput = {}
 RunnerRawOutput.__index = RunnerRawOutput
 
 function RunnerRawOutput.new(output, raw_output)
-  vim.validate({output = {output, "table"}, raw_output = {raw_output, "string"}})
-  local tbl = {output = raw_output, is_error = false, _output = output}
+  vim.validate({ output = { output, "table" }, raw_output = { raw_output, "string" } })
+  local tbl = { output = raw_output, is_error = false, _output = output }
   return setmetatable(tbl, RunnerRawOutput)
 end
 
@@ -43,8 +42,8 @@ end
 local RunnerRawError = {}
 
 function RunnerRawError.new(output, err)
-  vim.validate({output = {output, "table"}, err = {err, "string"}})
-  local tbl = {output = err, is_error = true, _output = output}
+  vim.validate({ output = { output, "table" }, err = { err, "string" } })
+  local tbl = { output = err, is_error = true, _output = output }
   return setmetatable(tbl, RunnerRawError)
 end
 
@@ -59,8 +58,8 @@ end
 local RunnerJobOutput = {}
 
 function RunnerJobOutput.new(output, job)
-  vim.validate({output = {output, "table"}, job = {job, "table"}})
-  local tbl = {output = nil, _job = job, _output = output}
+  vim.validate({ output = { output, "table" }, job = { job, "table" } })
+  local tbl = { output = nil, _job = job, _output = output }
   return setmetatable(tbl, RunnerJobOutput)
 end
 

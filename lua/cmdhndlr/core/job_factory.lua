@@ -16,12 +16,12 @@ function Job.new(cmd, opts, output_bufnr)
     vim.cmd("startinsert!")
   end)
 
-  local tbl = {_id = result}
+  local tbl = { _id = result }
   return setmetatable(tbl, Job), nil
 end
 
 function Job.is_running(self)
-  return vim.fn.jobwait({self._id}, 0)[1] == -1
+  return vim.fn.jobwait({ self._id }, 0)[1] == -1
 end
 
 function Job.wait(self, ms)
@@ -49,10 +49,10 @@ M.JobFactory = JobFactory
 
 function JobFactory.new(output_bufnr, hooks, default_cwd, env)
   vim.validate({
-    output_bufnr = {output_bufnr, "number"},
-    hooks = {hooks, "table"},
-    default_cwd = {default_cwd, "string"},
-    env = {env, "table", true},
+    output_bufnr = { output_bufnr, "number" },
+    hooks = { hooks, "table" },
+    default_cwd = { default_cwd, "string" },
+    env = { env, "table", true },
   })
   local tbl = {
     _output_bufnr = output_bufnr,
@@ -64,13 +64,12 @@ function JobFactory.new(output_bufnr, hooks, default_cwd, env)
 end
 
 function JobFactory.create(self, cmd, opts)
-  vim.validate({opts = {opts, "table", true}})
+  vim.validate({ opts = { opts, "table", true } })
   opts = opts or vim.empty_dict()
   opts.cwd = opts.cwd or self._default_cwd
   opts.env = vim.tbl_extend("force", self._env, opts.env or {})
 
-  local on_exit = opts.on_exit or function()
-  end
+  local on_exit = opts.on_exit or function() end
   local info_factory = self._hooks:info_factory()
   opts.on_exit = function(job_id, exit_code)
     on_exit(job_id, exit_code)

@@ -8,19 +8,19 @@ function StringUnwrapper.new(...)
   local patterns = vim.tbl_map(function(pair)
     local head = "^" .. pair[1]
     local tail = (pair[2] or pair[1]) .. "$"
-    return {head = head, tail = tail}
-  end, {...})
+    return { head = head, tail = tail }
+  end, { ... })
 
-  local tbl = {_patterns = patterns}
+  local tbl = { _patterns = patterns }
   return setmetatable(tbl, StringUnwrapper)
 end
 
 function StringUnwrapper.for_lua()
-  return StringUnwrapper.new({"'"}, {"\""}, {"%[=*%[", "%]=*%]"})
+  return StringUnwrapper.new({ "'" }, { '"' }, { "%[=*%[", "%]=*%]" })
 end
 
 function StringUnwrapper.for_go()
-  return StringUnwrapper.new({"'"}, {"\""}, {"`"})
+  return StringUnwrapper.new({ "'" }, { '"' }, { "`" })
 end
 
 function StringUnwrapper.unwrap(self, str)

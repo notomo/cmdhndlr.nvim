@@ -4,14 +4,13 @@ local Match = {}
 Match.__index = Match
 
 function Match.new(bufnr, raw_match, metadata, captures)
-  local tbl = {_bufnr = bufnr, _match = raw_match, _metadata = metadata or {}, _captures = captures}
+  local tbl = { _bufnr = bufnr, _match = raw_match, _metadata = metadata or {}, _captures = captures }
   return setmetatable(tbl, Match)
 end
 
 function Match.iter(self, f)
   local id = nil
-  f = f or function()
-  end
+  f = f or function() end
   return function()
     local node
     local ok = false
@@ -29,7 +28,7 @@ function Match.iter(self, f)
 end
 
 function Match.map(self, f)
-  vim.validate({f = {f, "function"}})
+  vim.validate({ f = { f, "function" } })
   local tbl = {}
   for _, node in self:iter() do
     table.insert(tbl, f(node))
@@ -41,7 +40,7 @@ local Node = {}
 M.Node = Node
 
 function Node.new(bufnr, raw_node, capture_name)
-  local tbl = {_node = raw_node, _bufnr = bufnr, capture_name = capture_name}
+  local tbl = { _node = raw_node, _bufnr = bufnr, capture_name = capture_name }
   return setmetatable(tbl, Node)
 end
 
@@ -79,16 +78,16 @@ Parser.__index = Parser
 M.Parser = Parser
 
 function Parser.new(bufnr)
-  vim.validate({bufnr = {bufnr, "number"}})
-  local tbl = {_bufnr = bufnr}
+  vim.validate({ bufnr = { bufnr, "number" } })
+  local tbl = { _bufnr = bufnr }
   return setmetatable(tbl, Parser)
 end
 
 function Parser.parse(self, lang)
-  vim.validate({lang = {lang, "string"}})
+  vim.validate({ lang = { lang, "string" } })
 
   if not vim.treesitter.language.require_language(lang, nil, true) then
-    return nil, {msg = "not found tree-sitter parser for " .. lang}
+    return nil, { msg = "not found tree-sitter parser for " .. lang }
   end
 
   local parser = vim.treesitter.get_parser(self._bufnr, lang)

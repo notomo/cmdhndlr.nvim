@@ -3,7 +3,6 @@ local cmdhndlr = helper.require("cmdhndlr")
 local handler_name = "vim/source"
 
 describe(handler_name .. " runner", function()
-
   before_each(helper.before_each)
   after_each(helper.after_each)
 
@@ -13,7 +12,7 @@ echomsg 'source'
 echomsg 'source'
 ]])
 
-    cmdhndlr.run({name = handler_name})
+    cmdhndlr.run({ name = handler_name })
 
     assert.exists_pattern([[
 source
@@ -27,7 +26,7 @@ echomsg 'source'
 ]])
     vim.cmd("normal! v$")
 
-    cmdhndlr.run({name = handler_name})
+    cmdhndlr.run({ name = handler_name })
 
     assert.exists_pattern([[
 source]])
@@ -38,10 +37,9 @@ source]])
 echoerr 'error!'
 ]])
 
-    cmdhndlr.run({name = handler_name})
+    cmdhndlr.run({ name = handler_name })
 
     assert.exists_pattern([[
 error!]])
   end)
-
 end)

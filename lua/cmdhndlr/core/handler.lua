@@ -8,19 +8,19 @@ local M = {}
 
 M.registered = {}
 
-local Handler = {registered = {}}
+local Handler = { registered = {} }
 M.Handler = Handler
 
 function Handler.new(typ, bufnr, name, hooks, raw_working_dir, raw_working_dir_marker, env, opts)
   vim.validate({
-    type = {typ, "string"},
-    bufnr = {bufnr, "number"},
-    name = {name, "string", true},
-    hooks = {hooks, "table"},
-    working_dir = {raw_working_dir, "function", true},
-    working_dir_marker = {raw_working_dir_marker, "function", true},
-    env = {env, "table", true},
-    opts = {opts, "table", true},
+    type = { typ, "string" },
+    bufnr = { bufnr, "number" },
+    name = { name, "string", true },
+    hooks = { hooks, "table" },
+    working_dir = { raw_working_dir, "function", true },
+    working_dir_marker = { raw_working_dir_marker, "function", true },
+    env = { env, "table", true },
+    opts = { opts, "table", true },
   })
 
   local filetype = vim.bo[bufnr].filetype
@@ -38,7 +38,10 @@ function Handler.new(typ, bufnr, name, hooks, raw_working_dir, raw_working_dir_m
     return nil, err
   end
 
-  local working_dir = WorkingDir.new(raw_working_dir or handler.working_dir, raw_working_dir_marker or handler.working_dir_marker)
+  local working_dir = WorkingDir.new(
+    raw_working_dir or handler.working_dir,
+    raw_working_dir_marker or handler.working_dir_marker
+  )
   local output_bunfr = vim.api.nvim_create_buf(false, true)
   local tbl = {
     name = name,

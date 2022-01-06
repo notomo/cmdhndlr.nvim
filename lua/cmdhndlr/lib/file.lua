@@ -1,7 +1,7 @@
 local M = {}
 
 function M.temporary(str)
-  vim.validate({str = {str, "string", true}})
+  vim.validate({ str = { str, "string", true } })
 
   local path = vim.fn.tempname()
   local f = io.open(path, "w")

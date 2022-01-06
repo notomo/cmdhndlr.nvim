@@ -10,9 +10,9 @@ function BuildRunner.new(bufnr, ...)
   if err ~= nil then
     return nil, err
   end
-  vim.validate({build = {handler.build, "function"}})
+  vim.validate({ build = { handler.build, "function" } })
 
-  local tbl = {_bufnr = bufnr, _handler = handler}
+  local tbl = { _bufnr = bufnr, _handler = handler }
   return setmetatable(tbl, BuildRunner)
 end
 

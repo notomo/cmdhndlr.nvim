@@ -12,11 +12,11 @@ function NormalRunner.new(bufnr, ...)
     return nil, err
   end
   vim.validate({
-    run_file = {handler.run_file, "function"},
-    run_string = {handler.run_string, "function", true},
+    run_file = { handler.run_file, "function" },
+    run_string = { handler.run_string, "function", true },
   })
 
-  local tbl = {_bufnr = bufnr, _handler = handler}
+  local tbl = { _bufnr = bufnr, _handler = handler }
   return setmetatable(tbl, NormalRunner)
 end
 
@@ -25,7 +25,7 @@ function NormalRunner.__index(self, k)
 end
 
 function NormalRunner.execute(self, range)
-  vim.validate({range = {range, "table", true}})
+  vim.validate({ range = { range, "table", true } })
 
   local info_factory = self:info_factory()
   local output, err
@@ -40,7 +40,7 @@ end
 
 function NormalRunner._run_range(self, range)
   if not self.run_string then
-    return nil, {msg = ("`%s` runner does not support range"):format(self.name)}
+    return nil, { msg = ("`%s` runner does not support range"):format(self.name) }
   end
 
   local str = BufferRange.new(self._bufnr, range):to_string()

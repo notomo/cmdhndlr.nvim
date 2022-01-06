@@ -2,7 +2,6 @@ local helper = require("cmdhndlr.lib.testlib.helper")
 local cmdhndlr = helper.require("cmdhndlr")
 
 describe("cmdhndlr.run()", function()
-
   before_each(function()
     helper.before_each()
 
@@ -27,14 +26,12 @@ describe("cmdhndlr.run()", function()
     })
 
     helper.register_normal_runner("_test/working_dir", {
-      run_file = function()
-      end,
+      run_file = function() end,
       run_string = function(self)
         return self.working_dir:get()
       end,
       working_dir = require("cmdhndlr.util").working_dir.upward_pattern("dir1", "dir2"),
     })
-
   end)
   after_each(helper.after_each)
 
@@ -93,7 +90,7 @@ describe("cmdhndlr.run()", function()
           return self.job_factory:create("echo $HOGE $BAR")
         end,
       },
-      env = {HOGE = "FOO", BAR = "BAZ"},
+      env = { HOGE = "FOO", BAR = "BAZ" },
     })
     helper.wait(job)
     assert.exists_pattern("FOO BAZ")
@@ -119,7 +116,7 @@ hoge
   end)
 
   it("can run default runner", function()
-    cmdhndlr.setup({normal_runner = {default = {[""] = "_test/file"}}})
+    cmdhndlr.setup({ normal_runner = { default = { [""] = "_test/file" } } })
 
     cmdhndlr.run({
       runner_opts = {
@@ -137,7 +134,7 @@ hoge
     helper.new_directory("root/dir2")
     helper.cd("root/dir")
 
-    cmdhndlr.run({name = "_test/working_dir"})
+    cmdhndlr.run({ name = "_test/working_dir" })
 
     assert.exists_pattern(helper.test_data_path .. "root$")
   end)
@@ -147,7 +144,7 @@ hoge
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"echo", "ok"})
+          return self.job_factory:create({ "echo", "ok" })
         end,
       },
     })
@@ -163,7 +160,7 @@ hoge
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"echo", "ok"})
+          return self.job_factory:create({ "echo", "ok" })
         end,
       },
       hooks = {
@@ -184,7 +181,7 @@ hoge
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"cat", "not_found"})
+          return self.job_factory:create({ "cat", "not_found" })
         end,
       },
       hooks = {
@@ -217,7 +214,7 @@ bar]]
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"echo", "hoge"})
+          return self.job_factory:create({ "echo", "hoge" })
         end,
       },
     })
@@ -229,7 +226,7 @@ bar]]
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"invalid_cmd"})
+          return self.job_factory:create({ "invalid_cmd" })
         end,
       },
     })
@@ -244,7 +241,7 @@ bar]]
   end)
 
   it("raises error if the runner is not found", function()
-    local result = cmdhndlr.run({name = "invalid"})
+    local result = cmdhndlr.run({ name = "invalid" })
 
     assert.is_nil(result)
     assert.exists_message([[not found handler: normal_runner/invalid]])
@@ -253,7 +250,7 @@ bar]]
   it("raises error if the runner does not support range", function()
     vim.cmd("normal! v")
 
-    local result = cmdhndlr.run({name = "_test/no_range"})
+    local result = cmdhndlr.run({ name = "_test/no_range" })
 
     assert.is_nil(result)
     assert.exists_message([[`_test/no_range` runner does not support range]])
@@ -262,11 +259,11 @@ bar]]
   it("raises error if the runner raises no output error", function()
     helper.register_normal_runner("_test/no_output_error", {
       run_file = function()
-        return nil, {msg = "not found parser"}
+        return nil, { msg = "not found parser" }
       end,
     })
 
-    local result = cmdhndlr.run({name = "_test/no_output_error"})
+    local result = cmdhndlr.run({ name = "_test/no_output_error" })
 
     assert.is_nil(result)
     assert.exists_message([[not found parser]])
@@ -274,7 +271,7 @@ bar]]
   end)
 
   it("can use runner that is not supported range in nofile buffer", function()
-    cmdhndlr.run({name = "_test/no_range"})
+    cmdhndlr.run({ name = "_test/no_range" })
 
     assert.exists_pattern([[run_file]])
   end)
@@ -294,7 +291,7 @@ bar]]
   it("can open in tab", function()
     cmdhndlr.run({
       name = "_test/file",
-      layout = {type = "tab"},
+      layout = { type = "tab" },
       runner_opts = {
         f = function()
           return "tab"
@@ -303,11 +300,9 @@ bar]]
     })
     assert.tab_count(2)
   end)
-
 end)
 
 describe("cmdhndlr.test()", function()
-
   before_each(function()
     helper.before_each()
 
@@ -329,7 +324,7 @@ describe("cmdhndlr.test()", function()
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"echo", "ok"})
+          return self.job_factory:create({ "echo", "ok" })
         end,
       },
     })
@@ -346,7 +341,7 @@ describe("cmdhndlr.test()", function()
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"echo", "ok"})
+          return self.job_factory:create({ "echo", "ok" })
         end,
       },
       hooks = {
@@ -367,7 +362,7 @@ describe("cmdhndlr.test()", function()
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"cat", "not_found"})
+          return self.job_factory:create({ "cat", "not_found" })
         end,
       },
       hooks = {
@@ -382,7 +377,7 @@ describe("cmdhndlr.test()", function()
   end)
 
   it("can run default test runner", function()
-    cmdhndlr.setup({test_runner = {default = {[""] = "_test/file"}}})
+    cmdhndlr.setup({ test_runner = { default = { [""] = "_test/file" } } })
 
     cmdhndlr.test({
       runner_opts = {
@@ -417,7 +412,7 @@ bar]]
   end)
 
   it("raises error if the test runner is not found", function()
-    local result = cmdhndlr.test({name = "invalid"})
+    local result = cmdhndlr.test({ name = "invalid" })
 
     assert.is_nil(result)
     assert.exists_message([[not found handler: test_runner/invalid]])
@@ -434,11 +429,9 @@ bar]]
     })
     assert.exists_pattern([[test_runner specific error!]])
   end)
-
 end)
 
 describe("cmdhndlr.build()", function()
-
   before_each(function()
     helper.before_each()
 
@@ -460,7 +453,7 @@ describe("cmdhndlr.build()", function()
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"echo", "ok"})
+          return self.job_factory:create({ "echo", "ok" })
         end,
       },
     })
@@ -469,11 +462,9 @@ describe("cmdhndlr.build()", function()
     assert.exists_pattern("ok")
     assert.exists_message("SUCCESS")
   end)
-
 end)
 
 describe("cmdhndlr.retry()", function()
-
   before_each(function()
     helper.before_each()
 
@@ -495,7 +486,7 @@ describe("cmdhndlr.retry()", function()
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"echo", "ok"})
+          return self.job_factory:create({ "echo", "ok" })
         end,
       },
     })
@@ -512,7 +503,7 @@ describe("cmdhndlr.retry()", function()
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"echo", "ok"})
+          return self.job_factory:create({ "echo", "ok" })
         end,
       },
     })
@@ -532,11 +523,9 @@ describe("cmdhndlr.retry()", function()
     cmdhndlr.retry()
     assert.exists_message([[not cmdhndlr buffer]])
   end)
-
 end)
 
 describe("cmdhndlr.input()", function()
-
   before_each(function()
     helper.before_each()
 
@@ -558,12 +547,12 @@ describe("cmdhndlr.input()", function()
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"cat"})
+          return self.job_factory:create({ "cat" })
         end,
       },
     })
-    cmdhndlr.input("test_input", {name = "normal_runner/_test/file"})
-    cmdhndlr.input(vim.api.nvim_eval("\"\\<C-c>\""), {name = "normal_runner/_test/file"})
+    cmdhndlr.input("test_input", { name = "normal_runner/_test/file" })
+    cmdhndlr.input(vim.api.nvim_eval('"\\<C-c>"'), { name = "normal_runner/_test/file" })
 
     helper.wait(job)
 
@@ -580,20 +569,18 @@ describe("cmdhndlr.input()", function()
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({"echo"})
+          return self.job_factory:create({ "echo" })
         end,
       },
     })
     helper.wait(job)
 
-    cmdhndlr.input("test_input", {name = "normal_runner/_test/file"})
+    cmdhndlr.input("test_input", { name = "normal_runner/_test/file" })
     assert.exists_message([[not found running buffer]])
   end)
-
 end)
 
 describe("cmdhndlr.executed_runners()", function()
-
   before_each(function()
     helper.before_each()
 
@@ -627,7 +614,6 @@ describe("cmdhndlr.executed_runners()", function()
     local bufnr = vim.api.nvim_get_current_buf()
 
     local actual = cmdhndlr.executed_runners()
-    assert.same({{name = "normal_runner/_test/file", bufnr = bufnr, is_running = false}}, actual)
+    assert.same({ { name = "normal_runner/_test/file", bufnr = bufnr, is_running = false } }, actual)
   end)
-
 end)
