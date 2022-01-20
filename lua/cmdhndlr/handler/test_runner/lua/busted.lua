@@ -22,10 +22,12 @@ function M.run_position_scope(self, path, position)
     (arguments
         (string) @describe_name
         (function_definition
-            (function_call
-                (identifier) @describe_or_it (#any-of? @describe_or_it "describe" "it") (#set! @describe_or_it "ignore")
-                (arguments
-                    (string) @describe_or_it_name
+            (block
+                (function_call
+                    (identifier) @describe_or_it (#any-of? @describe_or_it "describe" "it") (#set! @describe_or_it "ignore")
+                    (arguments
+                        (string) @describe_or_it_name
+                    )
                 )
             )
         )
