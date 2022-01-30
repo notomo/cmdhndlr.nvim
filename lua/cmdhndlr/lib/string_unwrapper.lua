@@ -9,7 +9,7 @@ function StringUnwrapper.new(...)
     local adjust = e.adjust or function(s)
       return s
     end
-    return { head = e.head, tail = e.tail, adjust = adjust }
+    return { head = "^" .. e.head, tail = e.tail .. "$", adjust = adjust }
   end, { ... })
 
   local tbl = { _patterns = patterns }
