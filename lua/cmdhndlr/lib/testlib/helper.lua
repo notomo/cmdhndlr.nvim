@@ -26,10 +26,6 @@ function M.after_each()
   print(" ")
 end
 
-function M.use_parsers()
-  vim.o.runtimepath = M.root .. "/script/nvim-treesitter," .. vim.o.runtimepath
-end
-
 function M.set_lines(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end

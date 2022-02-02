@@ -259,14 +259,14 @@ bar]]
   it("raises error if the runner raises no output error", function()
     helper.register_normal_runner("_test/no_output_error", {
       run_file = function()
-        return nil, { msg = "not found parser" }
+        return nil, { msg = "not found" }
       end,
     })
 
     local result = cmdhndlr.run({ name = "_test/no_output_error" })
 
     assert.is_nil(result)
-    assert.exists_message([[not found parser]])
+    assert.exists_message([[not found]])
     assert.window_count(1)
   end)
 

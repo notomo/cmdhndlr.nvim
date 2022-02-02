@@ -3,7 +3,6 @@ local NormalRunner = require("cmdhndlr.core.normal_runner").NormalRunner
 local TestRunner = require("cmdhndlr.core.test_runner").TestRunner
 local BuildRunner = require("cmdhndlr.core.build_runner").BuildRunner
 local Hooks = require("cmdhndlr.core.hook").Hooks
-local ExecuteScope = require("cmdhndlr.core.execute_scope").ExecuteScope
 local custom = require("cmdhndlr.core.custom")
 local View = require("cmdhndlr.view").View
 local messagelib = require("cmdhndlr.lib.message")
@@ -91,13 +90,12 @@ function Command.test(opts)
     return nil, err
   end
 
-  local scope = ExecuteScope.new(opts.scope)
-  local result, exec_err = runner:execute(scope)
+  local result, exec_err = runner:execute(opts.filter)
   if exec_err ~= nil then
     return nil, exec_err
   end
   View.open(result, runner.working_dir, opts.layout)
-  Context.set(runner.path, result, runner_factory, { scope })
+  Context.set(runner.path, result, runner_factory, { opts.filter })
 
   return result:return_output()
 end
