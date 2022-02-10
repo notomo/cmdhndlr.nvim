@@ -1,33 +1,31 @@
-local Command = require("cmdhndlr.command").Command
-
 local M = {}
 
 function M.run(opts)
-  return Command.new("run", opts)
+  return require("cmdhndlr.command").run(opts)
 end
 
 function M.test(opts)
-  return Command.new("test", opts)
+  return require("cmdhndlr.command").test(opts)
 end
 
 function M.build(opts)
-  return Command.new("build", opts)
+  return require("cmdhndlr.command").build(opts)
 end
 
 function M.retry()
-  return Command.new("retry")
+  return require("cmdhndlr.command").retry()
 end
 
 function M.input(text, opts)
-  return Command.new("input", text, opts)
+  return require("cmdhndlr.command").input(text, opts)
 end
 
 function M.setup(config)
-  return Command.new("setup", config)
+  return require("cmdhndlr.command").setup(config)
 end
 
 function M.executed_runners()
-  return Command.new("executed_runners")
+  return require("cmdhndlr.command").executed_runners()
 end
 
 return M

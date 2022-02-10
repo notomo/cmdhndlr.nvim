@@ -25,9 +25,7 @@ function Context.set(path, result, runner_factory, args)
   local self = setmetatable(tbl, Context)
 
   repository:set(bufnr, self)
-  vim.cmd(
-    ([[autocmd BufWipeout <buffer=%s> lua require("cmdhndlr.command").Command.new("delete", %s)]]):format(bufnr, bufnr)
-  )
+  vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("cmdhndlr.command").delete(%s)]]):format(bufnr, bufnr))
 
   return self
 end

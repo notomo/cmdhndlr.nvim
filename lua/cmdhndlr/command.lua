@@ -1,36 +1,15 @@
+local ReturnValue = require("cmdhndlr.lib.error_handler").for_return_value()
+local ReturnError = require("cmdhndlr.lib.error_handler").for_return_error()
+
 local Context = require("cmdhndlr.core.context").Context
 local NormalRunner = require("cmdhndlr.core.normal_runner").NormalRunner
 local TestRunner = require("cmdhndlr.core.test_runner").TestRunner
 local BuildRunner = require("cmdhndlr.core.build_runner").BuildRunner
 local Hooks = require("cmdhndlr.core.hook").Hooks
-local custom = require("cmdhndlr.core.custom")
 local View = require("cmdhndlr.view").View
-local messagelib = require("cmdhndlr.lib.message")
-local modelib = require("cmdhndlr.lib.mode")
 local hookutil = require("cmdhndlr.util.hook")
 
-local M = {}
-
-local Command = {}
-Command.__index = Command
-M.Command = Command
-
-function Command.new(name, ...)
-  local args = { ... }
-  local f = function()
-    return Command[name](unpack(args))
-  end
-
-  local ok, result, msg = xpcall(f, debug.traceback)
-  if not ok then
-    return messagelib.error(result)
-  elseif msg then
-    return messagelib.warn(msg)
-  end
-  return result
-end
-
-function Command.run(opts)
+function ReturnValue.run(opts)
   vim.validate({ opts = { opts, "table", true } })
   opts = opts or {}
 
@@ -53,7 +32,7 @@ function Command.run(opts)
     return nil, err
   end
 
-  local range = modelib.visual_range()
+  local range = require("cmdhndlr.lib.mode").visual_range()
   local result, exec_err = runner:execute(range)
   if exec_err ~= nil then
     return nil, exec_err
@@ -64,7 +43,7 @@ function Command.run(opts)
   return result:return_output()
 end
 
-function Command.test(opts)
+function ReturnValue.test(opts)
   vim.validate({ opts = { opts, "table", true } })
   opts = opts or {}
 
@@ -100,7 +79,7 @@ function Command.test(opts)
   return result:return_output()
 end
 
-function Command.build(opts)
+function ReturnValue.build(opts)
   vim.validate({ opts = { opts, "table", true } })
   opts = opts or {}
 
@@ -136,7 +115,7 @@ function Command.build(opts)
   return result:return_output()
 end
 
-function Command.retry()
+function ReturnValue.retry()
   local ctx, err = Context.get()
   if err then
     return nil, "not cmdhndlr buffer: " .. err
@@ -157,7 +136,7 @@ function Command.retry()
   return result:return_output()
 end
 
-function Command.input(text, opts)
+function ReturnError.input(text, opts)
   vim.validate({ text = { text, "string" }, opts = { opts, "table", true } })
   opts = opts or {}
 
@@ -165,28 +144,28 @@ function Command.input(text, opts)
     return ctx.result:is_running()
   end)
   if err then
-    return nil, "not found running buffer: " .. err
+    return "not found running buffer: " .. err
   end
 
   local input_err = ctx.result:input(text)
   if input_err ~= nil then
-    return nil, input_err
+    return input_err
   end
-  messagelib.echo(("sent to %s: %s"):format(ctx.name, text))
+  require("cmdhndlr.lib.message").echo(("sent to %s: %s"):format(ctx.name, text))
 
-  return nil, nil
+  return nil
 end
 
-function Command.delete(bufnr)
-  return nil, Context.delete_from(bufnr)
+function ReturnError.delete(bufnr)
+  return Context.delete_from(bufnr)
 end
 
-function Command.setup(config)
+function ReturnError.setup(config)
   vim.validate({ config = { config, "table" } })
-  custom.set(config)
+  return require("cmdhndlr.core.custom").set(config)
 end
 
-function Command.executed_runners()
+function ReturnValue.executed_runners()
   local items = {}
   for _, ctx in ipairs(Context.all()) do
     table.insert(items, { name = ctx.name, bufnr = ctx.bufnr, is_running = ctx.result:is_running() })
@@ -194,4 +173,4 @@ function Command.executed_runners()
   return items
 end
 
-return M
+return vim.tbl_extend("force", ReturnValue:methods(), ReturnError:methods())
