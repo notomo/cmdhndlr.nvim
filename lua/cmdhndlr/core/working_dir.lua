@@ -4,25 +4,15 @@ local WorkingDir = {}
 WorkingDir.__index = WorkingDir
 M.WorkingDir = WorkingDir
 
-function WorkingDir.new(find_dir, find_marker)
+function WorkingDir.new(working_dir, marker)
   vim.validate({
-    find_dir = { find_dir, "function", true },
-    find_marker = { find_marker, "function", true },
+    working_dir = { working_dir, "string", true },
+    marker = { marker, "string", true },
   })
-
-  local marker
-  if find_marker then
-    marker = find_marker()
-  end
-
-  local working_dir = "."
-  if find_dir and not marker then
-    working_dir = find_dir()
-  elseif marker then
+  if marker then
     working_dir = vim.fn.fnamemodify(marker, ":h")
   end
-  vim.validate({ working_dir = { working_dir, "string" } })
-
+  working_dir = working_dir or "."
   local tbl = { _working_dir = working_dir, _marker = marker }
   return setmetatable(tbl, WorkingDir)
 end

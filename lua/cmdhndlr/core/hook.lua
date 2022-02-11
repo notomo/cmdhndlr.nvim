@@ -1,8 +1,5 @@
-local M = {}
-
 local Hooks = {}
 Hooks.__index = Hooks
-M.Hooks = Hooks
 
 function Hooks.new(on_success, on_failure)
   vim.validate({
@@ -31,4 +28,4 @@ function Hooks.info_factory()
   end
 end
 
-return M
+return Hooks

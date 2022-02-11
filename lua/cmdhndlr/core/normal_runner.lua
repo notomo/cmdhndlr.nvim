@@ -6,8 +6,8 @@ local M = {}
 local NormalRunner = {}
 M.NormalRunner = NormalRunner
 
-function NormalRunner.new(bufnr, ...)
-  local handler, err = Handler.new("normal_runner", bufnr, ...)
+function NormalRunner.new(opts)
+  local handler, err = Handler.new("normal_runner", opts)
   if err ~= nil then
     return nil, err
   end
@@ -16,7 +16,7 @@ function NormalRunner.new(bufnr, ...)
     run_string = { handler.run_string, "function", true },
   })
 
-  local tbl = { _bufnr = bufnr, _handler = handler }
+  local tbl = { _bufnr = opts.bufnr, _handler = handler }
   return setmetatable(tbl, NormalRunner)
 end
 

@@ -52,13 +52,13 @@ function JobFactory.new(output_bufnr, hooks, default_cwd, env)
     output_bufnr = { output_bufnr, "number" },
     hooks = { hooks, "table" },
     default_cwd = { default_cwd, "string" },
-    env = { env, "table", true },
+    env = { env, "table" },
   })
   local tbl = {
     _output_bufnr = output_bufnr,
     _default_cwd = default_cwd,
     _hooks = hooks,
-    _env = env or vim.empty_dict(),
+    _env = vim.tbl_isempty(env) and vim.empty_dict() or env,
   }
   return setmetatable(tbl, JobFactory)
 end

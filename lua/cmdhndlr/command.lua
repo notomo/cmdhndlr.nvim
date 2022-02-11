@@ -5,26 +5,12 @@ local Context = require("cmdhndlr.core.context").Context
 local NormalRunner = require("cmdhndlr.core.normal_runner").NormalRunner
 local TestRunner = require("cmdhndlr.core.test_runner").TestRunner
 local BuildRunner = require("cmdhndlr.core.build_runner").BuildRunner
-local Hooks = require("cmdhndlr.core.hook").Hooks
 local View = require("cmdhndlr.view").View
-local hookutil = require("cmdhndlr.util.hook")
 
-function ReturnValue.run(opts)
-  vim.validate({ opts = { opts, "table", true } })
-  opts = opts or {}
-
-  local bufnr = vim.api.nvim_get_current_buf()
-  local hooks = Hooks.from(opts.hooks)
+function ReturnValue.run(raw_opts)
+  local opts = require("cmdhndlr.core.option").RunOption.new(raw_opts)
   local runner_factory = function()
-    return NormalRunner.new(
-      bufnr,
-      opts.name,
-      hooks,
-      opts.working_dir,
-      opts.working_dir_marker,
-      opts.env,
-      opts.runner_opts
-    )
+    return NormalRunner.new(opts)
   end
 
   local runner, err = runner_factory()
@@ -43,25 +29,10 @@ function ReturnValue.run(opts)
   return result:return_output()
 end
 
-function ReturnValue.test(opts)
-  vim.validate({ opts = { opts, "table", true } })
-  opts = opts or {}
-
-  local bufnr = vim.api.nvim_get_current_buf()
-  local hooks = Hooks.from(opts.hooks, {
-    success = hookutil.echo_success(),
-    failure = hookutil.echo_failure(),
-  })
+function ReturnValue.test(raw_opts)
+  local opts = require("cmdhndlr.core.option").TestOption.new(raw_opts)
   local runner_factory = function()
-    return TestRunner.new(
-      bufnr,
-      opts.name,
-      hooks,
-      opts.working_dir,
-      opts.working_dir_marker,
-      opts.env,
-      opts.runner_opts
-    )
+    return TestRunner.new(opts)
   end
 
   local runner, err = runner_factory()
@@ -79,25 +50,10 @@ function ReturnValue.test(opts)
   return result:return_output()
 end
 
-function ReturnValue.build(opts)
-  vim.validate({ opts = { opts, "table", true } })
-  opts = opts or {}
-
-  local bufnr = vim.api.nvim_get_current_buf()
-  local hooks = Hooks.from(opts.hooks, {
-    success = hookutil.echo_success(),
-    failure = hookutil.echo_failure(),
-  })
+function ReturnValue.build(raw_opts)
+  local opts = require("cmdhndlr.core.option").BuildOption.new(raw_opts)
   local runner_factory = function()
-    return BuildRunner.new(
-      bufnr,
-      opts.name,
-      hooks,
-      opts.working_dir,
-      opts.working_dir_marker,
-      opts.env,
-      opts.runner_opts
-    )
+    return BuildRunner.new(opts)
   end
 
   local runner, err = runner_factory()

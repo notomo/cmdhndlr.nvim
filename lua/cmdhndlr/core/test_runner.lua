@@ -5,8 +5,8 @@ local M = {}
 local TestRunner = {}
 M.TestRunner = TestRunner
 
-function TestRunner.new(bufnr, ...)
-  local handler, err = Handler.new("test_runner", bufnr, ...)
+function TestRunner.new(opts)
+  local handler, err = Handler.new("test_runner", opts)
   if err ~= nil then
     return nil, err
   end
@@ -15,7 +15,7 @@ function TestRunner.new(bufnr, ...)
   })
 
   local tbl = {
-    _bufnr = bufnr,
+    _bufnr = opts.bufnr,
     _handler = handler,
   }
   return setmetatable(tbl, TestRunner)
@@ -25,11 +25,12 @@ function TestRunner.__index(self, k)
   return rawget(TestRunner, k) or self._handler[k]
 end
 
-function TestRunner.execute(self, filter)
-  vim.validate({ filter = { filter, "string", true } })
+function TestRunner.execute(self, raw_filter)
+  vim.validate({ raw_filter = { raw_filter, "string" } })
   local path = vim.api.nvim_buf_get_name(self._bufnr)
 
   local info_factory = self:info_factory()
+  local filter = raw_filter ~= "" and raw_filter or nil
   local output, err = self:run_file(path, filter)
 
   return self:result(info_factory, output, err)

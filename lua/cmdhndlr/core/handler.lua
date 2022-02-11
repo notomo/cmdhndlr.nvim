@@ -11,24 +11,19 @@ M.registered = {}
 local Handler = { registered = {} }
 M.Handler = Handler
 
-function Handler.new(typ, bufnr, name, hooks, raw_working_dir, raw_working_dir_marker, env, opts)
+function Handler.new(typ, opts)
   vim.validate({
     type = { typ, "string" },
-    bufnr = { bufnr, "number" },
-    name = { name, "string", true },
-    hooks = { hooks, "table" },
-    working_dir = { raw_working_dir, "function", true },
-    working_dir_marker = { raw_working_dir_marker, "function", true },
-    env = { env, "table", true },
-    opts = { opts, "table", true },
+    opts = { opts, "table" },
   })
 
-  local filetype = vim.bo[bufnr].filetype
+  local filetype = vim.bo[opts.bufnr].filetype
   local default = require("cmdhndlr.core.custom").config[typ].default[filetype]
-  if not name and default ~= nil then
+  local name = opts.name
+  if name == "" and default ~= nil then
     name = default
   end
-  if not name then
+  if name == "" then
     return nil, "no handler"
   end
 
@@ -37,21 +32,28 @@ function Handler.new(typ, bufnr, name, hooks, raw_working_dir, raw_working_dir_m
   if err then
     return nil, err
   end
+  handler.opts = handler.opts or {}
+  handler.working_dir = handler.working_dir or function()
+    return nil
+  end
+  handler.working_dir_marker = handler.working_dir_marker or function()
+    return nil
+  end
 
   local working_dir = WorkingDir.new(
-    raw_working_dir or handler.working_dir,
-    raw_working_dir_marker or handler.working_dir_marker
+    opts.working_dir() or handler.working_dir(),
+    opts.working_dir_marker() or handler.working_dir_marker()
   )
   local output_bunfr = vim.api.nvim_create_buf(false, true)
   local tbl = {
     name = name,
     path = M._path(typ, name),
-    opts = vim.tbl_extend("force", handler.opts or {}, opts or {}),
-    job_factory = JobFactory.new(output_bunfr, hooks, working_dir:get(), env),
+    opts = vim.tbl_extend("force", handler.opts, opts.runner_opts),
+    job_factory = JobFactory.new(output_bunfr, opts.hooks, working_dir:get(), opts.env),
     working_dir = working_dir,
     filelib = filelib,
     _handler = handler,
-    _hooks = hooks,
+    _hooks = opts.hooks,
     _output_bufnr = output_bunfr,
   }
   return setmetatable(tbl, Handler), nil

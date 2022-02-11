@@ -5,14 +5,14 @@ local M = {}
 local BuildRunner = {}
 M.BuildRunner = BuildRunner
 
-function BuildRunner.new(bufnr, ...)
-  local handler, err = Handler.new("build_runner", bufnr, ...)
+function BuildRunner.new(opts)
+  local handler, err = Handler.new("build_runner", opts)
   if err ~= nil then
     return nil, err
   end
   vim.validate({ build = { handler.build, "function" } })
 
-  local tbl = { _bufnr = bufnr, _handler = handler }
+  local tbl = { _bufnr = opts.bufnr, _handler = handler }
   return setmetatable(tbl, BuildRunner)
 end
 

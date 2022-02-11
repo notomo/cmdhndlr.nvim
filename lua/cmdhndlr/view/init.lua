@@ -11,9 +11,8 @@ function View.open(result, working_dir, layout_opts)
   vim.validate({
     result = { result, "table" },
     working_dir = { working_dir, "table" },
-    layout_opts = { layout_opts, "table", true },
+    layout_opts = { layout_opts, "table" },
   })
-  layout_opts = layout_opts or { type = "horizontal" }
 
   local bufnr = result.bufnr
   vim.bo[bufnr].filetype = "cmdhndlr"
