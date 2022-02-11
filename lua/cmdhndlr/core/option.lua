@@ -10,7 +10,10 @@ local default = {
     return nil
   end,
   env = {},
-  hooks = {},
+  hooks = {
+    success = function() end,
+    failure = function() end,
+  },
   runner_opts = {},
   layout = { type = "horizontal" },
 }
@@ -24,7 +27,7 @@ local new = function(defalt_opts, raw_opts)
     opts.bufnr = vim.api.nvim_get_current_buf()
   end
 
-  opts.hooks = require("cmdhndlr.core.hook").from(opts.hooks)
+  opts.hooks = require("cmdhndlr.core.hooks").new(opts.hooks)
 
   return opts
 end
