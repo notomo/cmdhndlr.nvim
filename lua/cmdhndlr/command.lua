@@ -2,15 +2,12 @@ local ReturnValue = require("cmdhndlr.lib.error_handler").for_return_value()
 local ReturnError = require("cmdhndlr.lib.error_handler").for_return_error()
 
 local Context = require("cmdhndlr.core.context").Context
-local NormalRunner = require("cmdhndlr.core.normal_runner").NormalRunner
-local TestRunner = require("cmdhndlr.core.test_runner").TestRunner
-local BuildRunner = require("cmdhndlr.core.build_runner").BuildRunner
 local View = require("cmdhndlr.view").View
 
 function ReturnValue.run(raw_opts)
   local opts = require("cmdhndlr.core.option").RunOption.new(raw_opts)
   local runner_factory = function()
-    return NormalRunner.new(opts)
+    return require("cmdhndlr.core.runner.normal_runner").NormalRunner.new(opts)
   end
 
   local runner, err = runner_factory()
@@ -32,7 +29,7 @@ end
 function ReturnValue.test(raw_opts)
   local opts = require("cmdhndlr.core.option").TestOption.new(raw_opts)
   local runner_factory = function()
-    return TestRunner.new(opts)
+    return require("cmdhndlr.core.runner.test_runner").TestRunner.new(opts)
   end
 
   local runner, err = runner_factory()
@@ -53,7 +50,7 @@ end
 function ReturnValue.build(raw_opts)
   local opts = require("cmdhndlr.core.option").BuildOption.new(raw_opts)
   local runner_factory = function()
-    return BuildRunner.new(opts)
+    return require("cmdhndlr.core.runner.build_runner").BuildRunner.new(opts)
   end
 
   local runner, err = runner_factory()

@@ -43,15 +43,15 @@ function M.search(pattern)
 end
 
 function M.register_normal_runner(name, handler)
-  require("cmdhndlr.core.handler").register("normal_runner", name, handler)
+  require("cmdhndlr.core.runner.handler").register("normal_runner", name, handler)
 end
 
 function M.register_test_runner(name, handler)
-  require("cmdhndlr.core.handler").register("test_runner", name, handler)
+  require("cmdhndlr.core.runner.handler").register("test_runner", name, handler)
 end
 
 function M.register_build_runner(name, handler)
-  require("cmdhndlr.core.handler").register("build_runner", name, handler)
+  require("cmdhndlr.core.runner.handler").register("build_runner", name, handler)
 end
 
 function M.wait(job)

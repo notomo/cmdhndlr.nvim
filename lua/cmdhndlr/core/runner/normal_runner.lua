@@ -1,5 +1,4 @@
-local BufferRange = require("cmdhndlr.core.buffer_range").BufferRange
-local Handler = require("cmdhndlr.core.handler").Handler
+local Handler = require("cmdhndlr.core.runner.handler").Handler
 
 local M = {}
 
@@ -43,7 +42,7 @@ function NormalRunner._run_range(self, range)
     return nil, { msg = ("`%s` runner does not support range"):format(self.name) }
   end
 
-  local str = BufferRange.new(self._bufnr, range):to_string()
+  local str = require("cmdhndlr.lib.buffer_range").new(self._bufnr, range):to_string()
   return self:run_string(str)
 end
 
@@ -53,7 +52,7 @@ function NormalRunner._run_buffer(self)
     return self:run_file(path)
   end
 
-  local str = BufferRange.entire(self._bufnr):to_string()
+  local str = require("cmdhndlr.lib.buffer_range").entire(self._bufnr):to_string()
   if self.run_string then
     return self:run_string(str)
   end

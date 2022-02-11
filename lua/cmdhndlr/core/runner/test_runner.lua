@@ -1,4 +1,4 @@
-local Handler = require("cmdhndlr.core.handler").Handler
+local Handler = require("cmdhndlr.core.runner.handler").Handler
 
 local M = {}
 
