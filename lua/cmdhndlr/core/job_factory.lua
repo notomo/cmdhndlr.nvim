@@ -80,6 +80,7 @@ function JobFactory.create(self, cmd, opts)
     end
   end
 
+  self._hooks.pre_execute(cmd, opts)
   return Job.new(cmd, opts, self._output_bufnr)
 end
 

@@ -151,6 +151,7 @@ hoge
     helper.wait(job)
 
     assert.exists_pattern("ok")
+    assert.exists_message("STARTING: echo ok")
   end)
 
   it("can hook async command success", function()
@@ -193,6 +194,27 @@ hoge
     helper.wait(job)
 
     assert.is_true(hooked)
+  end)
+
+  it("can hook async command pre_execute", function()
+    local executed
+
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({ "echo", "ok" })
+        end,
+      },
+      hooks = {
+        pre_execute = function(cmd)
+          executed = cmd
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.is_same({ "echo", "ok" }, executed)
   end)
 
   it("moves cursor to the bottom with sync command", function()
@@ -331,6 +353,7 @@ describe("cmdhndlr.test()", function()
     helper.wait(job)
 
     assert.exists_pattern("ok")
+    assert.exists_message("STARTING: echo ok")
     assert.exists_message("SUCCESS")
   end)
 
@@ -374,6 +397,27 @@ describe("cmdhndlr.test()", function()
     helper.wait(job)
 
     assert.is_true(hooked)
+  end)
+
+  it("can hook async command pre_execute", function()
+    local executed
+
+    local job = cmdhndlr.test({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({ "echo", "ok" })
+        end,
+      },
+      hooks = {
+        pre_execute = function(cmd)
+          executed = cmd
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.is_same({ "echo", "ok" }, executed)
   end)
 
   it("can run default test runner", function()
@@ -460,6 +504,7 @@ describe("cmdhndlr.build()", function()
     helper.wait(job)
 
     assert.exists_pattern("ok")
+    assert.exists_message("STARTING: echo ok")
     assert.exists_message("SUCCESS")
   end)
 end)

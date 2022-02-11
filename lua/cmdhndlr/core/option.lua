@@ -13,6 +13,7 @@ local default = {
   hooks = {
     success = function() end,
     failure = function() end,
+    pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
   },
   runner_opts = {},
   layout = { type = "horizontal" },
@@ -45,6 +46,7 @@ TestOption.default = vim.deepcopy(default)
 TestOption.default.hooks = {
   success = require("cmdhndlr.util.hook").echo_success(),
   failure = require("cmdhndlr.util.hook").echo_failure(),
+  pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
 }
 TestOption.default.filter = ""
 function TestOption.new(raw_opts)
@@ -57,6 +59,7 @@ M.BuildOption.default = vim.deepcopy(default)
 BuildOption.default.hooks = {
   success = require("cmdhndlr.util.hook").echo_success(),
   failure = require("cmdhndlr.util.hook").echo_failure(),
+  pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
 }
 function BuildOption.new(raw_opts)
   return new(BuildOption.default, raw_opts)

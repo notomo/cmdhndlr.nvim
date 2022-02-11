@@ -19,4 +19,28 @@ function M.echo_failure()
   end
 end
 
+local tbl_to_msg = function(cmd)
+  local parts = {}
+  for _, c in ipairs(cmd) do
+    if c:find("%s") then
+      table.insert(parts, "'" .. c .. "'")
+    else
+      table.insert(parts, c)
+    end
+  end
+  return table.concat(parts, " ")
+end
+
+function M.echo_cmd()
+  return function(cmd)
+    local msg
+    if type(cmd) == "table" then
+      msg = tbl_to_msg(cmd)
+    else
+      msg = cmd
+    end
+    messagelib.echo("STARTING: " .. msg)
+  end
+end
+
 return M
