@@ -2,12 +2,9 @@ local Layout = require("cmdhndlr.view.layout").Layout
 local cursorlib = require("cmdhndlr.lib.cursor")
 
 local M = {}
+M.__index = M
 
-local View = {}
-View.__index = View
-M.View = View
-
-function View.open(result, working_dir, layout_opts)
+function M.open(result, working_dir, layout_opts)
   vim.validate({
     result = { result, "table" },
     working_dir = { working_dir, "table" },
@@ -20,14 +17,14 @@ function View.open(result, working_dir, layout_opts)
   working_dir:set_current()
 
   local tbl = { _bufnr = bufnr, _window_id = vim.api.nvim_get_current_win() }
-  local self = setmetatable(tbl, View)
+  local self = setmetatable(tbl, M)
 
   self:_set_lines(result.output)
 
   return self
 end
 
-function View._set_lines(self, output)
+function M._set_lines(self, output)
   vim.validate({ output = { output, "string", true } })
   if output then
     vim.bo[self._bufnr].modifiable = true

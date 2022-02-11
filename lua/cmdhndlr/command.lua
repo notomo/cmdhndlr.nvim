@@ -1,29 +1,30 @@
 local ReturnValue = require("cmdhndlr.lib.error_handler").for_return_value()
 local ReturnError = require("cmdhndlr.lib.error_handler").for_return_error()
-
 local Context = require("cmdhndlr.core.context").Context
-local View = require("cmdhndlr.view").View
+
+local execute_runner = function(runner_factory, args, layout)
+  local runner, err = runner_factory()
+  if err ~= nil then
+    return nil, err
+  end
+
+  local result, exec_err = runner:execute(unpack(args))
+  if exec_err ~= nil then
+    return nil, exec_err
+  end
+  require("cmdhndlr.view").open(result, runner.working_dir, layout)
+  Context.set(runner.path, result, runner_factory, args)
+
+  return result:return_output()
+end
 
 function ReturnValue.run(raw_opts)
   local opts = require("cmdhndlr.core.option").RunOption.new(raw_opts)
   local runner_factory = function()
     return require("cmdhndlr.core.runner.normal_runner").NormalRunner.new(opts)
   end
-
-  local runner, err = runner_factory()
-  if err ~= nil then
-    return nil, err
-  end
-
   local range = require("cmdhndlr.lib.mode").visual_range()
-  local result, exec_err = runner:execute(range)
-  if exec_err ~= nil then
-    return nil, exec_err
-  end
-  View.open(result, runner.working_dir, opts.layout)
-  Context.set(runner.path, result, runner_factory, { range })
-
-  return result:return_output()
+  return execute_runner(runner_factory, { range }, opts.layout)
 end
 
 function ReturnValue.test(raw_opts)
@@ -31,20 +32,7 @@ function ReturnValue.test(raw_opts)
   local runner_factory = function()
     return require("cmdhndlr.core.runner.test_runner").TestRunner.new(opts)
   end
-
-  local runner, err = runner_factory()
-  if err ~= nil then
-    return nil, err
-  end
-
-  local result, exec_err = runner:execute(opts.filter)
-  if exec_err ~= nil then
-    return nil, exec_err
-  end
-  View.open(result, runner.working_dir, opts.layout)
-  Context.set(runner.path, result, runner_factory, { opts.filter })
-
-  return result:return_output()
+  return execute_runner(runner_factory, { opts.filter }, opts.layout)
 end
 
 function ReturnValue.build(raw_opts)
@@ -52,20 +40,7 @@ function ReturnValue.build(raw_opts)
   local runner_factory = function()
     return require("cmdhndlr.core.runner.build_runner").BuildRunner.new(opts)
   end
-
-  local runner, err = runner_factory()
-  if err ~= nil then
-    return nil, err
-  end
-
-  local result, exec_err = runner:execute()
-  if exec_err ~= nil then
-    return nil, exec_err
-  end
-  View.open(result, runner.working_dir, opts.layout)
-  Context.set(runner.path, result, runner_factory)
-
-  return result:return_output()
+  return execute_runner(runner_factory, {}, opts.layout)
 end
 
 function ReturnValue.retry()
@@ -73,20 +48,7 @@ function ReturnValue.retry()
   if err then
     return nil, "not cmdhndlr buffer: " .. err
   end
-
-  local runner, factory_err = ctx.runner_factory()
-  if factory_err ~= nil then
-    return nil, factory_err
-  end
-
-  local result, exec_err = runner:execute(unpack(ctx.args))
-  if exec_err ~= nil then
-    return nil, exec_err
-  end
-  View.open(result, runner.working_dir, { type = "no" })
-  Context.set(runner.path, result, ctx.runner_factory, ctx.args)
-
-  return result:return_output()
+  return execute_runner(ctx.runner_factory, ctx.args, { type = "no" })
 end
 
 function ReturnError.input(text, opts)
