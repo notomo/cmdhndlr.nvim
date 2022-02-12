@@ -2,11 +2,12 @@ local M = {}
 
 M.cmd = "busted"
 
-function M.run_file(self, path, filter)
+function M.run_file(self, path, filter, is_leaf)
   local cmd = { self.cmd }
   if filter then
     filter = filter:gsub("%(", "%%("):gsub("%)", "%%)"):gsub("%-", "%%-")
-    vim.list_extend(cmd, { "--filter", filter })
+    local suffix = is_leaf and "$" or ""
+    vim.list_extend(cmd, { "--filter", filter .. suffix })
   end
   table.insert(cmd, path)
   return self.job_factory:create(cmd)

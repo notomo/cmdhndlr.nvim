@@ -1,9 +1,10 @@
 local M = {}
 
-function M.run_file(self, path, filter)
+function M.run_file(self, path, filter, is_leaf)
   local cmd = { "npx", "jest" }
   if filter then
-    table.insert(cmd, "--testNamePattern=" .. filter)
+    local suffix = is_leaf and "$" or ""
+    table.insert(cmd, "--testNamePattern=" .. filter .. suffix)
   end
   table.insert(cmd, path)
   return self.job_factory:create(cmd)

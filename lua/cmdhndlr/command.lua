@@ -32,7 +32,7 @@ function ReturnValue.test(raw_opts)
   local runner_factory = function()
     return require("cmdhndlr.core.runner.test_runner").TestRunner.new(opts)
   end
-  return execute_runner(runner_factory, { opts.filter }, opts.layout)
+  return execute_runner(runner_factory, { opts.filter, opts.is_leaf }, opts.layout)
 end
 
 function ReturnValue.build(raw_opts)

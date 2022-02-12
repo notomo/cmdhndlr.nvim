@@ -49,6 +49,7 @@ TestOption.default.hooks = {
   pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
 }
 TestOption.default.filter = ""
+TestOption.default.is_leaf = false
 function TestOption.new(raw_opts)
   return new(TestOption.default, raw_opts)
 end
