@@ -71,10 +71,6 @@ function ReturnError.input(text, opts)
   return nil
 end
 
-function ReturnError.delete(bufnr)
-  return Context.delete_from(bufnr)
-end
-
 function ReturnError.setup(config)
   vim.validate({ config = { config, "table" } })
   return require("cmdhndlr.core.custom").set(config)

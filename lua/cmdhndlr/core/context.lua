@@ -25,7 +25,12 @@ function Context.set(path, result, runner_factory, args)
   local self = setmetatable(tbl, Context)
 
   repository:set(bufnr, self)
-  vim.cmd(([[autocmd BufWipeout <buffer=%s> lua require("cmdhndlr.command").delete(%s)]]):format(bufnr, bufnr))
+  vim.api.nvim_create_autocmd({ "BufWipeout" }, {
+    buffer = bufnr,
+    callback = function()
+      repository:delete(bufnr)
+    end,
+  })
 
   return self
 end
@@ -38,18 +43,6 @@ function Context.get(bufnr)
     return nil, "no context"
   end
   return ctx, nil
-end
-
-function Context.delete(self)
-  repository:delete(self.result.bufnr)
-end
-
-function Context.delete_from(bufnr)
-  local ctx, err = Context.get(bufnr)
-  if err ~= nil then
-    return err
-  end
-  return ctx:delete()
 end
 
 function Context.find(name, predicate)
