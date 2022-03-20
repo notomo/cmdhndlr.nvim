@@ -1,10 +1,11 @@
 local helper = require("cmdhndlr.lib.testlib.helper")
 local cmdhndlr = helper.require("cmdhndlr")
-local handler_name = "shell/bash"
 
-describe(handler_name .. " runner", function()
+describe("shell/bash runner", function()
   before_each(helper.before_each)
   after_each(helper.after_each)
+
+  local handler_name = "shell/bash"
 
   it("can run buffer source", function()
     helper.set_lines([[

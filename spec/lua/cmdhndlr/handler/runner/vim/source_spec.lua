@@ -1,10 +1,11 @@
 local helper = require("cmdhndlr.lib.testlib.helper")
 local cmdhndlr = helper.require("cmdhndlr")
-local handler_name = "vim/source"
 
-describe(handler_name .. " runner", function()
+describe("vim/source runner", function()
   before_each(helper.before_each)
   after_each(helper.after_each)
+
+  local handler_name = "vim/source"
 
   it("can run buffer source", function()
     helper.set_lines([[
