@@ -13,7 +13,8 @@ print("lua")
 print("lua")
 ]])
 
-    cmdhndlr.run({ name = handler_name })
+    local job = cmdhndlr.run({ name = handler_name })
+    helper.wait(job)
 
     assert.exists_pattern([[
 lua
@@ -27,7 +28,8 @@ print("lua")
 ]])
     vim.cmd("normal! v$")
 
-    cmdhndlr.run({ name = handler_name })
+    local job = cmdhndlr.run({ name = handler_name })
+    helper.wait(job)
 
     assert.exists_pattern([[
 lua]])
@@ -38,7 +40,8 @@ lua]])
 error("error!")
 ]])
 
-    cmdhndlr.run({ name = handler_name })
+    local job = cmdhndlr.run({ name = handler_name })
+    helper.wait(job)
 
     assert.exists_pattern([[
 error!]])

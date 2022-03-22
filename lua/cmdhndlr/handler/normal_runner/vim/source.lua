@@ -1,19 +1,12 @@
 local M = {}
 
 function M.run_file(self, path)
-  local ok, result = pcall(vim.api.nvim_exec, "source " .. self.filelib.escape(path), true)
-  if not ok then
-    return nil, result
-  end
-  return result, nil
+  return self.job_factory:create({ "nvim", "--headless", "+source " .. path, "+quitall!" })
 end
 
-function M.run_string(_, str)
-  local ok, result = pcall(vim.api.nvim_exec, str, true)
-  if not ok then
-    return nil, result
-  end
-  return result, nil
+function M.run_string(self, str)
+  local path = self.filelib.temporary(str)
+  return self:run_file(path)
 end
 
 return M

@@ -13,7 +13,8 @@ echomsg 'source'
 echomsg 'source'
 ]])
 
-    cmdhndlr.run({ name = handler_name })
+    local job = cmdhndlr.run({ name = handler_name })
+    helper.wait(job)
 
     assert.exists_pattern([[
 source
@@ -27,7 +28,8 @@ echomsg 'source'
 ]])
     vim.cmd("normal! v$")
 
-    cmdhndlr.run({ name = handler_name })
+    local job = cmdhndlr.run({ name = handler_name })
+    helper.wait(job)
 
     assert.exists_pattern([[
 source]])
@@ -38,7 +40,8 @@ source]])
 echoerr 'error!'
 ]])
 
-    cmdhndlr.run({ name = handler_name })
+    local job = cmdhndlr.run({ name = handler_name })
+    helper.wait(job)
 
     assert.exists_pattern([[
 error!]])
