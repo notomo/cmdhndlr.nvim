@@ -11,19 +11,15 @@ function M.warn(msg)
   vim.api.nvim_echo({ { M.wrap(msg), "WarningMsg" } }, true, {})
 end
 
+function M.info(msg, hl_group)
+  vim.api.nvim_echo({ { M.wrap(msg), hl_group } }, true, {})
+end
+
 function M.wrap(msg)
   if type(msg) == "string" then
     return prefix .. msg
   end
   return prefix .. vim.inspect(msg)
-end
-
-function M.echo(msg, hl_group)
-  local chunk = { M.wrap(msg) }
-  if hl_group then
-    table.insert(chunk, hl_group)
-  end
-  vim.api.nvim_echo({ chunk }, true, {})
 end
 
 return M

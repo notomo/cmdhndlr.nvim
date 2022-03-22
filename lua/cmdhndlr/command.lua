@@ -1,5 +1,5 @@
-local ReturnValue = require("cmdhndlr.lib.error_handler").for_return_value()
-local ReturnError = require("cmdhndlr.lib.error_handler").for_return_error()
+local ReturnValue = require("cmdhndlr.vendor.error_handler").for_return_value()
+local ShowError = require("cmdhndlr.vendor.error_handler").for_show_error()
 local Context = require("cmdhndlr.core.context").Context
 
 local execute_runner = function(runner_factory, args, layout)
@@ -51,7 +51,7 @@ function ReturnValue.retry()
   return execute_runner(ctx.runner_factory, ctx.args, { type = "no" })
 end
 
-function ReturnError.input(text, opts)
+function ShowError.input(text, opts)
   vim.validate({ text = { text, "string" }, opts = { opts, "table", true } })
   opts = opts or {}
 
@@ -66,12 +66,12 @@ function ReturnError.input(text, opts)
   if input_err ~= nil then
     return input_err
   end
-  require("cmdhndlr.lib.message").echo(("sent to %s: %s"):format(ctx.name, text))
+  require("cmdhndlr.vendor.message").info(("sent to %s: %s"):format(ctx.name, text))
 
   return nil
 end
 
-function ReturnError.setup(config)
+function ShowError.setup(config)
   vim.validate({ config = { config, "table" } })
   return require("cmdhndlr.core.custom").set(config)
 end
@@ -84,4 +84,4 @@ function ReturnValue.executed_runners()
   return items
 end
 
-return vim.tbl_extend("force", ReturnValue:methods(), ReturnError:methods())
+return vim.tbl_extend("force", ReturnValue:methods(), ShowError:methods())

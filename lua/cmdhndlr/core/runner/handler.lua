@@ -1,7 +1,7 @@
 local JobFactory = require("cmdhndlr.core.job_factory").JobFactory
 local WorkingDir = require("cmdhndlr.core.working_dir").WorkingDir
 local RunnerResult = require("cmdhndlr.core.runner_result").RunnerResult
-local modulelib = require("cmdhndlr.lib.module")
+local modulelib = require("cmdhndlr.vendor.module")
 local filelib = require("cmdhndlr.lib.file")
 
 local M = {}
