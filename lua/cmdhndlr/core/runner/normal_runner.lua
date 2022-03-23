@@ -38,7 +38,7 @@ end
 
 function NormalRunner._run_range(self, range)
   if not self.run_string then
-    return nil, { msg = ("`%s` runner does not support range"):format(self.name) }
+    return nil, ("`%s` runner does not support range"):format(self.name)
   end
 
   local str = require("cmdhndlr.lib.buffer_range").new(self._bufnr, range):to_string()

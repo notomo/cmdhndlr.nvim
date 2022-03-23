@@ -46,7 +46,7 @@ end
 function ReturnValue.retry()
   local ctx, err = Context.get()
   if err then
-    return nil, "not cmdhndlr buffer: " .. err
+    return nil, err
   end
   return execute_runner(ctx.runner_factory, ctx.args, { type = "no" })
 end

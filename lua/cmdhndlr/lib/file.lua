@@ -4,12 +4,13 @@ function M.temporary(str)
   vim.validate({ str = { str, "string", true } })
 
   local path = vim.fn.tempname()
-  local f = io.open(path, "w")
-  if str then
-    f:write(str)
+  if not str then
+    return path
   end
-  f:close()
 
+  local f = io.open(path, "w")
+  f:write(str)
+  f:close()
   return path
 end
 

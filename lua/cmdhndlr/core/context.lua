@@ -40,7 +40,7 @@ function Context.get(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local ctx = repository:get(bufnr)
   if not ctx then
-    return nil, "no context"
+    return nil, "no cmdhndlr buffer: " .. bufnr
   end
   return ctx, nil
 end

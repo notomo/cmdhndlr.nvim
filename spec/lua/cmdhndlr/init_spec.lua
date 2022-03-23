@@ -478,7 +478,7 @@ describe("cmdhndlr.retry()", function()
 
   it("raises error if not plugin buffer", function()
     cmdhndlr.retry()
-    assert.exists_message([[not cmdhndlr buffer]])
+    assert.exists_message([[no cmdhndlr buffer]])
   end)
 end)
 

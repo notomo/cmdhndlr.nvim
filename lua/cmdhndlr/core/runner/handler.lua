@@ -78,7 +78,7 @@ end
 
 function Handler.result(self, output, err)
   if err ~= nil then
-    return nil, err.msg or err
+    return nil, err
   end
   return RunnerResult.new(self._output_bufnr, output), nil
 end
