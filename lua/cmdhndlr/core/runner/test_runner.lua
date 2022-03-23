@@ -29,11 +29,10 @@ function TestRunner.execute(self, raw_filter, is_leaf)
   vim.validate({ raw_filter = { raw_filter, "string" }, is_leaf = { is_leaf, "boolean" } })
   local path = vim.api.nvim_buf_get_name(self._bufnr)
 
-  local info_factory = self:info_factory()
   local filter = raw_filter ~= "" and raw_filter or nil
   local output, err = self:run_file(path, filter, is_leaf)
 
-  return self:result(info_factory, output, err)
+  return self:result(output, err)
 end
 
 return M

@@ -15,7 +15,7 @@ local execute_runner = function(runner_factory, args, layout)
   require("cmdhndlr.view").open(result, runner.working_dir, layout)
   Context.set(runner.path, result, runner_factory, args)
 
-  return result:return_output()
+  return result
 end
 
 function ReturnValue.run(raw_opts)

@@ -1,6 +1,6 @@
 local JobFactory = require("cmdhndlr.core.job_factory").JobFactory
 local WorkingDir = require("cmdhndlr.core.working_dir").WorkingDir
-local RunnerResult = require("cmdhndlr.core.runner_result").RunnerResult
+local RunnerResult = require("cmdhndlr.core.runner_result")
 local modulelib = require("cmdhndlr.vendor.module")
 local filelib = require("cmdhndlr.lib.file")
 
@@ -53,7 +53,6 @@ function Handler.new(typ, opts)
     working_dir = working_dir,
     filelib = filelib,
     _handler = handler,
-    _hooks = opts.hooks,
     _output_bufnr = output_bunfr,
   }
   return setmetatable(tbl, Handler), nil
@@ -77,19 +76,11 @@ function Handler.__index(self, k)
   return rawget(Handler, k) or self._handler[k]
 end
 
-function Handler.result(self, info_factory, output, err)
-  local info = info_factory()
+function Handler.result(self, output, err)
   if err ~= nil then
-    if type(err) == "table" then
-      return nil, err.msg
-    end
-    return RunnerResult.error(self._output_bufnr, self._hooks, info, err), nil
+    return nil, err.msg or err
   end
-  return RunnerResult.ok(self._output_bufnr, self._hooks, info, output), nil
-end
-
-function Handler.info_factory(self)
-  return self._hooks:info_factory()
+  return RunnerResult.new(self._output_bufnr, output), nil
 end
 
 function M._path(typ, name)
