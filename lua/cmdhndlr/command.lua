@@ -51,15 +51,13 @@ function ReturnValue.retry()
   return execute_runner(ctx.runner_factory, ctx.args, { type = "no" })
 end
 
-function ShowError.input(text, opts)
-  vim.validate({ text = { text, "string" }, opts = { opts, "table", true } })
-  opts = opts or {}
+function ShowError.input(text, raw_opts)
+  vim.validate({ text = { text, "string" } })
 
-  local ctx, err = Context.find(opts.name, function(ctx)
-    return ctx.result:is_running()
-  end)
+  local opts = require("cmdhndlr.core.option").InputOption.new(raw_opts)
+  local ctx, err = Context.find_running(opts.name)
   if err then
-    return "not found running buffer: " .. err
+    return err
   end
 
   local input_err = ctx.result:input(text)
@@ -79,7 +77,11 @@ end
 function ReturnValue.executed_runners()
   local items = {}
   for _, ctx in ipairs(Context.all()) do
-    table.insert(items, { name = ctx.name, bufnr = ctx.bufnr, is_running = ctx.result:is_running() })
+    table.insert(items, {
+      name = ctx.name,
+      bufnr = ctx.bufnr,
+      is_running = ctx.result:is_running(),
+    })
   end
   return items
 end

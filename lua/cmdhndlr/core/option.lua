@@ -66,4 +66,15 @@ function BuildOption.new(raw_opts)
   return new(BuildOption.default, raw_opts)
 end
 
+local InputOption = {}
+M.InputOption = InputOption
+M.InputOption.default = {
+  name = nil,
+}
+function InputOption.new(raw_opts)
+  vim.validate({ raw_opts = { raw_opts, "table", true } })
+  raw_opts = raw_opts or {}
+  return vim.tbl_deep_extend("force", M.InputOption.default, raw_opts)
+end
+
 return M

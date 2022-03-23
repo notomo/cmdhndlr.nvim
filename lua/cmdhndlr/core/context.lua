@@ -40,12 +40,22 @@ function Context.get(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local ctx = repository:get(bufnr)
   if not ctx then
-    return nil, "no cmdhndlr buffer: " .. bufnr
+    return nil, "no buffer: " .. bufnr
   end
   return ctx, nil
 end
 
-function Context.find(name, predicate)
+function Context.find_running(name)
+  local ctx, err = Context._find(name, function(ctx)
+    return ctx.result:is_running()
+  end)
+  if err then
+    return nil, "no running runner: " .. err
+  end
+  return ctx, nil
+end
+
+function Context._find(name, predicate)
   vim.validate({ name = { name, "string", true }, predicate = { predicate, "function", true } })
   predicate = predicate or function()
     return true
@@ -60,7 +70,7 @@ function Context.find(name, predicate)
       return ctx, nil
     end
   end
-  return nil, "no context"
+  return nil, "not found: " .. name
 end
 
 function Context.all()
