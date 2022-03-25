@@ -63,24 +63,22 @@ function JobFactory.new(output_bufnr, hooks, default_cwd, env)
   return setmetatable(tbl, JobFactory)
 end
 
-function JobFactory.create(self, cmd, opts)
-  vim.validate({ opts = { opts, "table", true } })
-  opts = opts or vim.empty_dict()
-  opts.cwd = opts.cwd or self._default_cwd
-  opts.env = vim.tbl_extend("force", self._env, opts.env or {})
-
-  local on_exit = opts.on_exit or function() end
+function JobFactory.create(self, cmd)
   local info_factory = self._hooks:info_factory()
-  opts.on_exit = function(job_id, exit_code)
-    on_exit(job_id, exit_code)
-    if exit_code == 0 then
-      self._hooks.success(info_factory())
-    else
-      self._hooks.failure(info_factory())
-    end
-  end
+  local opts = {
+    cwd = self._default_cwd,
+    env = self._env,
+    on_exit = function(_, exit_code)
+      if exit_code == 0 then
+        self._hooks.success(info_factory())
+      else
+        self._hooks.failure(info_factory())
+      end
+    end,
+  }
 
-  self._hooks.pre_execute(cmd, opts)
+  self._hooks.pre_execute(cmd)
+
   return Job.new(cmd, opts, self._output_bufnr)
 end
 
