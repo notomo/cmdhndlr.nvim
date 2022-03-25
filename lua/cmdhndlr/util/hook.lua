@@ -1,4 +1,4 @@
-local messagelib = require("cmdhndlr.vendor.message")
+local messagelib = require("cmdhndlr.vendor.misclib.message")
 
 local M = {}
 

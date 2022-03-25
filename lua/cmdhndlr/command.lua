@@ -1,5 +1,5 @@
-local ReturnValue = require("cmdhndlr.vendor.error_handler").for_return_value()
-local ShowError = require("cmdhndlr.vendor.error_handler").for_show_error()
+local ReturnValue = require("cmdhndlr.vendor.misclib.error_handler").for_return_value()
+local ShowError = require("cmdhndlr.vendor.misclib.error_handler").for_show_error()
 local Context = require("cmdhndlr.core.context").Context
 
 local execute_runner = function(runner_factory, args, layout)
@@ -64,7 +64,7 @@ function ShowError.input(text, raw_opts)
   if input_err ~= nil then
     return input_err
   end
-  require("cmdhndlr.vendor.message").info(("sent to %s: %s"):format(ctx.name, text))
+  require("cmdhndlr.vendor.misclib.message").info(("sent to %s: %s"):format(ctx.name, text))
 
   return nil
 end
