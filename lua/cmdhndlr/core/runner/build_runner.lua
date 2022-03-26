@@ -22,8 +22,7 @@ end
 
 function BuildRunner.execute(self)
   local path = vim.api.nvim_buf_get_name(self._bufnr)
-  local output, err = self:build(path)
-  return self:result(output, err)
+  return self:build(path)
 end
 
 return M

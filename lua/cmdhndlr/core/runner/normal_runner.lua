@@ -33,7 +33,7 @@ function NormalRunner.execute(self, range)
     output, err = self:_run_buffer()
   end
 
-  return self:result(output, err)
+  return output, err
 end
 
 function NormalRunner._run_range(self, range)

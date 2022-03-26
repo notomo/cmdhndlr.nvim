@@ -16,7 +16,10 @@ function Job.new(cmd, opts, output_bufnr)
     vim.cmd("startinsert!")
   end)
 
-  local tbl = { _id = result }
+  local tbl = {
+    _id = result,
+    bufnr = output_bufnr,
+  }
   return setmetatable(tbl, Job), nil
 end
 
@@ -47,16 +50,14 @@ local JobFactory = {}
 JobFactory.__index = JobFactory
 M.JobFactory = JobFactory
 
-function JobFactory.new(output_bufnr, hooks, default_cwd, env)
+function JobFactory.new(hooks, cwd, env)
   vim.validate({
-    output_bufnr = { output_bufnr, "number" },
     hooks = { hooks, "table" },
-    default_cwd = { default_cwd, "string" },
+    cwd = { cwd, "string" },
     env = { env, "table" },
   })
   local tbl = {
-    _output_bufnr = output_bufnr,
-    _default_cwd = default_cwd,
+    _cwd = cwd,
     _hooks = hooks,
     _env = vim.tbl_isempty(env) and vim.empty_dict() or env,
   }
@@ -66,7 +67,7 @@ end
 function JobFactory.create(self, cmd)
   local info_factory = self._hooks:info_factory()
   local opts = {
-    cwd = self._default_cwd,
+    cwd = self._cwd,
     env = self._env,
     on_exit = function(_, exit_code)
       if exit_code == 0 then
@@ -79,7 +80,8 @@ function JobFactory.create(self, cmd)
 
   self._hooks.pre_execute(cmd)
 
-  return Job.new(cmd, opts, self._output_bufnr)
+  local output_bufnr = vim.api.nvim_create_buf(false, true)
+  return Job.new(cmd, opts, output_bufnr)
 end
 
 return M

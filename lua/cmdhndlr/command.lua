@@ -12,7 +12,7 @@ local execute_runner = function(runner_factory, args, layout)
   if exec_err ~= nil then
     return nil, exec_err
   end
-  require("cmdhndlr.view").open(result, runner.working_dir, layout)
+  require("cmdhndlr.view").open(result.bufnr, runner.working_dir, layout)
   Context.set(runner.path, result, runner_factory, args)
 
   return result

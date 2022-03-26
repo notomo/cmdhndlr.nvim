@@ -1,6 +1,5 @@
 local JobFactory = require("cmdhndlr.core.job_factory").JobFactory
 local WorkingDir = require("cmdhndlr.core.working_dir").WorkingDir
-local RunnerResult = require("cmdhndlr.core.runner_result")
 local modulelib = require("cmdhndlr.vendor.misclib.module")
 local filelib = require("cmdhndlr.lib.file")
 
@@ -44,16 +43,14 @@ function Handler.new(typ, opts)
     opts.working_dir() or handler.working_dir(),
     opts.working_dir_marker() or handler.working_dir_marker()
   )
-  local output_bunfr = vim.api.nvim_create_buf(false, true)
   local tbl = {
     name = name,
     path = M._path(typ, name),
     opts = vim.tbl_extend("force", handler.opts, opts.runner_opts),
-    job_factory = JobFactory.new(output_bunfr, opts.hooks, working_dir:get(), opts.env),
+    job_factory = JobFactory.new(opts.hooks, working_dir:get(), opts.env),
     working_dir = working_dir,
     filelib = filelib,
     _handler = handler,
-    _output_bufnr = output_bunfr,
   }
   return setmetatable(tbl, Handler), nil
 end
@@ -74,13 +71,6 @@ end
 
 function Handler.__index(self, k)
   return rawget(Handler, k) or self._handler[k]
-end
-
-function Handler.result(self, output, err)
-  if err ~= nil then
-    return nil, err
-  end
-  return RunnerResult.new(self._output_bufnr, output), nil
 end
 
 function M._path(typ, name)

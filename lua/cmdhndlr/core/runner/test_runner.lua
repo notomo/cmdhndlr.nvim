@@ -30,9 +30,7 @@ function TestRunner.execute(self, raw_filter, is_leaf)
   local path = vim.api.nvim_buf_get_name(self._bufnr)
 
   local filter = raw_filter ~= "" and raw_filter or nil
-  local output, err = self:run_file(path, filter, is_leaf)
-
-  return self:result(output, err)
+  return self:run_file(path, filter, is_leaf)
 end
 
 return M
