@@ -2,45 +2,64 @@ local ReturnValue = require("cmdhndlr.vendor.misclib.error_handler").for_return_
 local ShowError = require("cmdhndlr.vendor.misclib.error_handler").for_show_error()
 local Context = require("cmdhndlr.core.context").Context
 
-local execute_runner = function(runner_factory, args, layout)
-  local runner, err = runner_factory()
-  if err ~= nil then
-    return nil, err
+local execute_runner = function(runner_factory, args, layout, hooks)
+  local runner, factory_err
+  local observer = {
+    pre_start = function(cmd)
+      hooks.pre_execute(cmd)
+    end,
+    post_start = function(job)
+      vim.schedule(function()
+        vim.cmd("startinsert!")
+      end)
+      require("cmdhndlr.view").open(job.bufnr, runner.working_dir, layout)
+      Context.set(runner.path, job, runner_factory, args, hooks)
+    end,
+  }
+  runner, factory_err = runner_factory(observer)
+  if factory_err ~= nil then
+    return nil, factory_err
   end
 
-  local result, exec_err = runner:execute(unpack(args))
-  if exec_err ~= nil then
-    return nil, exec_err
-  end
-  require("cmdhndlr.view").open(result.bufnr, runner.working_dir, layout)
-  Context.set(runner.path, result, runner_factory, args)
-
-  return result
+  local info_factory = hooks:info_factory()
+  return runner
+    :execute(unpack(args))
+    :next(function(ok)
+      local info = info_factory()
+      if ok then
+        hooks.success(info)
+      else
+        hooks.failure(info)
+      end
+    end)
+    :catch(function(err)
+      require("cmdhndlr.vendor.misclib.message").warn(err)
+    end)
 end
 
 function ReturnValue.run(raw_opts)
   local opts = require("cmdhndlr.core.option").RunOption.new(raw_opts)
-  local runner_factory = function()
-    return require("cmdhndlr.core.runner.normal_runner").NormalRunner.new(opts)
+  local runner_factory = function(observer)
+    return require("cmdhndlr.core.runner.normal_runner").NormalRunner.new(observer, opts)
   end
   local range = require("cmdhndlr.lib.mode").visual_range()
-  return execute_runner(runner_factory, { range }, opts.layout)
+  return execute_runner(runner_factory, { range }, opts.layout, opts.hooks)
 end
 
 function ReturnValue.test(raw_opts)
   local opts = require("cmdhndlr.core.option").TestOption.new(raw_opts)
-  local runner_factory = function()
-    return require("cmdhndlr.core.runner.test_runner").TestRunner.new(opts)
+  local runner_factory = function(observer)
+    return require("cmdhndlr.core.runner.test_runner").TestRunner.new(observer, opts)
   end
-  return execute_runner(runner_factory, { opts.filter, opts.is_leaf }, opts.layout)
+  return execute_runner(runner_factory, { opts.filter, opts.is_leaf }, opts.layout, opts.hooks)
 end
 
 function ReturnValue.build(raw_opts)
   local opts = require("cmdhndlr.core.option").BuildOption.new(raw_opts)
-  local runner_factory = function()
-    return require("cmdhndlr.core.runner.build_runner").BuildRunner.new(opts)
+  local runner_factory = function(observer)
+    return require("cmdhndlr.core.runner.build_runner").BuildRunner.new(observer, opts)
   end
-  return execute_runner(runner_factory, {}, opts.layout)
+  return execute_runner(runner_factory, {}, opts.layout, opts.hooks)
 end
 
 function ReturnValue.retry()
@@ -48,7 +67,7 @@ function ReturnValue.retry()
   if err then
     return nil, err
   end
-  return execute_runner(ctx.runner_factory, ctx.args, { type = "no" })
+  return execute_runner(ctx.runner_factory, ctx.args, { type = "no" }, ctx.hooks)
 end
 
 function ShowError.input(text, raw_opts)
@@ -60,7 +79,7 @@ function ShowError.input(text, raw_opts)
     return err
   end
 
-  local input_err = ctx.result:input(text)
+  local input_err = ctx.job:input(text)
   if input_err ~= nil then
     return input_err
   end
@@ -80,7 +99,7 @@ function ReturnValue.executed_runners()
     table.insert(items, {
       name = ctx.name,
       bufnr = ctx.bufnr,
-      is_running = ctx.result:is_running(),
+      is_running = ctx.job:is_running(),
     })
   end
   return items

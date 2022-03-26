@@ -6,20 +6,22 @@ local Context = {}
 Context.__index = Context
 M.Context = Context
 
-function Context.set(path, result, runner_factory, args)
+function Context.set(path, job, runner_factory, args, hooks)
   vim.validate({
-    result = { result, "table" },
+    job = { job, "table" },
     runner_factory = { runner_factory, "function" },
     args = { args, "table", true },
+    hooks = { hooks, "table" },
   })
 
-  local bufnr = result.bufnr
+  local bufnr = job.bufnr
   local tbl = {
     name = path,
     bufnr = bufnr,
-    result = result,
+    job = job,
     runner_factory = runner_factory,
     args = args or {},
+    hooks = hooks,
     _at = vim.fn.reltimestr(vim.fn.reltime()),
   }
   local self = setmetatable(tbl, Context)
@@ -47,7 +49,7 @@ end
 
 function Context.find_running(name)
   local ctx, err = Context._find(name, function(ctx)
-    return ctx.result:is_running()
+    return ctx.job:is_running()
   end)
   if err then
     return nil, "no running runner: " .. err

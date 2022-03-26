@@ -187,11 +187,11 @@ bar"]])
     })
     helper.wait(job)
 
-    assert.current_line("[Process exited 0]")
+    assert.is_true(vim.fn.line("$") > 2)
   end)
 
   it("raises error if command is not found", function()
-    cmdhndlr.run({
+    local job = cmdhndlr.run({
       name = "_test/file",
       runner_opts = {
         f = function(self)
@@ -199,6 +199,7 @@ bar"]])
         end,
       },
     })
+    helper.wait(job)
 
     assert.exists_message([['invalid_cmd' is not executable]])
   end)
@@ -220,24 +221,10 @@ bar"]])
   it("raises error if the runner does not support range", function()
     vim.cmd("normal! v")
 
-    local result = cmdhndlr.run({ name = "_test/no_range" })
+    local job = cmdhndlr.run({ name = "_test/no_range" })
+    helper.wait(job)
 
-    assert.is_nil(result)
     assert.exists_message([[`_test/no_range` runner does not support range]])
-  end)
-
-  it("raises error if the runner raises no output error", function()
-    helper.register_normal_runner("_test/no_output_error", {
-      run_file = function()
-        return nil, { msg = "not found" }
-      end,
-    })
-
-    local result = cmdhndlr.run({ name = "_test/no_output_error" })
-
-    assert.is_nil(result)
-    assert.exists_message([[not found]])
-    assert.window_count(1)
   end)
 
   it("can use runner that is not supported range in nofile buffer", function()
@@ -513,7 +500,7 @@ describe("cmdhndlr.input()", function()
 
     helper.wait(job)
 
-    assert.exists_pattern([[Process exited]])
+    assert.exists_pattern([[test_input]])
   end)
 
   it("raises error if not plugin buffer", function()

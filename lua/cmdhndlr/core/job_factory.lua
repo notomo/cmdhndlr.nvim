@@ -12,9 +12,6 @@ function Job.new(cmd, opts, output_bufnr)
   if not ok then
     return nil, result
   end
-  vim.schedule(function()
-    vim.cmd("startinsert!")
-  end)
 
   local tbl = {
     _id = result,
@@ -50,38 +47,39 @@ local JobFactory = {}
 JobFactory.__index = JobFactory
 M.JobFactory = JobFactory
 
-function JobFactory.new(hooks, cwd, env)
+function JobFactory.new(observer, cwd, env)
   vim.validate({
-    hooks = { hooks, "table" },
+    observer = { observer, "table" },
     cwd = { cwd, "string" },
     env = { env, "table" },
   })
   local tbl = {
+    _observer = observer,
     _cwd = cwd,
-    _hooks = hooks,
     _env = vim.tbl_isempty(env) and vim.empty_dict() or env,
   }
   return setmetatable(tbl, JobFactory)
 end
 
 function JobFactory.create(self, cmd)
-  local info_factory = self._hooks:info_factory()
-  local opts = {
-    cwd = self._cwd,
-    env = self._env,
-    on_exit = function(_, exit_code)
-      if exit_code == 0 then
-        self._hooks.success(info_factory())
-      else
-        self._hooks.failure(info_factory())
-      end
-    end,
-  }
+  return require("cmdhndlr.vendor.promise").new(function(resolve, reject)
+    local opts = {
+      cwd = self._cwd,
+      env = self._env,
+      on_exit = function(_, exit_code)
+        resolve(exit_code == 0)
+      end,
+    }
 
-  self._hooks.pre_execute(cmd)
+    self._observer.pre_start(cmd)
 
-  local output_bufnr = vim.api.nvim_create_buf(false, true)
-  return Job.new(cmd, opts, output_bufnr)
+    local output_bufnr = vim.api.nvim_create_buf(false, true)
+    local job, err = Job.new(cmd, opts, output_bufnr)
+    if err then
+      return reject(err)
+    end
+    return self._observer.post_start(job)
+  end)
 end
 
 return M

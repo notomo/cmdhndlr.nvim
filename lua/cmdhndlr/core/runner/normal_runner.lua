@@ -5,8 +5,8 @@ local M = {}
 local NormalRunner = {}
 M.NormalRunner = NormalRunner
 
-function NormalRunner.new(opts)
-  local handler, err = Handler.new("normal_runner", opts)
+function NormalRunner.new(observer, opts)
+  local handler, err = Handler.new("normal_runner", observer, opts)
   if err ~= nil then
     return nil, err
   end
@@ -25,20 +25,16 @@ end
 
 function NormalRunner.execute(self, range)
   vim.validate({ range = { range, "table", true } })
-
-  local output, err
   if range ~= nil then
-    output, err = self:_run_range(range)
-  else
-    output, err = self:_run_buffer()
+    return self:_run_range(range)
   end
-
-  return output, err
+  return self:_run_buffer()
 end
 
 function NormalRunner._run_range(self, range)
   if not self.run_string then
-    return nil, ("`%s` runner does not support range"):format(self.name)
+    local err = ("`%s` runner does not support range"):format(self.name)
+    return require("cmdhndlr.vendor.promise").reject(err)
   end
 
   local str = require("cmdhndlr.lib.buffer_range").new(self._bufnr, range):to_string()

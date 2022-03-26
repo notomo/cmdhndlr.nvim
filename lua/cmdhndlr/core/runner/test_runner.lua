@@ -5,8 +5,8 @@ local M = {}
 local TestRunner = {}
 M.TestRunner = TestRunner
 
-function TestRunner.new(opts)
-  local handler, err = Handler.new("test_runner", opts)
+function TestRunner.new(observer, opts)
+  local handler, err = Handler.new("test_runner", observer, opts)
   if err ~= nil then
     return nil, err
   end

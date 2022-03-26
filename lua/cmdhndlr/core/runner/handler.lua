@@ -10,7 +10,7 @@ M.registered = {}
 local Handler = { registered = {} }
 M.Handler = Handler
 
-function Handler.new(typ, opts)
+function Handler.new(typ, observer, opts)
   vim.validate({
     type = { typ, "string" },
     opts = { opts, "table" },
@@ -47,7 +47,7 @@ function Handler.new(typ, opts)
     name = name,
     path = M._path(typ, name),
     opts = vim.tbl_extend("force", handler.opts, opts.runner_opts),
-    job_factory = JobFactory.new(opts.hooks, working_dir:get(), opts.env),
+    job_factory = JobFactory.new(observer, working_dir:get(), opts.env),
     working_dir = working_dir,
     filelib = filelib,
     _handler = handler,

@@ -54,21 +54,30 @@ function M.register_build_runner(name, handler)
   require("cmdhndlr.core.runner.handler").register("build_runner", name, handler)
 end
 
-function M.wait(job)
-  if not job.wait then
-    error("invalid job: " .. vim.inspect(job))
-  end
+function M.on_finished()
+  local finished = false
+  return setmetatable({
+    wait = function()
+      local ok = vim.wait(1000, function()
+        return finished
+      end, 10, false)
+      if not ok then
+        error("wait timeout")
+      end
+    end,
+  }, {
+    __call = function()
+      finished = true
+    end,
+  })
+end
 
-  job:wait(1000)
-  -- wait for terminal output
-
-  local ok = vim.wait(1000, function()
-    return vim.fn.search("Process exited") ~= 0
-  end, 10)
-  if not ok then
-    error("timeout: " .. vim.inspect(job))
-  end
-  return true
+function M.wait(promise)
+  local on_finished = M.on_finished()
+  promise:finally(function()
+    on_finished()
+  end)
+  on_finished:wait()
 end
 
 function M.new_file(path, ...)

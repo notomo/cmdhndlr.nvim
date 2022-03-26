@@ -5,8 +5,8 @@ local M = {}
 local BuildRunner = {}
 M.BuildRunner = BuildRunner
 
-function BuildRunner.new(opts)
-  local handler, err = Handler.new("build_runner", opts)
+function BuildRunner.new(observer, opts)
+  local handler, err = Handler.new("build_runner", observer, opts)
   if err ~= nil then
     return nil, err
   end
