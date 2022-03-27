@@ -13,6 +13,7 @@ M.config = {
       javascript = "javascript/node",
       dart = "dart/dart",
       rust = "rust/cargo",
+      zig = "zig/zig",
     },
   },
   test_runner = {
@@ -23,6 +24,7 @@ M.config = {
       rust = "rust/cargo",
       javascript = "javascript/jest",
       typescript = "javascript/jest",
+      zig = "zig/zig",
     },
   },
   build_runner = {
