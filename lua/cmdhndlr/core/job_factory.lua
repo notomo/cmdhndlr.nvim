@@ -24,12 +24,6 @@ function Job.is_running(self)
   return vim.fn.jobwait({ self._id }, 0)[1] == -1
 end
 
-function Job.wait(self, ms)
-  return vim.wait(ms, function()
-    return not self:is_running()
-  end, 10)
-end
-
 function Job.input(self, text)
   if not self:is_running() then
     return "job is not running"
