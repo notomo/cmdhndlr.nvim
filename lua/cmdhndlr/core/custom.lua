@@ -11,6 +11,7 @@ M.config = {
       python = "python/python",
       make = "make/make",
       javascript = "javascript/node",
+      typescript = "typescript/deno",
       dart = "dart/dart",
       rust = "rust/cargo",
       zig = "zig/zig",
