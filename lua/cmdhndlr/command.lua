@@ -42,7 +42,7 @@ function ReturnValue.run(raw_opts)
   local runner_factory = function(observer)
     return require("cmdhndlr.core.runner.normal_runner").NormalRunner.new(observer, opts)
   end
-  local range = require("cmdhndlr.lib.mode").visual_range()
+  local range = require("cmdhndlr.vendor.misclib.visual_mode").row_range()
   return execute_runner(runner_factory, { range }, opts.layout, opts.hooks)
 end
 
