@@ -12,9 +12,15 @@ function M.row_range()
   }
 end
 
+local CTRL_V = api.nvim_replace_termcodes("<C-v>", true, false, true)
+local is_current = function()
+  local mode = api.nvim_get_mode().mode
+  return mode == "v" or mode == "V" or mode == CTRL_V, mode
+end
+
 local ESC = api.nvim_replace_termcodes("<ESC>", true, false, true)
 function M.leave()
-  local ok, mode = M.is_current()
+  local ok, mode = is_current()
   if not ok then
     return false, mode
   end
@@ -22,10 +28,9 @@ function M.leave()
   return true, mode
 end
 
-local CTRL_V = api.nvim_replace_termcodes("<C-v>", true, false, true)
 function M.is_current()
-  local mode = api.nvim_get_mode().mode
-  return mode == "v" or mode == "V" or mode == CTRL_V, mode
+  local ok = is_current()
+  return ok
 end
 
 return M
