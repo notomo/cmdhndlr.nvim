@@ -563,3 +563,53 @@ describe("cmdhndlr.executed_runners()", function()
     assert.same({ { name = "normal_runner/_test/file", bufnr = bufnr, is_running = false } }, actual)
   end)
 end)
+
+describe("cmdhndlr.execute()", function()
+  before_each(function()
+    helper.before_each()
+
+    helper.register_normal_runner("_test/file", {
+      opts = {
+        f = function()
+          error("not implemented")
+        end,
+      },
+      run_file = function(self, path)
+        return self.opts.f(self, path)
+      end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("can execute runner by name", function()
+    local job = cmdhndlr.execute("normal_runner/_test/file", {
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create("echo ok")
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.exists_pattern("ok")
+  end)
+end)
+
+describe("cmdhndlr.runners()", function()
+  before_each(function()
+    helper.before_each()
+
+    helper.register_normal_runner("_test/file", {
+      run_file = function()
+        error("not implemented")
+      end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("returns runners including registered manually", function()
+    local actual = cmdhndlr.runners()
+    assert.same({ name = "normal_runner/_test/file" }, actual[#actual])
+  end)
+end)

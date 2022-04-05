@@ -105,4 +105,29 @@ function ReturnValue.executed_runners()
   return items
 end
 
+function ReturnValue.execute(name, raw_opts)
+  raw_opts = raw_opts or {}
+  if vim.startswith(name, "normal_runner/") then
+    raw_opts.name = name:gsub("^normal_runner/", "")
+    return ReturnValue.run(raw_opts)
+  end
+  if vim.startswith(name, "test_runner/") then
+    raw_opts.name = name:gsub("^test_runner/", "")
+    return ReturnValue.test(raw_opts)
+  end
+  if vim.startswith(name, "build_runner/") then
+    raw_opts.name = name:gsub("^build_runner/", "")
+    return ReturnValue.build(raw_opts)
+  end
+  error("unexpected runner name: " .. name)
+end
+
+function ReturnValue.runners()
+  local items = {}
+  for _, name in ipairs(require("cmdhndlr.core.runner.handler").all()) do
+    table.insert(items, { name = name })
+  end
+  return items
+end
+
 return vim.tbl_extend("force", ReturnValue:methods(), ShowError:methods())
