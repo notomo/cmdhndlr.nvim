@@ -17,10 +17,14 @@ function Handler.new(typ, observer, opts)
   })
 
   local filetype = vim.bo[opts.bufnr].filetype
-  local default = require("cmdhndlr.core.custom").config[typ].default[filetype]
+  local global = require("cmdhndlr.core.custom").config[typ].default[filetype]
+  local buffer_local = (vim.b[opts.bufnr].cmdhndlr or {})[typ]
+
   local name = opts.name
-  if name == "" and default ~= nil then
-    name = default
+  if name == "" and buffer_local then
+    name = buffer_local
+  elseif name == "" and global then
+    name = global
   end
   if name == "" then
     return nil, "no handler"

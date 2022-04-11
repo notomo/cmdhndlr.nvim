@@ -246,6 +246,22 @@ bar"]])
     })
     assert.tab_count(2)
   end)
+
+  it("can use buffer local setting", function()
+    vim.b.cmdhndlr = { normal_runner = "_test/buffer_local" }
+
+    local called = false
+    helper.register_normal_runner("_test/buffer_local", {
+      run_file = function(self)
+        called = true
+        return self.job_factory:create({ "echo" })
+      end,
+    })
+
+    cmdhndlr.run()
+
+    assert.is_true(called)
+  end)
 end)
 
 describe("cmdhndlr.test()", function()
