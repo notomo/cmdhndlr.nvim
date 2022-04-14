@@ -1,10 +1,7 @@
-local contexts = {}
-
-local M = {}
+local _contexts = {}
 
 local Context = {}
 Context.__index = Context
-M.Context = Context
 
 function Context.set(path, job, runner_factory, args, hooks)
   vim.validate({
@@ -26,12 +23,12 @@ function Context.set(path, job, runner_factory, args, hooks)
   }
   local self = setmetatable(tbl, Context)
 
-  contexts[bufnr] = self
+  _contexts[bufnr] = self
 
   vim.api.nvim_create_autocmd({ "BufWipeout" }, {
     buffer = bufnr,
     callback = function()
-      contexts[bufnr] = nil
+      _contexts[bufnr] = nil
     end,
   })
 
@@ -41,7 +38,7 @@ end
 function Context.get(bufnr)
   vim.validate({ bufnr = { bufnr, "number", true } })
   bufnr = bufnr or vim.api.nvim_get_current_buf()
-  local ctx = contexts[bufnr]
+  local ctx = _contexts[bufnr]
   if not ctx then
     return nil, "no buffer: " .. bufnr
   end
@@ -68,7 +65,7 @@ function Context._find(name, predicate)
     return Context.get()
   end
 
-  for _, ctx in pairs(contexts) do
+  for _, ctx in pairs(_contexts) do
     if ctx.name == name and predicate(ctx) then
       return ctx, nil
     end
@@ -78,7 +75,7 @@ end
 
 function Context.all()
   local all = {}
-  for _, ctx in pairs(contexts) do
+  for _, ctx in pairs(_contexts) do
     table.insert(all, ctx)
   end
   table.sort(all, function(a, b)
@@ -87,4 +84,4 @@ function Context.all()
   return all
 end
 
-return M
+return Context

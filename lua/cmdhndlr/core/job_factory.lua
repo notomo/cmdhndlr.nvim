@@ -1,8 +1,5 @@
-local M = {}
-
 local Job = {}
 Job.__index = Job
-M.Job = Job
 
 function Job.new(cmd, opts, output_bufnr)
   local ok, result
@@ -39,7 +36,6 @@ end
 
 local JobFactory = {}
 JobFactory.__index = JobFactory
-M.JobFactory = JobFactory
 
 function JobFactory.new(observer, cwd, env)
   vim.validate({
@@ -76,4 +72,4 @@ function JobFactory.create(self, cmd)
   end)
 end
 
-return M
+return JobFactory

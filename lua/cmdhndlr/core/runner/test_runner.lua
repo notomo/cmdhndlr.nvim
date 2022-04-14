@@ -1,9 +1,6 @@
 local Handler = require("cmdhndlr.core.runner.handler").Handler
 
-local M = {}
-
 local TestRunner = {}
-M.TestRunner = TestRunner
 
 function TestRunner.new(observer, opts)
   local handler, err = Handler.new("test_runner", observer, opts)
@@ -33,4 +30,4 @@ function TestRunner.execute(self, raw_filter, is_leaf)
   return self:run_file(path, filter, is_leaf)
 end
 
-return M
+return TestRunner

@@ -1,5 +1,5 @@
-local JobFactory = require("cmdhndlr.core.job_factory").JobFactory
-local WorkingDir = require("cmdhndlr.core.working_dir").WorkingDir
+local JobFactory = require("cmdhndlr.core.job_factory")
+local WorkingDir = require("cmdhndlr.core.working_dir")
 local modulelib = require("cmdhndlr.vendor.misclib.module")
 local filelib = require("cmdhndlr.lib.file")
 

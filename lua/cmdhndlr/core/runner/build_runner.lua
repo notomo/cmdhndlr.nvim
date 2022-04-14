@@ -1,9 +1,6 @@
 local Handler = require("cmdhndlr.core.runner.handler").Handler
 
-local M = {}
-
 local BuildRunner = {}
-M.BuildRunner = BuildRunner
 
 function BuildRunner.new(observer, opts)
   local handler, err = Handler.new("build_runner", observer, opts)
@@ -25,4 +22,4 @@ function BuildRunner.execute(self)
   return self:build(path)
 end
 
-return M
+return BuildRunner

@@ -1,8 +1,5 @@
-local M = {}
-
 local WorkingDir = {}
 WorkingDir.__index = WorkingDir
-M.WorkingDir = WorkingDir
 
 function WorkingDir.new(working_dir, marker)
   vim.validate({
@@ -29,4 +26,4 @@ function WorkingDir.set_current(self)
   vim.cmd("silent lcd " .. self._working_dir)
 end
 
-return M
+return WorkingDir

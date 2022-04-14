@@ -1,4 +1,4 @@
-local Layout = require("cmdhndlr.view.layout").Layout
+local Layout = require("cmdhndlr.view.layout")
 
 local M = {}
 M.__index = M
@@ -9,6 +9,10 @@ function M.open(bufnr, working_dir, layout_opts)
     working_dir = { working_dir, "table" },
     layout_opts = { layout_opts, "table" },
   })
+
+  vim.schedule(function()
+    vim.cmd("startinsert!")
+  end)
 
   vim.bo[bufnr].filetype = "cmdhndlr"
   Layout.new(layout_opts):open(bufnr)

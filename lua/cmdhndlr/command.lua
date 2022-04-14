@@ -1,6 +1,6 @@
 local ReturnValue = require("cmdhndlr.vendor.misclib.error_handler").for_return_value()
 local ShowError = require("cmdhndlr.vendor.misclib.error_handler").for_show_error()
-local Context = require("cmdhndlr.core.context").Context
+local Context = require("cmdhndlr.core.context")
 
 local execute_runner = function(runner_factory, args, layout, hooks)
   local runner, factory_err
@@ -9,9 +9,6 @@ local execute_runner = function(runner_factory, args, layout, hooks)
       hooks.pre_execute(cmd)
     end,
     post_start = function(job)
-      vim.schedule(function()
-        vim.cmd("startinsert!")
-      end)
       require("cmdhndlr.view").open(job.bufnr, runner.working_dir, layout)
       Context.set(runner.path, job, runner_factory, args, hooks)
     end,
@@ -40,7 +37,7 @@ end
 function ReturnValue.run(raw_opts)
   local opts = require("cmdhndlr.core.option").RunOption.new(raw_opts)
   local runner_factory = function(observer)
-    return require("cmdhndlr.core.runner.normal_runner").NormalRunner.new(observer, opts)
+    return require("cmdhndlr.core.runner.normal_runner").new(observer, opts)
   end
   local range = require("cmdhndlr.vendor.misclib.visual_mode").row_range()
   return execute_runner(runner_factory, { range }, opts.layout, opts.hooks)
@@ -49,7 +46,7 @@ end
 function ReturnValue.test(raw_opts)
   local opts = require("cmdhndlr.core.option").TestOption.new(raw_opts)
   local runner_factory = function(observer)
-    return require("cmdhndlr.core.runner.test_runner").TestRunner.new(observer, opts)
+    return require("cmdhndlr.core.runner.test_runner").new(observer, opts)
   end
   return execute_runner(runner_factory, { opts.filter, opts.is_leaf }, opts.layout, opts.hooks)
 end
@@ -57,7 +54,7 @@ end
 function ReturnValue.build(raw_opts)
   local opts = require("cmdhndlr.core.option").BuildOption.new(raw_opts)
   local runner_factory = function(observer)
-    return require("cmdhndlr.core.runner.build_runner").BuildRunner.new(observer, opts)
+    return require("cmdhndlr.core.runner.build_runner").new(observer, opts)
   end
   return execute_runner(runner_factory, {}, opts.layout, opts.hooks)
 end

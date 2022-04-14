@@ -1,9 +1,6 @@
 local Handler = require("cmdhndlr.core.runner.handler").Handler
 
-local M = {}
-
 local NormalRunner = {}
-M.NormalRunner = NormalRunner
 
 function NormalRunner.new(observer, opts)
   local handler, err = Handler.new("normal_runner", observer, opts)
@@ -55,4 +52,4 @@ function NormalRunner._run_buffer(self)
   return self:run_file(self.filelib.temporary(str))
 end
 
-return M
+return NormalRunner
