@@ -10,7 +10,7 @@ M.registered = {}
 local Handler = { registered = {} }
 M.Handler = Handler
 
-function Handler.new(typ, observer, opts)
+function Handler.new(typ, opts)
   vim.validate({
     type = { typ, "string" },
     opts = { opts, "table" },
@@ -50,13 +50,23 @@ function Handler.new(typ, observer, opts)
   local tbl = {
     name = name,
     path = M._path(typ, name),
-    opts = vim.tbl_extend("force", handler.opts, opts.runner_opts),
-    job_factory = JobFactory.new(observer, working_dir:get(), opts.env),
     working_dir = working_dir,
-    filelib = filelib,
     _handler = handler,
+    _runner_opts = opts.runner_opts,
+    _env = opts.env,
   }
   return setmetatable(tbl, Handler), nil
+end
+
+function Handler.runner(self, observer)
+  return setmetatable({
+    opts = vim.tbl_extend("force", self._handler.opts, self._runner_opts),
+    job_factory = JobFactory.new(observer, self.working_dir:get(), self._env),
+    working_dir = self.working_dir,
+    filelib = filelib,
+  }, {
+    __index = self._handler,
+  })
 end
 
 function Handler._find(path)

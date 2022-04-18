@@ -3,7 +3,11 @@ local ShowError = require("cmdhndlr.vendor.misclib.error_handler").for_show_erro
 local Context = require("cmdhndlr.core.context")
 
 local execute_runner = function(runner_factory, args, layout, hooks)
-  local runner, factory_err
+  local runner, factory_err = runner_factory()
+  if factory_err ~= nil then
+    return nil, factory_err
+  end
+
   local observer = {
     pre_start = function(cmd)
       hooks.pre_execute(cmd)
@@ -13,14 +17,10 @@ local execute_runner = function(runner_factory, args, layout, hooks)
       Context.set(runner.path, job, runner_factory, args, hooks)
     end,
   }
-  runner, factory_err = runner_factory(observer)
-  if factory_err ~= nil then
-    return nil, factory_err
-  end
 
   local info_factory = hooks:info_factory()
   return runner
-    :execute(unpack(args))
+    :execute(observer, unpack(args))
     :next(function(ok)
       local info = info_factory()
       if ok then
@@ -36,8 +36,8 @@ end
 
 function ReturnValue.run(raw_opts)
   local opts = require("cmdhndlr.core.option").RunOption.new(raw_opts)
-  local runner_factory = function(observer)
-    return require("cmdhndlr.core.runner.normal_runner").new(observer, opts)
+  local runner_factory = function()
+    return require("cmdhndlr.core.runner.normal_runner").new(opts)
   end
   local range = require("cmdhndlr.vendor.misclib.visual_mode").row_range()
   return execute_runner(runner_factory, { range }, opts.layout, opts.hooks)
@@ -45,16 +45,16 @@ end
 
 function ReturnValue.test(raw_opts)
   local opts = require("cmdhndlr.core.option").TestOption.new(raw_opts)
-  local runner_factory = function(observer)
-    return require("cmdhndlr.core.runner.test_runner").new(observer, opts)
+  local runner_factory = function()
+    return require("cmdhndlr.core.runner.test_runner").new(opts)
   end
   return execute_runner(runner_factory, { opts.filter, opts.is_leaf }, opts.layout, opts.hooks)
 end
 
 function ReturnValue.build(raw_opts)
   local opts = require("cmdhndlr.core.option").BuildOption.new(raw_opts)
-  local runner_factory = function(observer)
-    return require("cmdhndlr.core.runner.build_runner").new(observer, opts)
+  local runner_factory = function()
+    return require("cmdhndlr.core.runner.build_runner").new(opts)
   end
   return execute_runner(runner_factory, {}, opts.layout, opts.hooks)
 end
