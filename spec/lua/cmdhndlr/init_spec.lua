@@ -87,9 +87,9 @@ hoge
   end)
 
   it("can run with runner's working_dir", function()
-    helper.new_directory("root/dir")
-    helper.new_directory("root/dir2")
-    helper.cd("root/dir")
+    helper.test_data:create_dir("root/dir")
+    helper.test_data:create_dir("root/dir2")
+    helper.test_data:cd("root/dir")
 
     local job = cmdhndlr.run({ name = "_test/working_dir" })
     helper.wait(job)

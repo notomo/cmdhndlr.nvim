@@ -1,36 +1,32 @@
 local plugin_name = vim.split((...):gsub("%.", "/"), "/", true)[1]
-local M = require("vusted.helper")
+local helper = require("vusted.helper")
 
-M.root = M.find_plugin_root(plugin_name)
+helper.root = helper.find_plugin_root(plugin_name)
 local runtimepath = vim.o.runtimepath
 
-function M.before_each()
+function helper.before_each()
   vim.cmd("filetype on")
   vim.cmd("syntax enable")
-  M.test_data_path = "spec/test_data/" .. math.random(1, 2 ^ 30) .. "/"
-  M.test_data_dir = M.root .. "/" .. M.test_data_path
-  M.new_directory("")
-  vim.api.nvim_set_current_dir(M.test_data_dir)
+  helper.test_data = require("cmdhndlr.vendor.misclib.test.data_dir").setup(helper.root)
+  vim.api.nvim_set_current_dir(helper.test_data.full_path)
   vim.o.runtimepath = runtimepath
 end
 
-function M.after_each()
-  vim.cmd("tabedit")
-  vim.cmd("tabonly!")
+function helper.after_each()
   vim.cmd("silent %bwipeout!")
   vim.cmd("filetype off")
   vim.cmd("syntax off")
-  M.cleanup_loaded_modules(plugin_name)
-  vim.fn.delete(M.root .. "/spec/test_data", "rf")
+  helper.cleanup_loaded_modules(plugin_name)
+  helper.test_data:teardown()
   vim.cmd("messages clear")
   print(" ")
 end
 
-function M.set_lines(lines)
+function helper.set_lines(lines)
   vim.api.nvim_buf_set_lines(0, 0, -1, false, vim.split(lines, "\n"))
 end
 
-function M.search(pattern)
+function helper.search(pattern)
   local result = vim.fn.search(pattern)
   if result == 0 then
     local info = debug.getinfo(2)
@@ -42,19 +38,19 @@ function M.search(pattern)
   return result
 end
 
-function M.register_normal_runner(name, handler)
+function helper.register_normal_runner(name, handler)
   require("cmdhndlr.core.runner.handler").register("normal_runner", name, handler)
 end
 
-function M.register_test_runner(name, handler)
+function helper.register_test_runner(name, handler)
   require("cmdhndlr.core.runner.handler").register("test_runner", name, handler)
 end
 
-function M.register_build_runner(name, handler)
+function helper.register_build_runner(name, handler)
   require("cmdhndlr.core.runner.handler").register("build_runner", name, handler)
 end
 
-function M.on_finished()
+function helper.on_finished()
   local finished = false
   return setmetatable({
     wait = function()
@@ -72,28 +68,12 @@ function M.on_finished()
   })
 end
 
-function M.wait(promise)
-  local on_finished = M.on_finished()
+function helper.wait(promise)
+  local on_finished = helper.on_finished()
   promise:finally(function()
     on_finished()
   end)
   on_finished:wait()
-end
-
-function M.new_file(path, ...)
-  local f = io.open(M.test_data_dir .. path, "w")
-  for _, line in ipairs({ ... }) do
-    f:write(line .. "\n")
-  end
-  f:close()
-end
-
-function M.new_directory(path)
-  vim.fn.mkdir(M.test_data_dir .. path, "p")
-end
-
-function M.cd(path)
-  vim.api.nvim_set_current_dir(M.test_data_dir .. path)
 end
 
 local asserts = require("vusted.assert").asserts
@@ -136,4 +116,4 @@ asserts.create("exists_pattern"):register(function(self)
   end
 end)
 
-return M
+return helper

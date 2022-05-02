@@ -8,7 +8,7 @@ describe("lua/busted test runner", function()
   local handler_name = "lua/busted"
 
   it("can test buffer source", function()
-    helper.new_file(
+    helper.test_data:create_file(
       "hoge_spec.lua",
       [[
 describe("hoge", function()
@@ -28,7 +28,7 @@ busted_test]])
   end)
 
   it("can test a it in the nested describe by filter", function()
-    helper.new_file(
+    helper.test_data:create_file(
       "hoge_spec.lua",
       [[
 describe("hoge", function()
