@@ -5,20 +5,15 @@ helper.root = helper.find_plugin_root(plugin_name)
 local runtimepath = vim.o.runtimepath
 
 function helper.before_each()
-  vim.cmd("filetype on")
-  vim.cmd("syntax enable")
   helper.test_data = require("cmdhndlr.vendor.misclib.test.data_dir").setup(helper.root)
   vim.api.nvim_set_current_dir(helper.test_data.full_path)
   vim.o.runtimepath = runtimepath
 end
 
 function helper.after_each()
-  vim.cmd("silent %bwipeout!")
-  vim.cmd("filetype off")
-  vim.cmd("syntax off")
+  helper.cleanup()
   helper.cleanup_loaded_modules(plugin_name)
   helper.test_data:teardown()
-  vim.cmd("messages clear")
   print(" ")
 end
 
