@@ -15,6 +15,7 @@ M.config = {
       dart = "dart/dart",
       rust = "rust/cargo",
       zig = "zig/zig",
+      autohotkey = "autohotkey/autohotkey",
     },
   },
   test_runner = {
