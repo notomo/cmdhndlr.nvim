@@ -25,7 +25,7 @@ M.config = {
       python = "python/pytest",
       rust = "rust/cargo",
       javascript = "javascript/jest",
-      typescript = "javascript/jest",
+      typescript = "typescript/deno",
       zig = "zig/zig",
     },
   },
