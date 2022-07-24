@@ -4,12 +4,12 @@ function Layouts.no() end
 
 function Layouts.horizontal()
   return function()
-    vim.cmd("botright split")
+    vim.cmd.split({ mods = { split = "botright" } })
   end
 end
 
 function Layouts.tab()
-  vim.cmd("tabedit")
+  vim.cmd.tabedit()
 end
 
 local Layout = {}

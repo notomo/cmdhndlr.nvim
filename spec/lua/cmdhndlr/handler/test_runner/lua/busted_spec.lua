@@ -18,7 +18,7 @@ describe("hoge", function()
 end)
 ]]
     )
-    vim.cmd("edit hoge_spec.lua")
+    vim.cmd.edit("hoge_spec.lua")
 
     local job = cmdhndlr.test({ name = handler_name })
     helper.wait(job)
@@ -46,7 +46,7 @@ describe("hoge", function()
 end)
 ]]
     )
-    vim.cmd("edit hoge_spec.lua")
+    vim.cmd.edit("hoge_spec.lua")
 
     local job = cmdhndlr.test({ name = handler_name, filter = "hoge foo target" })
     helper.wait(job)

@@ -23,7 +23,7 @@ function WorkingDir.marker(self)
 end
 
 function WorkingDir.set_current(self)
-  vim.cmd("silent lcd " .. self._working_dir)
+  vim.cmd.lcd({ args = { self._working_dir }, mods = { silent = true } })
 end
 
 return WorkingDir

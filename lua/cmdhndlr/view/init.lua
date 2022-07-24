@@ -11,7 +11,7 @@ function M.open(bufnr, working_dir, layout_opts)
   })
 
   vim.schedule(function()
-    vim.cmd("startinsert!")
+    vim.cmd.startinsert({ bang = true })
   end)
 
   vim.bo[bufnr].filetype = "cmdhndlr"

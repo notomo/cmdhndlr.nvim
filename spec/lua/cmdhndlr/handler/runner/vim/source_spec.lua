@@ -26,7 +26,7 @@ source]])
 echomsg 'source'
 echomsg 'source'
 ]])
-    vim.cmd("normal! v$")
+    vim.cmd.normal({ args = { "v$" }, bang = true })
 
     local job = cmdhndlr.run({ name = handler_name })
     helper.wait(job)

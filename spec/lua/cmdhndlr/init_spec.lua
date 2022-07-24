@@ -55,8 +55,8 @@ describe("cmdhndlr.run()", function()
 hoge
 ]])
 
-    vim.cmd("normal! v")
-    vim.cmd("normal! $")
+    vim.cmd.normal({ args = { "v" }, bang = true })
+    vim.cmd.normal({ args = { "$" }, bang = true })
 
     local job = cmdhndlr.run({
       name = "_test/file",
@@ -219,7 +219,7 @@ bar"]])
   end)
 
   it("raises error if the runner does not support range", function()
-    vim.cmd("normal! v")
+    vim.cmd.normal({ args = { "v" }, bang = true })
 
     local job = cmdhndlr.run({ name = "_test/no_range" })
     helper.wait(job)

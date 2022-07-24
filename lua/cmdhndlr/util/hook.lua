@@ -2,8 +2,8 @@ local messagelib = require("cmdhndlr.vendor.misclib.message")
 
 local M = {}
 
-vim.cmd("highlight default link CmdhndlrSuccess Search")
-vim.cmd("highlight default link CmdhndlrFailure Todo")
+vim.api.nvim_set_hl(0, "CmdhndlrSuccess", { link = "Search" })
+vim.api.nvim_set_hl(0, "CmdhndlrFailure", { link = "Todo" })
 
 function M.echo_success()
   return function(info)
