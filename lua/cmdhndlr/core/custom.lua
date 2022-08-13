@@ -12,6 +12,7 @@ M.config = {
       make = "make/make",
       javascript = "javascript/node",
       typescript = "typescript/deno",
+      ["typescript.tsx"] = "typescript/deno",
       dart = "dart/dart",
       rust = "rust/cargo",
       zig = "zig/zig",
