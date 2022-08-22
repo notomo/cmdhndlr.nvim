@@ -17,6 +17,7 @@ M.config = {
       rust = "rust/cargo",
       zig = "zig/zig",
       autohotkey = "autohotkey/autohotkey",
+      sql = "sql/sqlite3",
     },
   },
   test_runner = {

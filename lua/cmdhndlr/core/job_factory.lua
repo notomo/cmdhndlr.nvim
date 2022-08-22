@@ -34,6 +34,10 @@ function Job.input(self, text)
   return nil
 end
 
+function Job.close_stdin(self)
+  vim.fn.chanclose(self._id, "stdin")
+end
+
 local JobFactory = {}
 JobFactory.__index = JobFactory
 
@@ -51,7 +55,8 @@ function JobFactory.new(observer, cwd, env)
   return setmetatable(tbl, JobFactory)
 end
 
-function JobFactory.create(self, cmd)
+function JobFactory.create(self, cmd, special_opts)
+  special_opts = special_opts or {}
   return require("cmdhndlr.vendor.promise").new(function(resolve, reject)
     local opts = {
       cwd = self._cwd,
@@ -68,7 +73,13 @@ function JobFactory.create(self, cmd)
     if err then
       return reject(err)
     end
-    return self._observer.post_start(job)
+
+    self._observer.post_start(job)
+
+    if special_opts.input then
+      job:input(special_opts.input)
+      job:close_stdin()
+    end
   end)
 end
 
