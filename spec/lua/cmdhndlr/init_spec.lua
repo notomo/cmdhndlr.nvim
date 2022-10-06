@@ -1,4 +1,4 @@
-local helper = require("cmdhndlr.lib.testlib.helper")
+local helper = require("cmdhndlr.test.helper")
 local cmdhndlr = helper.require("cmdhndlr")
 
 describe("cmdhndlr.run()", function()
