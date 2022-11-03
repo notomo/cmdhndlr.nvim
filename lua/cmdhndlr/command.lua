@@ -8,13 +8,14 @@ local execute_runner = function(runner_factory, args, layout, hooks)
     return nil, factory_err
   end
 
+  local bufnr = vim.api.nvim_create_buf(false, true)
   local observer = {
     pre_start = function(cmd)
       hooks.pre_execute(cmd)
+      require("cmdhndlr.view").open(bufnr, runner.working_dir, layout)
     end,
     post_start = function(job)
-      require("cmdhndlr.view").open(job.bufnr, runner.working_dir, layout)
-      Context.set(runner.path, job, runner_factory, args, hooks)
+      Context.set(runner.path, bufnr, job, runner_factory, args, hooks)
     end,
   }
 

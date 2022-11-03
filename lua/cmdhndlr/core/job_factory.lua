@@ -1,18 +1,14 @@
 local Job = {}
 Job.__index = Job
 
-function Job.new(cmd, opts, output_bufnr)
-  local ok, result
-  vim.api.nvim_buf_call(output_bufnr, function()
-    ok, result = pcall(vim.fn.termopen, cmd, opts)
-  end)
+function Job.new(cmd, opts)
+  local ok, result = pcall(vim.fn.termopen, cmd, opts)
   if not ok then
     return nil, result
   end
 
   local tbl = {
     _id = result,
-    bufnr = output_bufnr,
   }
   return setmetatable(tbl, Job), nil
 end
@@ -68,8 +64,7 @@ function JobFactory.create(self, cmd, special_opts)
 
     self._observer.pre_start(cmd)
 
-    local output_bufnr = vim.api.nvim_create_buf(false, true)
-    local job, err = Job.new(cmd, opts, output_bufnr)
+    local job, err = Job.new(cmd, opts)
     if err then
       return reject(err)
     end

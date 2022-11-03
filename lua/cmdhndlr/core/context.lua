@@ -3,15 +3,15 @@ local _contexts = {}
 local Context = {}
 Context.__index = Context
 
-function Context.set(path, job, runner_factory, args, hooks)
+function Context.set(path, bufnr, job, runner_factory, args, hooks)
   vim.validate({
     job = { job, "table" },
+    bufnr = { bufnr, "number" },
     runner_factory = { runner_factory, "function" },
     args = { args, "table", true },
     hooks = { hooks, "table" },
   })
 
-  local bufnr = job.bufnr
   local tbl = {
     name = path,
     bufnr = bufnr,
