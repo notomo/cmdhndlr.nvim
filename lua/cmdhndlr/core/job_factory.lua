@@ -1,39 +1,3 @@
-local Job = {}
-Job.__index = Job
-
-function Job.new(cmd, opts)
-  local ok, result = pcall(vim.fn.termopen, cmd, opts)
-  if not ok then
-    return nil, result
-  end
-
-  local tbl = {
-    _id = result,
-  }
-  return setmetatable(tbl, Job), nil
-end
-
-function Job.is_running(self)
-  return vim.fn.jobwait({ self._id }, 0)[1] == -1
-end
-
-function Job.input(self, text)
-  if not self:is_running() then
-    return "job is not running"
-  end
-
-  local ok, err = pcall(vim.fn.chansend, self._id, text)
-  if not ok then
-    return err
-  end
-
-  return nil
-end
-
-function Job.close_stdin(self)
-  vim.fn.chanclose(self._id, "stdin")
-end
-
 local JobFactory = {}
 JobFactory.__index = JobFactory
 
@@ -64,7 +28,7 @@ function JobFactory.create(self, cmd, special_opts)
 
     self._observer.pre_start(cmd)
 
-    local job, err = Job.new(cmd, opts)
+    local job, err = require("cmdhndlr.vendor.misclib.job").open_terminal(cmd, opts)
     if err then
       return reject(err)
     end
