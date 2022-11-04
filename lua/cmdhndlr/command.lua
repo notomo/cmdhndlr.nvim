@@ -29,6 +29,7 @@ local execute_runner = function(runner_factory, args, layout, hooks)
       else
         hooks.failure(info)
       end
+      vim.bo[bufnr].bufhidden = "wipe"
     end)
     :catch(function(err)
       require("cmdhndlr.vendor.misclib.message").warn(err)

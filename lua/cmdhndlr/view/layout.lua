@@ -10,6 +10,8 @@ end
 
 function Layouts.tab()
   vim.cmd.tabedit()
+  vim.bo.buftype = "nofile"
+  vim.bo.bufhidden = "wipe"
 end
 
 local Layout = {}
