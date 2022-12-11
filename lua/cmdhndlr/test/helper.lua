@@ -8,6 +8,9 @@ function helper.before_each()
   helper.test_data = require("cmdhndlr.vendor.misclib.test.data_dir").setup(helper.root)
   vim.api.nvim_set_current_dir(helper.test_data.full_path)
   vim.o.runtimepath = runtimepath
+  require("cmdhndlr").setup({
+    log_file_path = helper.test_data.full_path .. "cmdhndlr.log",
+  })
 end
 
 function helper.after_each()

@@ -40,6 +40,7 @@ M.config = {
       dockerfile = "dockerfile/docker",
     },
   },
+  log_file_path = vim.fn.stdpath("log") .. "/cmdhndlr.log",
 }
 
 function M.set(config)
