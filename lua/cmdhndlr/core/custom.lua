@@ -37,6 +37,7 @@ M.config = {
       javascript = "javascript/npm",
       typescript = "javascript/npm",
       c = "c/clang",
+      dockerfile = "dockerfile/docker",
     },
   },
 }
