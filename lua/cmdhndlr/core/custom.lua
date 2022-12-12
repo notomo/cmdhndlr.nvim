@@ -18,6 +18,8 @@ M.config = {
       zig = "zig/zig",
       autohotkey = "autohotkey/autohotkey",
       sql = "sql/sqlite3",
+      zip = "zip/unzip",
+      tar = "tar/tar_unarchive",
     },
   },
   test_runner = {
