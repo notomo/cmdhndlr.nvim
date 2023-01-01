@@ -17,11 +17,11 @@ function M.retry()
 end
 
 function M.input(text, opts)
-  return require("cmdhndlr.command").input(text, opts)
+  require("cmdhndlr.command").input(text, opts)
 end
 
 function M.setup(config)
-  return require("cmdhndlr.command").setup(config)
+  require("cmdhndlr.command").setup(config)
 end
 
 function M.executed_runners()
