@@ -101,7 +101,7 @@ function M.all()
 
   local paths = vim.api.nvim_get_runtime_file("lua/cmdhndlr/handler/**/*.lua", true)
   for _, path in ipairs(paths) do
-    local file = vim.split(path, "lua/cmdhndlr/handler/", true)[2]
+    local file = vim.split(path, "lua/cmdhndlr/handler/", { plain = true })[2]
     local name = file:sub(1, #file - 4)
     table.insert(names, name)
   end
