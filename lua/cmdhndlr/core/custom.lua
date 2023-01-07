@@ -20,6 +20,7 @@ M.config = {
       sql = "sql/sqlite3",
       zip = "zip/unzip",
       tar = "tar/tar_unarchive",
+      ocaml = "ocaml/ocaml",
     },
   },
   test_runner = {
