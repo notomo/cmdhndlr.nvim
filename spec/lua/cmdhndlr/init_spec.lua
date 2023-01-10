@@ -264,6 +264,25 @@ bar"]])
 
     assert.is_true(called)
   end)
+
+  it("can use buffer local runner option", function()
+    vim.b.cmdhndlr_runner_opts = { called = true }
+
+    local called = false
+    helper.register_normal_runner("_test/buffer_local", {
+      opts = { called = false },
+      run_file = function(self)
+        called = self.opts.called
+        return self.job_factory:create({ "echo" })
+      end,
+    })
+
+    cmdhndlr.run({
+      name = "_test/buffer_local",
+    })
+
+    assert.is_true(called)
+  end)
 end)
 
 describe("cmdhndlr.test()", function()

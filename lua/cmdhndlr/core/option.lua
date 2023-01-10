@@ -27,6 +27,7 @@ local new = function(defalt_opts, raw_opts)
   if opts.bufnr == 0 then
     opts.bufnr = vim.api.nvim_get_current_buf()
   end
+  opts.runner_opts = vim.tbl_deep_extend("force", opts.runner_opts, vim.b[opts.bufnr].cmdhndlr_runner_opts or {})
 
   opts.hooks = require("cmdhndlr.core.hooks").new(opts.hooks)
 
