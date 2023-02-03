@@ -120,11 +120,7 @@ function M.execute(name, raw_opts)
 end
 
 function M.runners()
-  local items = {}
-  for _, name in ipairs(require("cmdhndlr.core.runner.handler").all()) do
-    table.insert(items, { name = name })
-  end
-  return items
+  return require("cmdhndlr.core.runner.handler").all()
 end
 
 return M

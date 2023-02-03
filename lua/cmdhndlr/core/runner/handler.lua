@@ -97,20 +97,25 @@ function M.register(typ, name, handler)
 end
 
 function M.all()
-  local names = {}
+  local items = {}
 
   local paths = vim.api.nvim_get_runtime_file("lua/cmdhndlr/handler/**/*.lua", true)
   for _, path in ipairs(paths) do
     local file = vim.split(path, "lua/cmdhndlr/handler/", { plain = true })[2]
     local name = file:sub(1, #file - 4)
-    table.insert(names, name)
+    table.insert(items, {
+      name = name,
+      path = path,
+    })
   end
 
   for name in pairs(M.registered) do
-    table.insert(names, name)
+    table.insert(items, {
+      name = name,
+    })
   end
 
-  return names
+  return items
 end
 
 return M
