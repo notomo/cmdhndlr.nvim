@@ -17,14 +17,17 @@ function Handler.new(typ, opts)
   })
 
   local filetype = vim.bo[opts.bufnr].filetype
-  local global = require("cmdhndlr.core.custom").config[typ].default[filetype]
-  local buffer_local = (vim.b[opts.bufnr].cmdhndlr or {})[typ]
+  local global = require("cmdhndlr.core.custom").config
+  local global_name = global[typ].default[filetype]
+
+  local buffer_local = (vim.b[opts.bufnr].cmdhndlr or {})
+  local buffer_local_name = buffer_local[typ]
 
   local name = opts.name
-  if name == "" and buffer_local then
-    name = buffer_local
-  elseif name == "" and global then
-    name = global
+  if name == "" and buffer_local_name then
+    name = buffer_local_name
+  elseif name == "" and global_name then
+    name = global_name
   end
   if name == "" then
     return nil, "no handler"
@@ -47,13 +50,16 @@ function Handler.new(typ, opts)
     opts.working_dir() or handler.working_dir(),
     opts.working_dir_marker() or handler.working_dir_marker()
   )
+
+  local env = vim.tbl_deep_extend("force", global.env, buffer_local.env or {}, opts.env)
+
   local tbl = {
     name = name,
     path = M._path(typ, name),
     working_dir = working_dir,
     _handler = handler,
     _runner_opts = opts.runner_opts,
-    _env = opts.env,
+    _env = env,
   }
   return setmetatable(tbl, Handler), nil
 end

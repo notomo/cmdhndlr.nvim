@@ -50,6 +50,46 @@ describe("cmdhndlr.run()", function()
     assert.exists_pattern("FOO BAZ")
   end)
 
+  it("can run with global environment variables", function()
+    cmdhndlr.setup({
+      env = {
+        HOGE = "FOO",
+        BAR = "BAZ",
+      },
+    })
+
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create("echo $HOGE $BAR")
+        end,
+      },
+    })
+    helper.wait(job)
+    assert.exists_pattern("FOO BAZ")
+  end)
+
+  it("can run with buffer specific environment variables", function()
+    vim.b.cmdhndlr = {
+      env = {
+        HOGE = "FOO",
+        BAR = "BAZ",
+      },
+    }
+
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create("echo $HOGE $BAR")
+        end,
+      },
+    })
+    helper.wait(job)
+    assert.exists_pattern("FOO BAZ")
+  end)
+
   it("can run with range", function()
     helper.set_lines([[
 hoge

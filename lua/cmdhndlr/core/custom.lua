@@ -44,6 +44,7 @@ M.config = {
     },
   },
   log_file_path = vim.fn.stdpath("log") .. "/cmdhndlr.log",
+  env = {},
 }
 
 function M.set(config)
