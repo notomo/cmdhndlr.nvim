@@ -60,6 +60,7 @@ function Handler.new(typ, opts)
     _handler = handler,
     _runner_opts = opts.runner_opts,
     _env = env,
+    _build_cmd = opts.build_cmd,
   }
   return setmetatable(tbl, Handler), nil
 end
@@ -68,7 +69,7 @@ function Handler.runner(self, observer)
   local log_file_path = require("cmdhndlr.core.custom").config.log_file_path
   return setmetatable({
     opts = vim.tbl_extend("force", self._handler.opts, self._runner_opts),
-    job_factory = JobFactory.new(observer, self.working_dir:get(), self._env, log_file_path),
+    job_factory = JobFactory.new(observer, self.working_dir:get(), self._env, log_file_path, self._build_cmd),
     working_dir = self.working_dir,
     filelib = filelib,
   }, {

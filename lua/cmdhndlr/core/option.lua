@@ -17,6 +17,9 @@ local default = {
   },
   runner_opts = {},
   layout = { type = "horizontal" },
+  build_cmd = function(default_cmd, callback)
+    callback(default_cmd)
+  end,
 }
 
 local new = function(defalt_opts, raw_opts)

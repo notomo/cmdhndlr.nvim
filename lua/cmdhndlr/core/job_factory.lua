@@ -1,18 +1,20 @@
 local JobFactory = {}
 JobFactory.__index = JobFactory
 
-function JobFactory.new(observer, cwd, env, log_file_path)
+function JobFactory.new(observer, cwd, env, log_file_path, build_cmd)
   vim.validate({
     observer = { observer, "table" },
     cwd = { cwd, "string" },
     env = { env, "table" },
     log_file_path = { log_file_path, "string" },
+    build_cmd = { build_cmd, "function", true },
   })
   local tbl = {
     _observer = observer,
     _cwd = cwd,
     _env = vim.tbl_isempty(env) and vim.empty_dict() or env,
     _log_file_path = log_file_path,
+    _build_cmd = build_cmd,
   }
   return setmetatable(tbl, JobFactory)
 end
@@ -46,20 +48,26 @@ function JobFactory.create(self, cmd, special_opts)
       end,
     }
 
-    self._observer.pre_start(cmd)
-    log(cmd, self._log_file_path)
+    self._build_cmd(cmd, function(built_cmd)
+      if not built_cmd then
+        return reject("canceled")
+      end
 
-    local job, err = require("cmdhndlr.vendor.misclib.job").open_terminal(cmd, opts)
-    if err then
-      return reject(err)
-    end
+      self._observer.pre_start(built_cmd)
+      log(built_cmd, self._log_file_path)
 
-    self._observer.post_start(job)
+      local job, err = require("cmdhndlr.vendor.misclib.job").open_terminal(built_cmd, opts)
+      if err then
+        return reject(err)
+      end
 
-    if special_opts.input then
-      job:input(special_opts.input)
-      job:close_stdin()
-    end
+      self._observer.post_start(job)
+
+      if special_opts.input then
+        job:input(special_opts.input)
+        job:close_stdin()
+      end
+    end)
   end)
 end
 

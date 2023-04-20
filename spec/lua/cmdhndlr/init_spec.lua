@@ -323,6 +323,23 @@ bar"]])
 
     assert.is_true(called)
   end)
+
+  it("can custom command build", function()
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({ "echo" })
+        end,
+      },
+      build_cmd = function(cmd, callback)
+        table.insert(cmd, "built")
+        callback(cmd)
+      end,
+    })
+    helper.wait(job)
+    assert.exists_pattern("built")
+  end)
 end)
 
 describe("cmdhndlr.test()", function()
