@@ -17,9 +17,9 @@ function Hooks.new(raw_hooks)
 end
 
 function Hooks.info_factory()
-  local start_time = vim.loop.now()
+  local start_time = vim.uv.now()
   return function()
-    return { elapsed_ms = vim.loop.now() - start_time }
+    return { elapsed_ms = vim.uv.now() - start_time }
   end
 end
 
