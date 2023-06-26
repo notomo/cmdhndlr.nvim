@@ -9,7 +9,7 @@ function helper.before_each()
   vim.api.nvim_set_current_dir(helper.test_data.full_path)
   vim.o.runtimepath = runtimepath
   require("cmdhndlr").setup({
-    log_file_path = helper.test_data.full_path .. "cmdhndlr.log",
+    log_file_path = helper.test_data:path("cmdhndlr.log"),
   })
 end
 
