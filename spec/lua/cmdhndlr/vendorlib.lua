@@ -8,6 +8,7 @@ return {
   "notomo/assertlib.nvim/lua/assertlib/function/tab.lua",
   "notomo/assertlib.nvim/lua/assertlib/function/window.lua",
   "notomo/assertlib.nvim/lua/assertlib/init.lua",
+  "notomo/misclib.nvim/lua/misclib/highlight.lua",
   "notomo/misclib.nvim/lua/misclib/job/init.lua",
   "notomo/misclib.nvim/lua/misclib/message.lua",
   "notomo/misclib.nvim/lua/misclib/module.lua",

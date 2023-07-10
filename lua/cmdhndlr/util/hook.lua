@@ -1,32 +1,19 @@
 local messagelib = require("cmdhndlr.vendor.misclib.message")
+local hl_groups = require("cmdhndlr.view.highlight_group")
 
 local M = {}
-
-local setup_highlight_groups = function()
-  vim.api.nvim_set_hl(0, "CmdhndlrSuccess", { link = "Search" })
-  vim.api.nvim_set_hl(0, "CmdhndlrFailure", { link = "Todo" })
-end
-
-local group = vim.api.nvim_create_augroup("cmdhndlr", {})
-vim.api.nvim_create_autocmd({ "ColorScheme" }, {
-  group = group,
-  pattern = { "*" },
-  callback = setup_highlight_groups,
-})
-
-setup_highlight_groups()
 
 function M.echo_success()
   return function(info)
     local msg = ("SUCCESS: %d ms"):format(info.elapsed_ms)
-    messagelib.info(msg, "CmdhndlrSuccess")
+    messagelib.info(msg, hl_groups.CmdhndlrSuccess)
   end
 end
 
 function M.echo_failure()
   return function(info)
     local msg = ("FAILURE: %d ms"):format(info.elapsed_ms)
-    messagelib.info(msg, "CmdhndlrFailure")
+    messagelib.info(msg, hl_groups.CmdhndlrFailure)
   end
 end
 
