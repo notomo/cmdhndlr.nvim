@@ -15,6 +15,6 @@ function M.run_file(self, path, filter)
   return self.job_factory:create(cmd)
 end
 
-M.working_dir_marker = require("cmdhndlr.util").working_dir.upward_marker("deno.json", "deno.jsonc", "import_map.json")
+M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker("deno.json", "deno.jsonc", "import_map.json")
 
 return M

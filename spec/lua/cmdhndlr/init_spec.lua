@@ -31,7 +31,7 @@ describe("cmdhndlr.run()", function()
         local parts = vim.split(self.working_dir:get(), "/", { plain = true })
         return self.job_factory:create({ "echo", parts[#parts] })
       end,
-      working_dir = require("cmdhndlr.util").working_dir.upward_pattern("dir1", "dir2"),
+      working_dir = require("cmdhndlr.util.working_dir").upward_pattern("dir1", "dir2"),
     })
   end)
   after_each(helper.after_each)

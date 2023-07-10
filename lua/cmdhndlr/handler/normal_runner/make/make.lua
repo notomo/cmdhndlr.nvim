@@ -17,6 +17,6 @@ function M.run_file(self, _)
   return self.job_factory:create(cmd)
 end
 
-M.working_dir_marker = require("cmdhndlr.util").working_dir.upward_marker("Makefile")
+M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker("Makefile")
 
 return M
