@@ -12,6 +12,10 @@ function M.build(opts)
   return require("cmdhndlr.command").build(opts)
 end
 
+function M.format(opts)
+  return require("cmdhndlr.command").format(opts)
+end
+
 function M.retry()
   return require("cmdhndlr.command").retry()
 end

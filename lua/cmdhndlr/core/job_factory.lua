@@ -46,6 +46,7 @@ function JobFactory.create(self, cmd, special_opts)
       on_exit = function(_, exit_code)
         resolve(exit_code == 0)
       end,
+      on_stdout = special_opts.on_stdout,
     }
 
     self._build_cmd(cmd, function(built_cmd)
@@ -56,7 +57,12 @@ function JobFactory.create(self, cmd, special_opts)
       self._observer.pre_start(built_cmd)
       log(built_cmd, self._log_file_path)
 
-      local job, err = require("cmdhndlr.vendor.misclib.job").open_terminal(built_cmd, opts)
+      local job, err
+      if special_opts.as_job then
+        job, err = require("cmdhndlr.vendor.misclib.job").start(built_cmd, opts)
+      else
+        job, err = require("cmdhndlr.vendor.misclib.job").open_terminal(built_cmd, opts)
+      end
       if err then
         return reject(err)
       end

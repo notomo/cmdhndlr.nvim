@@ -504,6 +504,43 @@ describe("cmdhndlr.build()", function()
   end)
 end)
 
+describe("cmdhndlr.format()", function()
+  before_each(function()
+    helper.before_each()
+
+    helper.register_format_runner("_test/file", {
+      opts = {
+        f = function()
+          error("not implemented")
+        end,
+      },
+      format = function(self, ...)
+        return self.opts.f(self, ...)
+      end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("can format async", function()
+    local job = cmdhndlr.format({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self, _, on_stdout)
+          return self.job_factory:create({ "echo", "ok" }, {
+            on_stdout = on_stdout,
+            as_job = true,
+          })
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.exists_pattern("ok")
+    assert.exists_message("STARTING: echo ok")
+    assert.exists_message("SUCCESS")
+  end)
+end)
+
 describe("cmdhndlr.retry()", function()
   before_each(function()
     helper.before_each()

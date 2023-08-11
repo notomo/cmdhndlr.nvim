@@ -61,6 +61,14 @@ function M.build(raw_opts)
   return execute_runner(runner_factory, {}, opts.layout, opts.hooks)
 end
 
+function M.format(raw_opts)
+  local opts = require("cmdhndlr.core.option").FormatOption.new(raw_opts)
+  local runner_factory = function()
+    return require("cmdhndlr.core.runner.format_runner").new(opts)
+  end
+  return execute_runner(runner_factory, {}, nil, opts.hooks)
+end
+
 function M.retry()
   local ctx, err = Context.get()
   if err then
@@ -115,6 +123,10 @@ function M.execute(name, raw_opts)
   if vim.startswith(name, "build_runner/") then
     raw_opts.name = name:gsub("^build_runner/", "")
     return M.build(raw_opts)
+  end
+  if vim.startswith(name, "format_runner/") then
+    raw_opts.name = name:gsub("^format_runner/", "")
+    return M.format(raw_opts)
   end
   error("unexpected runner name: " .. name)
 end

@@ -47,6 +47,10 @@ function helper.register_build_runner(name, handler)
   require("cmdhndlr.core.runner.handler").register("build_runner", name, handler)
 end
 
+function helper.register_format_runner(name, handler)
+  require("cmdhndlr.core.runner.handler").register("format_runner", name, handler)
+end
+
 function helper.on_finished()
   local finished = false
   return setmetatable({

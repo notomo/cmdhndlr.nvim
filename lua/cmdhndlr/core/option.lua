@@ -70,6 +70,18 @@ function BuildOption.new(raw_opts)
   return new(BuildOption.default, raw_opts)
 end
 
+local FormatOption = {}
+M.FormatOption = FormatOption
+M.FormatOption.default = vim.deepcopy(default)
+FormatOption.default.hooks = {
+  success = require("cmdhndlr.util.hook").echo_success(),
+  failure = require("cmdhndlr.util.hook").echo_failure(),
+  pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
+}
+function FormatOption.new(raw_opts)
+  return new(FormatOption.default, raw_opts)
+end
+
 local InputOption = {}
 M.InputOption = InputOption
 M.InputOption.default = {

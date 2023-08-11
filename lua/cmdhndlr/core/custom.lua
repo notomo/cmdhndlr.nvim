@@ -43,6 +43,11 @@ M.config = {
       dockerfile = "dockerfile/docker",
     },
   },
+  format_runner = {
+    default = {
+      json = "json/fixjson",
+    },
+  },
   log_file_path = vim.fn.stdpath("log") .. "/cmdhndlr.log",
   env = {},
 }
