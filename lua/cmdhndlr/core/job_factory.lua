@@ -1,13 +1,14 @@
 local JobFactory = {}
 JobFactory.__index = JobFactory
 
-function JobFactory.new(observer, cwd, env, log_file_path, build_cmd)
+function JobFactory.new(observer, cwd, env, log_file_path, build_cmd, build_cmd_ctx)
   vim.validate({
     observer = { observer, "table" },
     cwd = { cwd, "string" },
     env = { env, "table" },
     log_file_path = { log_file_path, "string" },
     build_cmd = { build_cmd, "function", true },
+    build_cmd_ctx = { build_cmd_ctx, "table" },
   })
   local tbl = {
     _observer = observer,
@@ -15,6 +16,7 @@ function JobFactory.new(observer, cwd, env, log_file_path, build_cmd)
     _env = vim.tbl_isempty(env) and vim.empty_dict() or env,
     _log_file_path = log_file_path,
     _build_cmd = build_cmd,
+    _build_cmd_ctx = build_cmd_ctx,
   }
   return setmetatable(tbl, JobFactory)
 end
@@ -73,7 +75,7 @@ function JobFactory.create(self, cmd, special_opts)
         job:input(special_opts.input)
         job:close_stdin()
       end
-    end)
+    end, self._build_cmd_ctx)
   end)
 end
 

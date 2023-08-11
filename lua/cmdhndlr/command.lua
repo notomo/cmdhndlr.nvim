@@ -132,7 +132,7 @@ function M.execute(name, raw_opts)
 end
 
 function M.enabled(typ, raw_opts)
-  local opts = require("cmdhndlr.core.option").EnabledOption.new(raw_opts)
+  local opts = require("cmdhndlr.core.option").EnabledOption.new(typ, raw_opts)
   local _, err = require("cmdhndlr.core.runner.handler").Handler.new(typ, opts)
   return err ~= "no handler"
 end

@@ -58,10 +58,12 @@ M.config = {
       rust = "rust/rustfmt",
       go = "go/goimports",
       c = "c/uncrustify",
+      lua = "lua/stylua",
     },
   },
   log_file_path = vim.fs.joinpath(vim.fn.stdpath("log"), "cmdhndlr.log"),
   env = {},
+  opts = {},
 }
 
 function M.set(config)

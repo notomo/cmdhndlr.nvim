@@ -16,19 +16,7 @@ function Handler.new(typ, opts)
     opts = { opts, "table" },
   })
 
-  local filetype = vim.bo[opts.bufnr].filetype
-  local global = require("cmdhndlr.core.custom").config
-  local global_name = global[typ].default[filetype]
-
-  local buffer_local = (vim.b[opts.bufnr].cmdhndlr or {})
-  local buffer_local_name = buffer_local[typ]
-
   local name = opts.name
-  if name == "" and buffer_local_name then
-    name = buffer_local_name
-  elseif name == "" and global_name then
-    name = global_name
-  end
   if name == "" then
     return nil, "no handler"
   end
@@ -51,16 +39,17 @@ function Handler.new(typ, opts)
     opts.working_dir_marker() or handler.working_dir_marker()
   )
 
-  local env = vim.tbl_deep_extend("force", global.env, buffer_local.env or {}, opts.env)
-
   local tbl = {
     name = name,
     path = M._path(typ, name),
     working_dir = working_dir,
     _handler = handler,
     _runner_opts = opts.runner_opts,
-    _env = env,
+    _env = opts.env,
     _build_cmd = opts.build_cmd,
+    _build_cmd_ctx = {
+      bufnr = opts.bufnr,
+    },
   }
   return setmetatable(tbl, Handler), nil
 end
@@ -69,7 +58,14 @@ function Handler.runner(self, observer)
   local log_file_path = require("cmdhndlr.core.custom").config.log_file_path
   return setmetatable({
     opts = vim.tbl_extend("force", self._handler.opts, self._runner_opts),
-    job_factory = JobFactory.new(observer, self.working_dir:get(), self._env, log_file_path, self._build_cmd),
+    job_factory = JobFactory.new(
+      observer,
+      self.working_dir:get(),
+      self._env,
+      log_file_path,
+      self._build_cmd,
+      self._build_cmd_ctx
+    ),
     working_dir = self.working_dir,
     filelib = filelib,
   }, {
