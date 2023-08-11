@@ -46,6 +46,18 @@ M.config = {
   format_runner = {
     default = {
       json = "json/fixjson",
+      jsonc = "json/fixjson",
+      typescript = "typescript/deno",
+      terraform = "terraform/terraform",
+      python = "python/black",
+      javascript = "javascript/prettier",
+      css = "javascript/prettier",
+      html = "javascript/prettier",
+      graphql = "javascript/prettier",
+      yaml = "yaml/yamlfmt",
+      rust = "rust/rustfmt",
+      go = "go/goimports",
+      c = "c/uncrustify",
     },
   },
   log_file_path = vim.fs.joinpath(vim.fn.stdpath("log"), "cmdhndlr.log"),
