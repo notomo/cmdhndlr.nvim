@@ -36,6 +36,10 @@ function M.execute(name, opts)
   return require("cmdhndlr.command").execute(name, opts)
 end
 
+function M.enabled(name, opts)
+  return require("cmdhndlr.command").enabled(name, opts)
+end
+
 function M.runners()
   return require("cmdhndlr.command").runners()
 end

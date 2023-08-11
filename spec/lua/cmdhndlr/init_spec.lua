@@ -755,3 +755,26 @@ describe("cmdhndlr.runners()", function()
     assert.same({ name = "normal_runner/_test/file" }, actual[#actual])
   end)
 end)
+
+describe("cmdhndlr.enabled()", function()
+  before_each(function()
+    helper.before_each()
+
+    helper.register_format_runner("_test/file", {
+      format = function() end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("returns true if the buffer has enabled runner", function()
+    vim.b.cmdhndlr = { format_runner = "_test/file" }
+
+    local got = cmdhndlr.enabled("format_runner")
+    assert.is_true(got)
+  end)
+
+  it("returns false if the buffer does not have enabled runner", function()
+    local got = cmdhndlr.enabled("format_runner")
+    assert.is_false(got)
+  end)
+end)

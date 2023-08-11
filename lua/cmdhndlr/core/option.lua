@@ -93,4 +93,11 @@ function InputOption.new(raw_opts)
   return vim.tbl_deep_extend("force", M.InputOption.default, raw_opts)
 end
 
+local EnabledOption = {}
+M.EnabledOption = EnabledOption
+M.EnabledOption.default = vim.deepcopy(default)
+function EnabledOption.new(raw_opts)
+  return new(EnabledOption.default, raw_opts)
+end
+
 return M
