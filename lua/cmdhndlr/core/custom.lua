@@ -48,7 +48,7 @@ M.config = {
       json = "json/fixjson",
     },
   },
-  log_file_path = vim.fn.stdpath("log") .. "/cmdhndlr.log",
+  log_file_path = vim.fs.joinpath(vim.fn.stdpath("log"), "cmdhndlr.log"),
   env = {},
 }
 
