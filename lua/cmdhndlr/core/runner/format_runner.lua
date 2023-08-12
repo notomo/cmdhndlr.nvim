@@ -23,10 +23,12 @@ function FormatRunner.execute(self, observer)
   local path = vim.api.nvim_buf_get_name(self._bufnr)
   local stdout = require("cmdhndlr.vendor.misclib.job.output").new()
   local runner = self._handler:runner(observer)
-  return self._handler.format(runner, path, stdout:collector()):next(function(...)
-    local lines = stdout:lines()
-    vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, false, lines)
-    return ...
+  return self._handler.format(runner, path, stdout:collector()):next(function(ok)
+    if ok then
+      local lines = stdout:lines()
+      vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, false, lines)
+    end
+    return ok
   end)
 end
 

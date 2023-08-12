@@ -539,6 +539,25 @@ describe("cmdhndlr.format()", function()
     assert.exists_message("STARTING: echo ok")
     assert.exists_message("SUCCESS")
   end)
+
+  it("ignores outputs on failure", function()
+    helper.set_lines([[original]])
+
+    local job = cmdhndlr.format({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self, _, on_stdout)
+          return self.job_factory:create({ "cat", "not_found" }, {
+            on_stdout = on_stdout,
+            as_job = true,
+          })
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.exists_pattern("original")
+  end)
 end)
 
 describe("cmdhndlr.retry()", function()
