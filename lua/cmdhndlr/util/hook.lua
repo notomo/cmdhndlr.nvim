@@ -37,7 +37,14 @@ function M.echo_cmd()
     else
       msg = cmd
     end
-    messagelib.info("STARTING: " .. msg)
+
+    msg = "[cmdhndlr] STARTING: " .. msg
+    local max_width = math.floor(vim.o.columns * 0.90) -- suppress Press ENTER message
+    if max_width < vim.fn.strdisplaywidth(msg) then
+      msg = vim.fn.strpart(msg, 0, max_width - 3) .. "..."
+    end
+
+    vim.api.nvim_echo({ { msg } }, true, {})
   end
 end
 
