@@ -26,7 +26,9 @@ function FormatRunner.execute(self, observer)
   return self._handler.format(runner, path, stdout:collector()):next(function(ok)
     if ok then
       local lines = stdout:lines()
+      local restore = require("cmdhndlr.lib.cursor").store_positions(self._bufnr)
       vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, false, lines)
+      restore()
     end
     return ok
   end)
