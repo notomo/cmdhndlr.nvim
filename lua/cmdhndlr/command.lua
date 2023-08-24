@@ -1,6 +1,6 @@
 local M = {}
 
-local Context = require("cmdhndlr.core.context")
+local State = require("cmdhndlr.core.state")
 
 local execute_runner = function(runner_factory, args, layout, hooks)
   local runner, factory_err = runner_factory()
@@ -15,7 +15,7 @@ local execute_runner = function(runner_factory, args, layout, hooks)
       require("cmdhndlr.view").open(bufnr, runner.working_dir, layout)
     end,
     post_start = function(job)
-      Context.set(runner.path, bufnr, job, runner_factory, args, hooks)
+      State.set(runner.path, bufnr, job, runner_factory, args, hooks)
     end,
   }
 
@@ -70,27 +70,27 @@ function M.format(raw_opts)
 end
 
 function M.retry()
-  local ctx, err = Context.get()
+  local state, err = State.get()
   if err then
     require("cmdhndlr.vendor.misclib.message").error(err)
   end
-  return execute_runner(ctx.runner_factory, ctx.args, { type = "no" }, ctx.hooks)
+  return execute_runner(state.runner_factory, state.args, { type = "no" }, state.hooks)
 end
 
 function M.input(text, raw_opts)
   vim.validate({ text = { text, "string" } })
 
   local opts = require("cmdhndlr.core.option").InputOption.new(raw_opts)
-  local ctx, err = Context.find_running(opts.name)
+  local state, err = State.find_running(opts.name)
   if err then
     require("cmdhndlr.vendor.misclib.message").error(err)
   end
 
-  local input_err = ctx.job:input(text)
+  local input_err = state.job:input(text)
   if input_err then
     require("cmdhndlr.vendor.misclib.message").error(input_err)
   end
-  require("cmdhndlr.vendor.misclib.message").info(("sent to %s: %s"):format(ctx.name, text))
+  require("cmdhndlr.vendor.misclib.message").info(("sent to %s: %s"):format(state.name, text))
 end
 
 function M.setup(config)
@@ -100,11 +100,11 @@ end
 
 function M.executed_runners()
   local items = {}
-  for _, ctx in ipairs(Context.all()) do
+  for _, state in ipairs(State.all()) do
     table.insert(items, {
-      name = ctx.name,
-      bufnr = ctx.bufnr,
-      is_running = ctx.job:is_running(),
+      name = state.name,
+      bufnr = state.bufnr,
+      is_running = state.job:is_running(),
     })
   end
   return items
