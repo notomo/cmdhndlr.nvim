@@ -15,9 +15,10 @@ function Layouts.tab()
 end
 
 local Layout = {}
-Layout.__index = Layout
 
-function Layout.new(opts)
+function Layout.open(bufnr, opts)
+  vim.validate({ bufnr = { bufnr, "number" } })
+
   opts = opts or {}
   local typ = opts.type
 
@@ -32,13 +33,7 @@ function Layout.new(opts)
     error("unexpected layout type: " .. tostring(typ))
   end
 
-  local tbl = { _f = f }
-  return setmetatable(tbl, Layout)
-end
-
-function Layout.open(self, bufnr)
-  vim.validate({ bufnr = { bufnr, "number" } })
-  self._f()
+  f()
   vim.api.nvim_win_set_buf(0, bufnr)
   return vim.api.nvim_get_current_win()
 end

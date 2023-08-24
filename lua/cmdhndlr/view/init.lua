@@ -17,9 +17,9 @@ function M.open(bufnr, working_dir, layout_opts)
     vim.cmd.startinsert({ bang = true })
   end)
 
-  vim.bo[bufnr].filetype = "cmdhndlr"
-  Layout.new(layout_opts):open(bufnr)
+  Layout.open(bufnr, layout_opts)
   working_dir:set_current()
+  vim.bo[bufnr].filetype = "cmdhndlr"
 end
 
 return M
