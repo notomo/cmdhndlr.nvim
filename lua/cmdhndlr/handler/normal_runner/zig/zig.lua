@@ -1,7 +1,7 @@
 local M = {}
 
-function M.run_file(self, path)
-  return self.job_factory:create({ "zig", "run", path })
+function M.run_file(ctx, path)
+  return ctx.job_factory:create({ "zig", "run", path })
 end
 
 return M

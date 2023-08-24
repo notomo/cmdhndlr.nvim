@@ -1,6 +1,6 @@
 local M = {}
 
-function M.run_file(self, path)
+function M.run_file(ctx, path)
   if not vim.fn.filereadable(path) then
     error("not readable: " .. path)
   end
@@ -14,7 +14,7 @@ function M.run_file(self, path)
   else
     error("not supported os")
   end
-  return self.job_factory:create(cmd)
+  return ctx.job_factory:create(cmd)
 end
 
 return M

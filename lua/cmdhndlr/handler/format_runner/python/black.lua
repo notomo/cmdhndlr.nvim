@@ -1,8 +1,8 @@
 local M = {}
 
-function M.format(self, path, stdout_collector)
+function M.format(ctx, path, stdout_collector)
   local content = require("cmdhndlr.lib.file").read_all(path)
-  return self.job_factory:create({ "black", "--stdin-filename", path, "--quiet", "-" }, {
+  return ctx.job_factory:create({ "black", "--stdin-filename", path, "--quiet", "-" }, {
     input = content,
     on_stdout = stdout_collector,
     as_job = true,

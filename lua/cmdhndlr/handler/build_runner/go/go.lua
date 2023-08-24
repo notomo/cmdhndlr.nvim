@@ -1,8 +1,8 @@
 local M = {}
 
-function M.build(self, _)
+function M.build(ctx, _)
   local temp = require("cmdhndlr.lib.file").temporary()
-  return self.job_factory:create({ "go", "build", "-o", temp })
+  return ctx.job_factory:create({ "go", "build", "-o", temp })
 end
 
 return M

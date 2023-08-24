@@ -1,6 +1,6 @@
 local M = {}
 
-function M.run_file(self, path, filter)
+function M.run_file(ctx, path, filter)
   local cmd = { "deno", "test" }
   if filter then
     table.insert(cmd, "--filter=" .. filter)
@@ -12,7 +12,7 @@ function M.run_file(self, path, filter)
     vim.list_extend(cmd, extra_args)
   end
 
-  return self.job_factory:create(cmd)
+  return ctx.job_factory:create(cmd)
 end
 
 M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker("deno.json", "deno.jsonc", "import_map.json")

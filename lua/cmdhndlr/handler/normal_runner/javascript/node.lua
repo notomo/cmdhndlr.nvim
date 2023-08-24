@@ -1,12 +1,12 @@
 local M = {}
 
-function M.run_file(self, path)
-  return self.job_factory:create({ "node", path })
+function M.run_file(ctx, path)
+  return ctx.job_factory:create({ "node", path })
 end
 
-function M.run_string(self, str)
+function M.run_string(ctx, str)
   local path = require("cmdhndlr.lib.file").temporary(str)
-  return M.run_file(self, path)
+  return M.run_file(ctx, path)
 end
 
 return M

@@ -5,10 +5,10 @@ M.opts = {
   use_dune_top = false,
 }
 
-function M.run_file(self, path)
-  if self.opts.use_in_repl then
+function M.run_file(ctx, path)
+  if ctx.opts.use_in_repl then
     local input = ""
-    if self.opts.use_dune_top then
+    if ctx.opts.use_dune_top then
       input = [[
 #use_output "dune top";;
 ]]
@@ -18,9 +18,9 @@ function M.run_file(self, path)
 #use "%s";;
 #quit;;
 ]]):format(path)
-    return self.job_factory:create({ "ocaml" }, { input = input })
+    return ctx.job_factory:create({ "ocaml" }, { input = input })
   end
-  return self.job_factory:create({ "ocaml", path })
+  return ctx.job_factory:create({ "ocaml", path })
 end
 
 return M
