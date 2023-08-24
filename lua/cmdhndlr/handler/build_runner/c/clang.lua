@@ -1,7 +1,7 @@
 local M = {}
 
 function M.build(self, path)
-  local temp = self.filelib.temporary()
+  local temp = require("cmdhndlr.lib.file").temporary()
   return self.job_factory:create({ "clang", "-o", temp, path })
 end
 

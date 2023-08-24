@@ -5,7 +5,7 @@ function M.run_file(self, path)
 end
 
 function M.run_string(self, str)
-  local path = self.filelib.temporary(str)
+  local path = require("cmdhndlr.lib.file").temporary(str)
   return self:run_file(path)
 end
 

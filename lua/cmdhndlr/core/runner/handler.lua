@@ -1,7 +1,6 @@
 local JobFactory = require("cmdhndlr.core.job_factory")
 local WorkingDir = require("cmdhndlr.core.working_dir")
 local modulelib = require("cmdhndlr.vendor.misclib.module")
-local filelib = require("cmdhndlr.lib.file")
 
 local M = {}
 
@@ -67,7 +66,6 @@ function Handler.runner(self, observer)
       self._build_cmd_ctx
     ),
     working_dir = self.working_dir,
-    filelib = filelib,
   }, {
     __index = self._handler,
   })

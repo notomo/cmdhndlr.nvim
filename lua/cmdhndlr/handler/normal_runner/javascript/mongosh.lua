@@ -1,7 +1,7 @@
 local M = {}
 
 function M.run_file(self, path)
-  local input, err = self.filelib.read_all(path)
+  local input, err = require("cmdhndlr.lib.file").read_all(path)
   if err then
     require("cmdhndlr.vendor.misclib.message").error(err)
   end

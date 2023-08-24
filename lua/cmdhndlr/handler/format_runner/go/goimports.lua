@@ -1,7 +1,7 @@
 local M = {}
 
 function M.format(self, path, stdout_collector)
-  local content = self.filelib.read_all(path)
+  local content = require("cmdhndlr.lib.file").read_all(path)
   local dir_path = vim.fs.basename(path)
   return self.job_factory:create({ "goimports", "-srcdir", dir_path }, {
     input = content,

@@ -1,4 +1,5 @@
 local Handler = require("cmdhndlr.core.runner.handler").Handler
+local filelib = require("cmdhndlr.lib.file")
 
 local NormalRunner = {}
 NormalRunner.__index = NormalRunner
@@ -52,7 +53,7 @@ function NormalRunner._run_buffer(self, runner)
     return self._handler.run_string(runner, str)
   end
 
-  return self._handler.run_file(runner, runner.filelib.temporary(str))
+  return self._handler.run_file(runner, filelib.temporary(str))
 end
 
 return NormalRunner
