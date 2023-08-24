@@ -6,7 +6,7 @@ local M = {}
 
 M.registered = {}
 
-local Handler = { registered = {} }
+local Handler = {}
 M.Handler = Handler
 
 function Handler.new(typ, opts)
@@ -43,7 +43,7 @@ function Handler.new(typ, opts)
     path = M._path(typ, name),
     working_dir = working_dir,
     _handler = handler,
-    _runner_opts = opts.runner_opts,
+    _runner_opts = vim.tbl_extend("force", handler.opts, opts.runner_opts),
     _env = opts.env,
     _build_cmd = opts.build_cmd,
     _build_cmd_ctx = {
@@ -56,7 +56,7 @@ end
 function Handler.runner(self, observer)
   local log_file_path = require("cmdhndlr.core.custom").config.log_file_path
   return setmetatable({
-    opts = vim.tbl_extend("force", self._handler.opts, self._runner_opts),
+    opts = self._runner_opts,
     job_factory = JobFactory.new(
       observer,
       self.working_dir:get(),
