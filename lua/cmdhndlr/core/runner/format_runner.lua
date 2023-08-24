@@ -13,7 +13,7 @@ function FormatRunner.new(opts)
 
   local tbl = {
     working_dir = handler.decided_working_dir,
-    path = handler.path,
+    full_name = handler.full_name,
     _bufnr = opts.bufnr,
     _handler = handler,
     _global_opts = opts,

@@ -11,15 +11,13 @@ function Handler.new(typ, opts)
     opts = { opts, "table" },
   })
 
-  local name = opts.name
-  local path = Handler._path(typ, name)
-  local handler, err = Handler._find(path)
+  local full_name = Handler._full_name(typ, opts.name)
+  local handler, err = Handler._find(full_name)
   if err then
     return nil, err
   end
 
-  handler.name = name
-  handler.path = path
+  handler.full_name = full_name
   handler.opts = handler.opts or {}
 
   handler.working_dir = handler.working_dir or function()
@@ -36,26 +34,26 @@ function Handler.new(typ, opts)
   return handler
 end
 
-function Handler._find(path)
-  local registered = Handler.registered[path]
+function Handler._find(full_name)
+  local registered = Handler.registered[full_name]
   if registered then
     return registered, nil
   end
 
-  local handler = modulelib.find("cmdhndlr.handler." .. path)
+  local handler = modulelib.find("cmdhndlr.handler." .. full_name)
   if handler then
     return handler, nil
   end
 
-  return nil, "not found handler: " .. path
+  return nil, "not found handler: " .. full_name
 end
 
-function Handler._path(typ, name)
+function Handler._full_name(typ, name)
   return ("%s/%s"):format(typ, name:gsub("%.", "/"))
 end
 
 function Handler.register(typ, name, handler)
-  Handler.registered[Handler._path(typ, name)] = handler
+  Handler.registered[Handler._full_name(typ, name)] = handler
 end
 
 function Handler.all()
@@ -64,16 +62,16 @@ function Handler.all()
   local paths = vim.api.nvim_get_runtime_file("lua/cmdhndlr/handler/**/*.lua", true)
   for _, path in ipairs(paths) do
     local file = vim.split(path, "lua/cmdhndlr/handler/", { plain = true })[2]
-    local name = file:sub(1, #file - 4)
+    local full_name = file:sub(1, #file - 4)
     table.insert(items, {
-      name = name,
+      full_name = full_name,
       path = path,
     })
   end
 
-  for name in pairs(Handler.registered) do
+  for full_name in pairs(Handler.registered) do
     table.insert(items, {
-      name = name,
+      full_name = full_name,
     })
   end
 

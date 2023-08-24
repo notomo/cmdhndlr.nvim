@@ -266,7 +266,7 @@ bar"]])
     local job = cmdhndlr.run({ name = "_test/no_range" })
     helper.wait(job)
 
-    assert.exists_message([[`_test/no_range` runner does not support range]])
+    assert.exists_message([[`normal_runner/_test/no_range` does not support range]])
   end)
 
   it("can use runner that is not supported range in nofile buffer", function()
@@ -650,12 +650,13 @@ describe("cmdhndlr.input()", function()
         end,
       },
     })
-    cmdhndlr.input("test_input", { name = "normal_runner/_test/file" })
-    cmdhndlr.input(vim.api.nvim_eval('"\\<C-c>"'), { name = "normal_runner/_test/file" })
+    cmdhndlr.input("test_input", { full_name = "normal_runner/_test/file" })
+    cmdhndlr.input(vim.api.nvim_eval('"\\<C-c>"'), { full_name = "normal_runner/_test/file" })
 
     helper.wait(job)
 
     assert.exists_pattern([[test_input]])
+    assert.exists_message([[sent to normal_runner/_test/file: test_input]])
   end)
 
   it("raises error if not plugin buffer", function()
@@ -678,7 +679,7 @@ describe("cmdhndlr.input()", function()
     helper.wait(job)
 
     local ok, err = pcall(function()
-      cmdhndlr.input("test_input", { name = "normal_runner/_test/file" })
+      cmdhndlr.input("test_input", { full_name = "normal_runner/_test/file" })
     end)
     assert.is_false(ok)
     assert.match([[no running runner: not found: normal_runner/_test/file]], err)
@@ -721,7 +722,7 @@ describe("cmdhndlr.executed_runners()", function()
     local bufnr = vim.api.nvim_get_current_buf()
 
     local actual = cmdhndlr.executed_runners()
-    assert.same({ { name = "normal_runner/_test/file", bufnr = bufnr, is_running = false } }, actual)
+    assert.same({ { full_name = "normal_runner/_test/file", bufnr = bufnr, is_running = false } }, actual)
   end)
 end)
 
@@ -771,7 +772,7 @@ describe("cmdhndlr.runners()", function()
 
   it("returns runners including registered manually", function()
     local actual = cmdhndlr.runners()
-    assert.same({ name = "normal_runner/_test/file" }, actual[#actual])
+    assert.same({ full_name = "normal_runner/_test/file" }, actual[#actual])
   end)
 end)
 

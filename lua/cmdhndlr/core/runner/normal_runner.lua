@@ -16,7 +16,7 @@ function NormalRunner.new(opts)
 
   local tbl = {
     working_dir = handler.decided_working_dir,
-    path = handler.path,
+    full_name = handler.full_name,
     _bufnr = opts.bufnr,
     _handler = handler,
     _global_opts = opts,
@@ -35,7 +35,7 @@ end
 
 function NormalRunner._run_range(self, ctx, range)
   if not self._handler.run_string then
-    local err = ("`%s` runner does not support range"):format(self._handler.name)
+    local err = ("`%s` does not support range"):format(self._handler.full_name)
     return require("cmdhndlr.vendor.promise").reject(err)
   end
 

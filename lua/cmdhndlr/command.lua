@@ -15,7 +15,7 @@ local execute_runner = function(runner_factory, args, layout, hooks)
       require("cmdhndlr.view").open(bufnr, runner.working_dir, layout)
     end,
     post_start = function(job)
-      State.set(runner.path, bufnr, job, runner_factory, args, hooks)
+      State.set(runner.full_name, bufnr, job, runner_factory, args, hooks)
     end,
   }
 
@@ -97,7 +97,7 @@ function M.input(text, raw_opts)
   vim.validate({ text = { text, "string" } })
 
   local opts = require("cmdhndlr.core.option").InputOption.new(raw_opts)
-  local state, err = State.find_running(opts.name)
+  local state, err = State.find_running(opts.full_name)
   if err then
     require("cmdhndlr.vendor.misclib.message").error(err)
   end
@@ -106,7 +106,7 @@ function M.input(text, raw_opts)
   if input_err then
     require("cmdhndlr.vendor.misclib.message").error(input_err)
   end
-  require("cmdhndlr.vendor.misclib.message").info(("sent to %s: %s"):format(state.name, text))
+  require("cmdhndlr.vendor.misclib.message").info(("sent to %s: %s"):format(state.full_name, text))
 end
 
 function M.setup(config)
@@ -118,7 +118,7 @@ function M.executed_runners()
   local items = {}
   for _, state in ipairs(State.all()) do
     table.insert(items, {
-      name = state.name,
+      full_name = state.full_name,
       bufnr = state.bufnr,
       is_running = state.job:is_running(),
     })
@@ -126,25 +126,28 @@ function M.executed_runners()
   return items
 end
 
-function M.execute(name, raw_opts)
+function M.execute(full_name, raw_opts)
   raw_opts = raw_opts or {}
-  if vim.startswith(name, "normal_runner/") then
-    raw_opts.name = name:gsub("^normal_runner/", "")
+
+  local index = full_name:find("/")
+  if index then
+    raw_opts.name = full_name:sub(index + 1)
+  end
+
+  if vim.startswith(full_name, "normal_runner/") then
     return M.run(raw_opts)
   end
-  if vim.startswith(name, "test_runner/") then
-    raw_opts.name = name:gsub("^test_runner/", "")
+  if vim.startswith(full_name, "test_runner/") then
     return M.test(raw_opts)
   end
-  if vim.startswith(name, "build_runner/") then
-    raw_opts.name = name:gsub("^build_runner/", "")
+  if vim.startswith(full_name, "build_runner/") then
     return M.build(raw_opts)
   end
-  if vim.startswith(name, "format_runner/") then
-    raw_opts.name = name:gsub("^format_runner/", "")
+  if vim.startswith(full_name, "format_runner/") then
     return M.format(raw_opts)
   end
-  error("unexpected runner name: " .. name)
+
+  require("cmdhndlr.vendor.misclib.message").error("unexpected runner name: " .. full_name)
 end
 
 function M.enabled(typ, raw_opts)

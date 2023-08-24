@@ -3,7 +3,7 @@ local _states = {}
 local State = {}
 State.__index = State
 
-function State.set(path, bufnr, job, runner_factory, args, hooks)
+function State.set(full_name, bufnr, job, runner_factory, args, hooks)
   vim.validate({
     job = { job, "table" },
     bufnr = { bufnr, "number" },
@@ -13,7 +13,7 @@ function State.set(path, bufnr, job, runner_factory, args, hooks)
   })
 
   local tbl = {
-    name = path,
+    full_name = full_name,
     bufnr = bufnr,
     job = job,
     runner_factory = runner_factory,
@@ -45,8 +45,8 @@ function State.get(bufnr)
   return state, nil
 end
 
-function State.find_running(name)
-  local state, err = State._find(name, function(state)
+function State.find_running(full_name)
+  local state, err = State._find(full_name, function(state)
     return state.job:is_running()
   end)
   if err then
@@ -55,22 +55,22 @@ function State.find_running(name)
   return state, nil
 end
 
-function State._find(name, predicate)
-  vim.validate({ name = { name, "string", true }, predicate = { predicate, "function", true } })
+function State._find(full_name, predicate)
+  vim.validate({ full_name = { full_name, "string", true }, predicate = { predicate, "function", true } })
   predicate = predicate or function()
     return true
   end
 
-  if not name then
+  if not full_name then
     return State.get()
   end
 
   for _, state in pairs(_states) do
-    if state.name == name and predicate(state) then
+    if state.full_name == full_name and predicate(state) then
       return state, nil
     end
   end
-  return nil, "not found: " .. name
+  return nil, "not found: " .. full_name
 end
 
 function State.all()

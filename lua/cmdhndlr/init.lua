@@ -32,12 +32,12 @@ function M.executed_runners()
   return require("cmdhndlr.command").executed_runners()
 end
 
-function M.execute(name, opts)
-  return require("cmdhndlr.command").execute(name, opts)
+function M.execute(full_name, opts)
+  return require("cmdhndlr.command").execute(full_name, opts)
 end
 
-function M.enabled(name, opts)
-  return require("cmdhndlr.command").enabled(name, opts)
+function M.enabled(typ, opts)
+  return require("cmdhndlr.command").enabled(typ, opts)
 end
 
 function M.runners()

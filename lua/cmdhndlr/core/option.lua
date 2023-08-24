@@ -113,7 +113,7 @@ end
 local InputOption = {}
 M.InputOption = InputOption
 M.InputOption.default = {
-  name = nil,
+  full_name = nil,
 }
 function InputOption.new(raw_opts)
   vim.validate({ raw_opts = { raw_opts, "table", true } })
