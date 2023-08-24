@@ -1,4 +1,4 @@
-local Handler = require("cmdhndlr.core.runner.handler").Handler
+local Handler = require("cmdhndlr.core.runner.handler")
 
 local TestRunner = {}
 TestRunner.__index = TestRunner
@@ -13,10 +13,11 @@ function TestRunner.new(opts)
   })
 
   local tbl = {
-    working_dir = handler.working_dir,
+    working_dir = handler.decided_working_dir,
     path = handler.path,
     _bufnr = opts.bufnr,
     _handler = handler,
+    _global_opts = opts,
   }
   return setmetatable(tbl, TestRunner)
 end
@@ -24,10 +25,9 @@ end
 function TestRunner.execute(self, observer, raw_filter, is_leaf)
   vim.validate({ raw_filter = { raw_filter, "string" }, is_leaf = { is_leaf, "boolean" } })
   local path = vim.api.nvim_buf_get_name(self._bufnr)
-
   local filter = raw_filter ~= "" and raw_filter or nil
-  local runner = self._handler:runner(observer)
-  return self._handler.run_file(runner, path, filter, is_leaf)
+  local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
+  return self._handler.run_file(ctx, path, filter, is_leaf)
 end
 
 return TestRunner

@@ -1,4 +1,4 @@
-local Handler = require("cmdhndlr.core.runner.handler").Handler
+local Handler = require("cmdhndlr.core.runner.handler")
 local filelib = require("cmdhndlr.lib.file")
 
 local NormalRunner = {}
@@ -15,45 +15,46 @@ function NormalRunner.new(opts)
   })
 
   local tbl = {
-    working_dir = handler.working_dir,
+    working_dir = handler.decided_working_dir,
     path = handler.path,
     _bufnr = opts.bufnr,
     _handler = handler,
+    _global_opts = opts,
   }
   return setmetatable(tbl, NormalRunner)
 end
 
 function NormalRunner.execute(self, observer, range)
   vim.validate({ range = { range, "table", true } })
-  local runner = self._handler:runner(observer)
+  local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
   if range ~= nil then
-    return self:_run_range(runner, range)
+    return self:_run_range(ctx, range)
   end
-  return self:_run_buffer(runner)
+  return self:_run_buffer(ctx)
 end
 
-function NormalRunner._run_range(self, runner, range)
+function NormalRunner._run_range(self, ctx, range)
   if not self._handler.run_string then
     local err = ("`%s` runner does not support range"):format(self._handler.name)
     return require("cmdhndlr.vendor.promise").reject(err)
   end
 
   local str = require("cmdhndlr.lib.buffer_range").new(self._bufnr, range):to_string()
-  return self._handler.run_string(runner, str)
+  return self._handler.run_string(ctx, str)
 end
 
-function NormalRunner._run_buffer(self, runner)
+function NormalRunner._run_buffer(self, ctx)
   local path = vim.api.nvim_buf_get_name(self._bufnr)
   if path ~= "" then
-    return self._handler.run_file(runner, path)
+    return self._handler.run_file(ctx, path)
   end
 
   local str = require("cmdhndlr.lib.buffer_range").entire(self._bufnr):to_string()
   if self._handler.run_string then
-    return self._handler.run_string(runner, str)
+    return self._handler.run_string(ctx, str)
   end
 
-  return self._handler.run_file(runner, filelib.temporary(str))
+  return self._handler.run_file(ctx, filelib.temporary(str))
 end
 
 return NormalRunner

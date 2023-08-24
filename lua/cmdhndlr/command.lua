@@ -37,7 +37,11 @@ local execute_runner = function(runner_factory, args, layout, hooks)
 end
 
 function M.run(raw_opts)
-  local opts = require("cmdhndlr.core.option").RunOption.new(raw_opts)
+  local opts, err = require("cmdhndlr.core.option").RunOption.new(raw_opts)
+  if err then
+    require("cmdhndlr.vendor.misclib.message").error(err)
+  end
+
   local runner_factory = function()
     return require("cmdhndlr.core.runner.normal_runner").new(opts)
   end
@@ -46,7 +50,11 @@ function M.run(raw_opts)
 end
 
 function M.test(raw_opts)
-  local opts = require("cmdhndlr.core.option").TestOption.new(raw_opts)
+  local opts, err = require("cmdhndlr.core.option").TestOption.new(raw_opts)
+  if err then
+    require("cmdhndlr.vendor.misclib.message").error(err)
+  end
+
   local runner_factory = function()
     return require("cmdhndlr.core.runner.test_runner").new(opts)
   end
@@ -54,7 +62,11 @@ function M.test(raw_opts)
 end
 
 function M.build(raw_opts)
-  local opts = require("cmdhndlr.core.option").BuildOption.new(raw_opts)
+  local opts, err = require("cmdhndlr.core.option").BuildOption.new(raw_opts)
+  if err then
+    require("cmdhndlr.vendor.misclib.message").error(err)
+  end
+
   local runner_factory = function()
     return require("cmdhndlr.core.runner.build_runner").new(opts)
   end
@@ -62,7 +74,11 @@ function M.build(raw_opts)
 end
 
 function M.format(raw_opts)
-  local opts = require("cmdhndlr.core.option").FormatOption.new(raw_opts)
+  local opts, err = require("cmdhndlr.core.option").FormatOption.new(raw_opts)
+  if err then
+    require("cmdhndlr.vendor.misclib.message").error(err)
+  end
+
   local runner_factory = function()
     return require("cmdhndlr.core.runner.format_runner").new(opts)
   end
@@ -132,9 +148,15 @@ function M.execute(name, raw_opts)
 end
 
 function M.enabled(typ, raw_opts)
-  local opts = require("cmdhndlr.core.option").EnabledOption.new(typ, raw_opts)
-  local _, err = require("cmdhndlr.core.runner.handler").Handler.new(typ, opts)
-  return err ~= "no handler"
+  local opts, err = require("cmdhndlr.core.option").EnabledOption.new(typ, raw_opts)
+  if err then
+    if err == "no handler" then
+      return false
+    end
+    require("cmdhndlr.vendor.misclib.message").error(err)
+  end
+  local _, handler_err = require("cmdhndlr.core.runner.handler").new(typ, opts)
+  return handler_err == nil
 end
 
 function M.runners()

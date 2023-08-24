@@ -1,9 +1,9 @@
 local M = {}
 
-M.cmd = "busted"
+M.opts = { cmd = "busted" }
 
 function M.run_file(self, path, filter, is_leaf)
-  local cmd = { self.cmd }
+  local cmd = { self.opts.cmd }
   if filter then
     filter = filter:gsub("%(", "%%("):gsub("%)", "%%)"):gsub("%-", "%%-")
     local suffix = is_leaf and "$" or ""
