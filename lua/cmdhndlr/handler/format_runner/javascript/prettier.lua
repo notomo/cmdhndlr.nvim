@@ -9,4 +9,6 @@ function M.format(ctx, path, stdout_collector)
   })
 end
 
+M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker(".prettierrc")
+
 return M
