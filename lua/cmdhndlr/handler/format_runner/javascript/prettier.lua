@@ -9,6 +9,19 @@ function M.format(ctx, path, stdout_collector)
   })
 end
 
-M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker(".prettierrc")
+M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker(
+  ".prettierrc",
+  ".prettierrc.json",
+  ".prettierrc.yml",
+  ".prettierrc.yaml",
+  ".prettierrc.json5",
+  ".prettierrc.js",
+  "prettier.config.js",
+  ".prettierrc.mjs",
+  "prettier.config.mjs",
+  ".prettierrc.cjs",
+  "prettier.config.cjs",
+  ".prettierrc.toml"
+)
 
 return M
