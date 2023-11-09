@@ -32,6 +32,7 @@ M.config = {
       rust = "rust/cargo",
       javascript = "javascript/jest",
       typescript = "typescript/deno",
+      typescriptreact = "javascript/jest",
       zig = "zig/zig",
     },
   },
