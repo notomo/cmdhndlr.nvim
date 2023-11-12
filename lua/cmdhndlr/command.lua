@@ -162,6 +162,13 @@ function M.enabled(typ, raw_opts)
   return handler_err == nil
 end
 
+function M.get(full_name)
+  return require("cmdhndlr.core.runner.handler").from_full_name(full_name, {
+    working_dir = function() end,
+    working_dir_marker = function() end,
+  })
+end
+
 function M.runners()
   return require("cmdhndlr.core.runner.handler").all()
 end

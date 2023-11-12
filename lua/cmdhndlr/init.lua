@@ -40,6 +40,10 @@ function M.enabled(typ, opts)
   return require("cmdhndlr.command").enabled(typ, opts)
 end
 
+function M.get(full_name)
+  return require("cmdhndlr.command").get(full_name)
+end
+
 function M.runners()
   return require("cmdhndlr.command").runners()
 end

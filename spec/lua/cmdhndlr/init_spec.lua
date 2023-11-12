@@ -798,3 +798,19 @@ describe("cmdhndlr.enabled()", function()
     assert.is_false(got)
   end)
 end)
+
+describe("cmdhndlr.get()", function()
+  before_each(function()
+    helper.before_each()
+
+    helper.register_format_runner("_test/file", {
+      format = function() end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("returns handler", function()
+    local got = cmdhndlr.get("format_runner/_test/file")
+    assert.equals("format_runner/_test/file", got.full_name)
+  end)
+end)

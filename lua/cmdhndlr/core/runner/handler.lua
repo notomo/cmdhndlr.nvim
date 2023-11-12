@@ -10,8 +10,11 @@ function Handler.new(typ, opts)
     type = { typ, "string" },
     opts = { opts, "table" },
   })
-
   local full_name = Handler._full_name(typ, opts.name)
+  return Handler.from_full_name(full_name, opts)
+end
+
+function Handler.from_full_name(full_name, opts)
   local handler, err = Handler._find(full_name)
   if err then
     return nil, err
