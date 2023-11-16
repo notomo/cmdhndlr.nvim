@@ -1,7 +1,10 @@
 local M = {}
 
+M.opts = { cmd = { "jest" } }
+
 function M.run_file(ctx, path, filter, is_leaf)
-  local cmd = { "npx", "jest" }
+  local cmd = { "npx" }
+  vim.list_extend(cmd, ctx.opts.cmd)
   if filter then
     local suffix = is_leaf and "$" or ""
     table.insert(cmd, "--testNamePattern=" .. filter .. suffix)
