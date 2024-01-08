@@ -9,10 +9,12 @@ local execute_runner = function(runner_factory, args, layout, hooks)
   end
 
   local bufnr = vim.api.nvim_create_buf(false, true)
+  local window_id
   local observer = {
     pre_start = function(cmd)
       hooks.pre_execute(cmd)
       require("cmdhndlr.view").open(bufnr, runner.working_dir, layout)
+      window_id = vim.api.nvim_get_current_win()
     end,
     post_start = function(job)
       State.set(runner.full_name, bufnr, job, runner_factory, args, hooks)
@@ -23,7 +25,7 @@ local execute_runner = function(runner_factory, args, layout, hooks)
   return runner
     :execute(observer, unpack(args))
     :next(function(ok)
-      local info = info_factory()
+      local info = info_factory(window_id)
       if ok then
         hooks.success(info)
       else

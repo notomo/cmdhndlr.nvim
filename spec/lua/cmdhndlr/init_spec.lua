@@ -215,6 +215,27 @@ hoge
     assert.is_same({ "echo", "ok" }, executed)
   end)
 
+  it("can use window_id in hook", function()
+    local got
+
+    local job = cmdhndlr.run({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({ "echo", "ok" })
+        end,
+      },
+      hooks = {
+        success = function(info)
+          got = info
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.window_id(got.window_id)
+  end)
+
   it("moves cursor to the bottom with async command", function()
     local job = cmdhndlr.run({
       name = "_test/file",
