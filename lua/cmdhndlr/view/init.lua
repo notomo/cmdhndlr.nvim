@@ -13,11 +13,14 @@ function M.open(bufnr, working_dir, layout_opts)
     return
   end
 
+  local window_id = Layout.open(bufnr, layout_opts)
   vim.schedule(function()
+    if vim.api.nvim_get_current_win() ~= window_id then
+      return
+    end
     vim.cmd.startinsert({ bang = true })
   end)
 
-  Layout.open(bufnr, layout_opts)
   working_dir:set_current()
   vim.bo[bufnr].filetype = "cmdhndlr"
 end
