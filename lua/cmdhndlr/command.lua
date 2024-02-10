@@ -2,29 +2,48 @@ local M = {}
 
 local State = require("cmdhndlr.core.state")
 
-local execute_runner = function(runner_factory, args, layout, hooks)
+local execute_runner = function(runner_factory, args, layout, hooks, reuse_predicate)
   local runner, factory_err = runner_factory()
   if factory_err then
     require("cmdhndlr.vendor.misclib.message").error(factory_err)
   end
 
-  local bufnr = vim.api.nvim_create_buf(false, true)
-  local window_id
+  local bufnr
+  local window_id, executed_cmd
   local observer = {
     pre_start = function(cmd)
+      executed_cmd = cmd
+
+      local state = State.find_running({
+        cmd = cmd,
+        working_dir_path = runner.working_dir:get(),
+        full_name = runner.full_name,
+      }, reuse_predicate)
+      if state then
+        bufnr = state.bufnr
+        window_id = require("cmdhndlr.view").open(bufnr, runner.working_dir, layout)
+        return true
+      end
+
       hooks.pre_execute(cmd)
-      require("cmdhndlr.view").open(bufnr, runner.working_dir, layout)
-      window_id = vim.api.nvim_get_current_win()
+
+      bufnr = vim.api.nvim_create_buf(false, true)
+      window_id = require("cmdhndlr.view").open(bufnr, runner.working_dir, layout)
+      return false
     end,
     post_start = function(job)
-      State.set(runner.full_name, bufnr, job, runner_factory, args, hooks)
+      State.set(runner.full_name, bufnr, job, runner_factory, args, hooks, executed_cmd, runner.working_dir:get())
     end,
   }
 
   local info_factory = hooks:info_factory()
   return runner
     :execute(observer, unpack(args))
-    :next(function(ok)
+    :next(function(ok, reuse)
+      if reuse then
+        return
+      end
+
       local info = info_factory(window_id)
       if ok then
         hooks.success(info)
@@ -48,7 +67,7 @@ function M.run(raw_opts)
     return require("cmdhndlr.core.runner.normal_runner").new(opts)
   end
   local range = require("cmdhndlr.vendor.misclib.visual_mode").row_range()
-  return execute_runner(runner_factory, { range }, opts.layout, opts.hooks)
+  return execute_runner(runner_factory, { range }, opts.layout, opts.hooks, opts.reuse_predicate)
 end
 
 function M.test(raw_opts)
@@ -60,7 +79,7 @@ function M.test(raw_opts)
   local runner_factory = function()
     return require("cmdhndlr.core.runner.test_runner").new(opts)
   end
-  return execute_runner(runner_factory, { opts.filter, opts.is_leaf }, opts.layout, opts.hooks)
+  return execute_runner(runner_factory, { opts.filter, opts.is_leaf }, opts.layout, opts.hooks, opts.reuse_predicate)
 end
 
 function M.build(raw_opts)
@@ -72,7 +91,7 @@ function M.build(raw_opts)
   local runner_factory = function()
     return require("cmdhndlr.core.runner.build_runner").new(opts)
   end
-  return execute_runner(runner_factory, {}, opts.layout, opts.hooks)
+  return execute_runner(runner_factory, {}, opts.layout, opts.hooks, opts.reuse_predicate)
 end
 
 function M.format(raw_opts)
@@ -84,7 +103,7 @@ function M.format(raw_opts)
   local runner_factory = function()
     return require("cmdhndlr.core.runner.format_runner").new(opts)
   end
-  return execute_runner(runner_factory, {}, nil, opts.hooks)
+  return execute_runner(runner_factory, {}, nil, opts.hooks, opts.reuse_predicate)
 end
 
 function M.retry()
@@ -92,14 +111,18 @@ function M.retry()
   if err then
     require("cmdhndlr.vendor.misclib.message").error(err)
   end
-  return execute_runner(state.runner_factory, state.args, { type = "no" }, state.hooks)
+  return execute_runner(state.runner_factory, state.args, { type = "no" }, state.hooks, function(_)
+    return false
+  end)
 end
 
 function M.input(text, raw_opts)
   vim.validate({ text = { text, "string" } })
 
   local opts = require("cmdhndlr.core.option").InputOption.new(raw_opts)
-  local state, err = State.find_running(opts.full_name)
+  local state, err = State.find_running({ full_name = opts.full_name }, function(state)
+    return opts.full_name == state.full_name
+  end)
   if err then
     require("cmdhndlr.vendor.misclib.message").error(err)
   end

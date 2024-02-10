@@ -56,7 +56,11 @@ function JobFactory.create(self, cmd, special_opts)
         return reject("canceled")
       end
 
-      self._observer.pre_start(built_cmd)
+      local reusable = self._observer.pre_start(built_cmd)
+      if reusable then
+        return resolve(true, true)
+      end
+
       log(built_cmd, self._log_file_path)
 
       local job, err

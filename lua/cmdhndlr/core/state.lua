@@ -3,7 +3,7 @@ local _states = {}
 local State = {}
 State.__index = State
 
-function State.set(full_name, bufnr, job, runner_factory, args, hooks)
+function State.set(full_name, bufnr, job, runner_factory, args, hooks, executed_cmd, working_dir_path)
   vim.validate({
     job = { job, "table" },
     bufnr = { bufnr, "number" },
@@ -19,6 +19,8 @@ function State.set(full_name, bufnr, job, runner_factory, args, hooks)
     runner_factory = runner_factory,
     args = args or {},
     hooks = hooks,
+    executed_cmd = executed_cmd,
+    working_dir_path = working_dir_path,
     _at = vim.fn.reltimestr(vim.fn.reltime()),
   }
   local self = setmetatable(tbl, State)
@@ -45,9 +47,9 @@ function State.get(bufnr)
   return state, nil
 end
 
-function State.find_running(full_name)
-  local state, err = State._find(full_name, function(state)
-    return state.job:is_running()
+function State.find_running(current_state, reuse_predicate)
+  local state, err = State._find(current_state.full_name, function(state)
+    return state.job:is_running() and reuse_predicate(current_state, state)
   end)
   if err then
     return nil, "no running runner: " .. err
@@ -56,17 +58,17 @@ function State.find_running(full_name)
 end
 
 function State._find(full_name, predicate)
-  vim.validate({ full_name = { full_name, "string", true }, predicate = { predicate, "function", true } })
-  predicate = predicate or function()
-    return true
-  end
+  vim.validate({
+    full_name = { full_name, "string", true },
+    predicate = { predicate, "function" },
+  })
 
   if not full_name then
     return State.get()
   end
 
   for _, state in pairs(_states) do
-    if state.full_name == full_name and predicate(state) then
+    if predicate(state) then
       return state, nil
     end
   end

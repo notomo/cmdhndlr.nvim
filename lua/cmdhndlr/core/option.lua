@@ -20,6 +20,9 @@ local default = {
   build_cmd = function(default_cmd, callback)
     callback(default_cmd)
   end,
+  reuse_predicate = function(_)
+    return false
+  end,
 }
 
 local new = function(defalt_opts, raw_opts, typ)

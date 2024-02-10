@@ -10,7 +10,7 @@ function M.open(bufnr, working_dir, layout_opts)
   })
 
   if not layout_opts then
-    return
+    return vim.api.nvim_get_current_win()
   end
 
   local window_id = Layout.open(bufnr, layout_opts)
@@ -23,6 +23,8 @@ function M.open(bufnr, working_dir, layout_opts)
 
   working_dir:set_current()
   vim.bo[bufnr].filetype = "cmdhndlr"
+
+  return window_id
 end
 
 return M
