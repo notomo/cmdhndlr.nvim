@@ -9,7 +9,7 @@ function M.run_file(ctx, path, filter, is_leaf)
     local suffix = is_leaf and "$" or ""
     table.insert(cmd, "--testNamePattern=" .. filter .. suffix)
   end
-  table.insert(cmd, path)
+  table.insert(cmd, vim.fn.escape(path, "[]()$"))
   return ctx.job_factory:create(cmd)
 end
 
