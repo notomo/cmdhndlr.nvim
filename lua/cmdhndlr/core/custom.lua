@@ -64,6 +64,7 @@ M.config = {
       go = "go/goimports",
       c = "c/uncrustify",
       lua = "lua/stylua",
+      zig = "zig/zig",
     },
   },
   log_file_path = vim.fs.joinpath(vim.fn.stdpath("log"), "cmdhndlr.log"),
