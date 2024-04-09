@@ -1,9 +1,9 @@
 local M = {}
 
-M.opts = { cmd = { "jest" } }
+M.opts = { cmd = { "npx", "jest" } }
 
 function M.run_file(ctx, path, filter, is_leaf)
-  local cmd = { "npx" }
+  local cmd = {}
   vim.list_extend(cmd, ctx.opts.cmd)
   if filter then
     local suffix = is_leaf and "$" or ""

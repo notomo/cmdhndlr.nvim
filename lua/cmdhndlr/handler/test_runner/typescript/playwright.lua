@@ -1,12 +1,9 @@
 local M = {}
 
 function M.run_file(ctx, path)
-  local cmd = {
-    "npx",
-    "playwright",
-    "test",
-    path,
-  }
+  local cmd = {}
+  vim.list_extend(cmd, ctx.opts.cmd)
+  table.insert(cmd, path)
 
   local config_path = ctx.working_dir:marker()
   if config_path then
@@ -24,6 +21,7 @@ end
 M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker("playwright.config.ts")
 
 M.opts = {
+  cmd = { "npx", "playwright", "test" },
   extra_args = {},
 }
 
