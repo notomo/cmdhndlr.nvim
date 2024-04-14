@@ -53,6 +53,7 @@ M.config = {
       typescript = "javascript/prettier",
       typescriptreact = "javascript/prettier",
       ["typescript.tsx"] = "javascript/prettier",
+      astro = "javascript/prettier",
       terraform = "terraform/terraform",
       python = "python/black",
       javascript = "javascript/prettier",
