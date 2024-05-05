@@ -26,6 +26,16 @@ function Layouts.tab_drop(bufnr)
   vim.api.nvim_set_current_win(window_id)
 end
 
+function Layouts.drop(bufnr)
+  local window_id = vim.fn.win_findbuf(bufnr)[1]
+  if not window_id then
+    Layouts.no(bufnr)
+    return
+  end
+
+  vim.api.nvim_set_current_win(window_id)
+end
+
 local Layout = {}
 
 function Layout.open(bufnr, opts)
