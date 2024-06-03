@@ -7,11 +7,13 @@ function Hooks.new(raw_hooks)
     success = { raw_hooks.success, "function" },
     failure = { raw_hooks.failure, "function" },
     pre_execute = { raw_hooks.pre_execute, "function" },
+    post_execute = { raw_hooks.post_execute, "function" },
   })
   local tbl = {
     success = raw_hooks.success,
     failure = raw_hooks.failure,
     pre_execute = raw_hooks.pre_execute,
+    post_execute = raw_hooks.post_execute,
   }
   return setmetatable(tbl, Hooks)
 end

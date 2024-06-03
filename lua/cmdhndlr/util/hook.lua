@@ -30,7 +30,8 @@ local tbl_to_msg = function(cmd)
 end
 
 function M.echo_cmd()
-  return function(cmd)
+  return function(ctx)
+    local cmd = ctx.cmd
     local msg
     if type(cmd) == "table" then
       msg = tbl_to_msg(cmd)

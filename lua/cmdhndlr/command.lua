@@ -15,7 +15,7 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
       executed_cmd = cmd
 
       local state = State.find_running({
-        cmd = cmd,
+        cmd = executed_cmd,
         working_dir_path = runner.working_dir:get(),
         full_name = runner.full_name,
       }, reuse_predicate)
@@ -25,14 +25,25 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
         return true
       end
 
-      hooks.pre_execute(cmd)
-
       bufnr = vim.api.nvim_create_buf(false, true)
       window_id = require("cmdhndlr.view").open(bufnr, runner.working_dir, layout)
+
+      hooks.pre_execute({
+        cmd = executed_cmd,
+        bufnr = bufnr,
+        window_id = window_id,
+      })
+
       return false
     end,
     post_start = function(job)
       State.set(runner.full_name, bufnr, job, runner_factory, args, hooks, executed_cmd, runner.working_dir:get())
+
+      hooks.post_execute({
+        cmd = executed_cmd,
+        bufnr = bufnr,
+        window_id = window_id,
+      })
     end,
   }
 

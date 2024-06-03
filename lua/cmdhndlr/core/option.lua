@@ -14,6 +14,7 @@ local default = {
     success = function() end,
     failure = function() end,
     pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
+    post_execute = function() end,
   },
   runner_opts = {},
   layout = { type = "horizontal" },
@@ -82,6 +83,7 @@ TestOption.default.hooks = {
   success = require("cmdhndlr.util.hook").echo_success(),
   failure = require("cmdhndlr.util.hook").echo_failure(),
   pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
+  post_execute = function() end,
 }
 TestOption.default.filter = ""
 TestOption.default.is_leaf = false
@@ -96,6 +98,7 @@ BuildOption.default.hooks = {
   success = require("cmdhndlr.util.hook").echo_success(),
   failure = require("cmdhndlr.util.hook").echo_failure(),
   pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
+  post_execute = function() end,
 }
 function BuildOption.new(raw_opts)
   return new(BuildOption.default, raw_opts, "build_runner")
@@ -108,6 +111,7 @@ FormatOption.default.hooks = {
   success = require("cmdhndlr.util.hook").echo_success(),
   failure = require("cmdhndlr.util.hook").echo_failure(),
   pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
+  post_execute = function() end,
 }
 function FormatOption.new(raw_opts)
   return new(FormatOption.default, raw_opts, "format_runner")

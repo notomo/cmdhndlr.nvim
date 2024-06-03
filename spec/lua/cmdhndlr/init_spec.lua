@@ -205,8 +205,8 @@ hoge
         end,
       },
       hooks = {
-        pre_execute = function(cmd)
-          executed = cmd
+        pre_execute = function(ctx)
+          executed = ctx.cmd
         end,
       },
     })
@@ -449,14 +449,33 @@ describe("cmdhndlr.test()", function()
         end,
       },
       hooks = {
-        pre_execute = function(cmd)
-          executed = cmd
+        pre_execute = function(ctx)
+          executed = ctx.cmd
         end,
       },
     })
     helper.wait(job)
 
     assert.is_same({ "echo", "ok" }, executed)
+  end)
+
+  it("can hook async command post_execute", function()
+    local job = cmdhndlr.test({
+      name = "_test/file",
+      runner_opts = {
+        f = function(self)
+          return self.job_factory:create({ "echo", "ok" })
+        end,
+      },
+      hooks = {
+        post_execute = function(ctx)
+          vim.api.nvim_buf_set_name(0, table.concat(ctx.cmd, " "))
+        end,
+      },
+    })
+    helper.wait(job)
+
+    assert.is_same("echo ok", vim.fs.basename(vim.api.nvim_buf_get_name(0)))
   end)
 
   it("can run default test runner", function()
