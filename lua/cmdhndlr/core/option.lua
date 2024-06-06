@@ -55,8 +55,9 @@ local new = function(defalt_opts, raw_opts, typ)
     name_hints.name = global_name
   end
 
-  local custom_opts = vim.tbl_get(global.opts, typ, name_hints.name) or {}
-  local opts = vim.tbl_deep_extend("force", defalt_opts, custom_opts, raw_opts, name_hints)
+  local custom_opts = vim.tbl_get(global.opts, typ, "_") or {}
+  local custom_opts_specific = vim.tbl_get(global.opts, typ, name_hints.name) or {}
+  local opts = vim.tbl_deep_extend("force", defalt_opts, custom_opts, custom_opts_specific, raw_opts, name_hints)
 
   if opts.name == "" then
     return nil, "no handler"
