@@ -41,46 +41,48 @@ end
 
 function JobFactory.create(self, cmd, special_opts)
   special_opts = special_opts or {}
-  return require("cmdhndlr.vendor.promise").new(function(resolve, reject)
-    local opts = {
-      cwd = self._cwd,
-      env = self._env,
-      on_exit = function(_, exit_code)
-        resolve(exit_code == 0)
-      end,
-      on_stdout = special_opts.on_stdout,
-    }
+  local promise, resolve, reject = require("cmdhndlr.vendor.promise").with_resolvers()
 
-    self._build_cmd(cmd, function(built_cmd)
-      if not built_cmd then
-        return reject("canceled")
-      end
+  local opts = {
+    cwd = self._cwd,
+    env = self._env,
+    on_exit = function(_, exit_code)
+      resolve(exit_code == 0)
+    end,
+    on_stdout = special_opts.on_stdout,
+  }
 
-      local reusable = self._observer.pre_start(built_cmd)
-      if reusable then
-        return resolve(true, true)
-      end
+  self._build_cmd(cmd, function(built_cmd)
+    if not built_cmd then
+      return reject("canceled")
+    end
 
-      log(built_cmd, self._log_file_path)
+    local reusable = self._observer.pre_start(built_cmd)
+    if reusable then
+      return resolve(true, true)
+    end
 
-      local job, err
-      if special_opts.as_job then
-        job, err = require("cmdhndlr.vendor.misclib.job").start(built_cmd, opts)
-      else
-        job, err = require("cmdhndlr.vendor.misclib.job").open_terminal(built_cmd, opts)
-      end
-      if err then
-        return reject(err)
-      end
+    log(built_cmd, self._log_file_path)
 
-      self._observer.post_start(job)
+    local job, err
+    if special_opts.as_job then
+      job, err = require("cmdhndlr.vendor.misclib.job").start(built_cmd, opts)
+    else
+      job, err = require("cmdhndlr.vendor.misclib.job").open_terminal(built_cmd, opts)
+    end
+    if err then
+      return reject(err)
+    end
 
-      if special_opts.input then
-        job:input(special_opts.input)
-        job:close_stdin()
-      end
-    end, self._build_cmd_ctx)
-  end)
+    self._observer.post_start(job)
+
+    if special_opts.input then
+      job:input(special_opts.input)
+      job:close_stdin()
+    end
+  end, self._build_cmd_ctx)
+
+  return promise
 end
 
 return JobFactory
