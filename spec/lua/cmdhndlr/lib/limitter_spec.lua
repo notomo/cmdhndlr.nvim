@@ -1,5 +1,6 @@
 local helper = require("cmdhndlr.test.helper")
 local Limitter = helper.require("cmdhndlr.lib.limitter")
+local assert = require("assertlib").typed(assert)
 
 describe("limitter", function()
   before_each(helper.before_each)

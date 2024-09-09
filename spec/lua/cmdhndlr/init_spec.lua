@@ -1,5 +1,6 @@
 local helper = require("cmdhndlr.test.helper")
 local cmdhndlr = helper.require("cmdhndlr")
+local assert = require("assertlib").typed(assert)
 
 describe("cmdhndlr.run()", function()
   before_each(function()
@@ -212,7 +213,7 @@ hoge
     })
     helper.wait(job)
 
-    assert.is_same({ "echo", "ok" }, executed)
+    assert.same({ "echo", "ok" }, executed)
   end)
 
   it("can use window_id in hook", function()
@@ -456,7 +457,7 @@ describe("cmdhndlr.test()", function()
     })
     helper.wait(job)
 
-    assert.is_same({ "echo", "ok" }, executed)
+    assert.same({ "echo", "ok" }, executed)
   end)
 
   it("can hook async command post_execute", function()
@@ -475,7 +476,7 @@ describe("cmdhndlr.test()", function()
     })
     helper.wait(job)
 
-    assert.is_same("echo ok", vim.fs.basename(vim.api.nvim_buf_get_name(0)))
+    assert.same("echo ok", vim.fs.basename(vim.api.nvim_buf_get_name(0)))
   end)
 
   it("can run default test runner", function()
@@ -745,7 +746,7 @@ describe("cmdhndlr.executed_runners()", function()
 
   it("returns empty if there is no context", function()
     local actual = cmdhndlr.executed_runners()
-    assert.is_same({}, actual)
+    assert.same({}, actual)
   end)
 
   it("returns executed runners", function()
@@ -851,6 +852,6 @@ describe("cmdhndlr.get()", function()
 
   it("returns handler", function()
     local got = cmdhndlr.get("format_runner/_test/file")
-    assert.equals("format_runner/_test/file", got.full_name)
+    assert.equal("format_runner/_test/file", got.full_name)
   end)
 end)

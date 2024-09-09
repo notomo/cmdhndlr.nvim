@@ -1,5 +1,6 @@
 local helper = require("cmdhndlr.test.helper")
 local cmdhndlr = helper.require("cmdhndlr")
+local assert = require("assertlib").typed(assert)
 
 describe("vim/lua runner", function()
   before_each(helper.before_each)
