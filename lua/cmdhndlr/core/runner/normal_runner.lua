@@ -5,9 +5,10 @@ local NormalRunner = {}
 NormalRunner.__index = NormalRunner
 
 function NormalRunner.new(opts)
-  local handler, err = Handler.new("normal_runner", opts)
-  if err ~= nil then
-    return nil, err
+  local handler = Handler.new("normal_runner", opts)
+  if type(handler) == "string" then
+    local err = handler
+    return err
   end
   vim.validate({
     run_file = { handler.run_file, "function" },

@@ -4,9 +4,10 @@ local BuildRunner = {}
 BuildRunner.__index = BuildRunner
 
 function BuildRunner.new(opts)
-  local handler, err = Handler.new("build_runner", opts)
-  if err ~= nil then
-    return nil, err
+  local handler = Handler.new("build_runner", opts)
+  if type(handler) == "string" then
+    local err = handler
+    return err
   end
   vim.validate({ build = { handler.build, "function" } })
 

@@ -64,13 +64,14 @@ function JobFactory.create(self, cmd, special_opts)
 
     log(built_cmd, self._log_file_path)
 
-    local job, err
+    local job
     if special_opts.as_job then
-      job, err = require("cmdhndlr.vendor.misclib.job").start(built_cmd, opts)
+      job = require("cmdhndlr.vendor.misclib.job").start(built_cmd, opts)
     else
-      job, err = require("cmdhndlr.vendor.misclib.job").open_terminal(built_cmd, opts)
+      job = require("cmdhndlr.vendor.misclib.job").open_terminal(built_cmd, opts)
     end
-    if err then
+    if type(job) == "string" then
+      local err = job
       return reject(err)
     end
 

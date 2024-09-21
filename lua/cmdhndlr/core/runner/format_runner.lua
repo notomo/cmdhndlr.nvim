@@ -5,9 +5,10 @@ local FormatRunner = {}
 FormatRunner.__index = FormatRunner
 
 function FormatRunner.new(opts)
-  local handler, err = Handler.new("format_runner", opts)
-  if err ~= nil then
-    return nil, err
+  local handler = Handler.new("format_runner", opts)
+  if type(handler) == "string" then
+    local err = handler
+    return err
   end
   vim.validate({ format = { handler.format, "function" } })
 

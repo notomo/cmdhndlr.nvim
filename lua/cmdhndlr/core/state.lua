@@ -42,19 +42,20 @@ function State.get(bufnr)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local state = _states[bufnr]
   if not state then
-    return nil, "no buffer: " .. bufnr
+    return "no buffer: " .. bufnr
   end
-  return state, nil
+  return state
 end
 
 function State.find_running(current_state, reuse_predicate)
-  local state, err = State._find(current_state.full_name, function(state)
+  local state = State._find(current_state.full_name, function(state)
     return state.job:is_running() and reuse_predicate(current_state, state)
   end)
-  if err then
-    return nil, "no running runner: " .. err
+  if type(state) == "string" then
+    local err = state
+    return "no running runner: " .. err
   end
-  return state, nil
+  return state
 end
 
 function State._find(full_name, predicate)
@@ -69,10 +70,10 @@ function State._find(full_name, predicate)
 
   for _, state in pairs(_states) do
     if predicate(state) then
-      return state, nil
+      return state
     end
   end
-  return nil, "not found: " .. full_name
+  return "not found: " .. full_name
 end
 
 function State.all()

@@ -60,14 +60,14 @@ local new = function(defalt_opts, raw_opts, typ)
   local opts = vim.tbl_deep_extend("force", defalt_opts, custom_opts, custom_opts_specific, raw_opts, name_hints)
 
   if opts.name == "" then
-    return nil, "no handler"
+    return "no handler"
   end
 
   opts.env = vim.tbl_deep_extend("force", global.env, buffer_local.env or {}, opts.env)
   opts.runner_opts = vim.tbl_deep_extend("force", opts.runner_opts, vim.b[opts.bufnr].cmdhndlr_runner_opts or {})
   opts.hooks = require("cmdhndlr.core.hooks").new(opts.hooks)
 
-  return opts, nil
+  return opts
 end
 
 local RunOption = {}

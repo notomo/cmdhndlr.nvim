@@ -15,9 +15,10 @@ function Handler.new(typ, opts)
 end
 
 function Handler.from_full_name(full_name, opts)
-  local handler, err = Handler._find(full_name)
-  if err then
-    return nil, err
+  local handler = Handler._find(full_name)
+  if type(handler) == "string" then
+    local err = handler
+    return err
   end
 
   handler.full_name = full_name
@@ -40,15 +41,15 @@ end
 function Handler._find(full_name)
   local registered = Handler.registered[full_name]
   if registered then
-    return registered, nil
+    return registered
   end
 
   local handler = modulelib.find("cmdhndlr.handler." .. full_name)
   if handler then
-    return handler, nil
+    return handler
   end
 
-  return nil, "not found handler: " .. full_name
+  return "not found handler: " .. full_name
 end
 
 function Handler._full_name(typ, name)

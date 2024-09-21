@@ -9,6 +9,7 @@ function M.temporary(str)
   end
 
   local f = io.open(path, "w")
+  assert(f, "failed to open temporary file: " .. path)
   f:write(str)
   f:close()
   return path
