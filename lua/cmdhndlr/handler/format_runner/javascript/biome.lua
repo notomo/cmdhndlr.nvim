@@ -15,8 +15,9 @@ function M.format(ctx, path)
     }, {
       as_job = true,
     })
-    :next(function(ok)
-      return ok, true
+    :next(function()
+      -- workaround: ignore lint failure
+      return true, true
     end)
 end
 
