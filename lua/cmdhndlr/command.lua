@@ -57,7 +57,7 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
         return
       end
 
-      local info = info_factory(window_id)
+      local info = info_factory(window_id, executed_cmd)
       if ok then
         hooks.success(info)
       else

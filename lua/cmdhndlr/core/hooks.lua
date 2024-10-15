@@ -20,10 +20,11 @@ end
 
 function Hooks.info_factory()
   local start_time = vim.uv.now()
-  return function(window_id)
+  return function(window_id, cmd)
     return {
       elapsed_ms = vim.uv.now() - start_time,
       window_id = window_id,
+      cmd = cmd,
     }
   end
 end
