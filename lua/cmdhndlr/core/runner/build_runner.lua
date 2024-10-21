@@ -9,7 +9,7 @@ function BuildRunner.new(opts)
     local err = handler
     return err
   end
-  vim.validate({ build = { handler.build, "function" } })
+  vim.validate("build", handler.build, "function")
 
   local tbl = {
     working_dir = handler.decided_working_dir,

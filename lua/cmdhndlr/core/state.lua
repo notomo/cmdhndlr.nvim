@@ -3,15 +3,13 @@ local _states = {}
 local State = {}
 State.__index = State
 
+--- @param full_name string
+--- @param bufnr integer
+--- @param job table
+--- @param runner_factory function
+--- @param args table?
+--- @param hooks table
 function State.set(full_name, bufnr, job, runner_factory, args, hooks, executed_cmd, working_dir_path)
-  vim.validate({
-    job = { job, "table" },
-    bufnr = { bufnr, "number" },
-    runner_factory = { runner_factory, "function" },
-    args = { args, "table", true },
-    hooks = { hooks, "table" },
-  })
-
   local tbl = {
     full_name = full_name,
     bufnr = bufnr,
@@ -37,8 +35,8 @@ function State.set(full_name, bufnr, job, runner_factory, args, hooks, executed_
   return self
 end
 
+--- @param bufnr integer?
 function State.get(bufnr)
-  vim.validate({ bufnr = { bufnr, "number", true } })
   bufnr = bufnr or vim.api.nvim_get_current_buf()
   local state = _states[bufnr]
   if not state then
@@ -58,12 +56,9 @@ function State.find_running(current_state, reuse_predicate)
   return state
 end
 
+--- @param full_name string?
+--- @param predicate function
 function State._find(full_name, predicate)
-  vim.validate({
-    full_name = { full_name, "string", true },
-    predicate = { predicate, "function" },
-  })
-
   if not full_name then
     return State.get()
   end

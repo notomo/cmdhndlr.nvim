@@ -27,7 +27,6 @@ local default = {
 }
 
 local new = function(defalt_opts, raw_opts, typ)
-  vim.validate({ raw_opts = { raw_opts, "table", true } })
   raw_opts = raw_opts or {}
   local name_hints = vim.tbl_deep_extend("force", {
     name = defalt_opts.name,
@@ -124,7 +123,6 @@ M.InputOption.default = {
   full_name = nil,
 }
 function InputOption.new(raw_opts)
-  vim.validate({ raw_opts = { raw_opts, "table", true } })
   raw_opts = raw_opts or {}
   return vim.tbl_deep_extend("force", M.InputOption.default, raw_opts)
 end

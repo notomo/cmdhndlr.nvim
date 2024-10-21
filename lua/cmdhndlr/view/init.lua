@@ -2,13 +2,10 @@ local Layout = require("cmdhndlr.view.layout")
 
 local M = {}
 
+--- @param bufnr integer
+--- @param working_dir table
+--- @param layout_opts table?
 function M.open(bufnr, working_dir, layout_opts)
-  vim.validate({
-    bufnr = { bufnr, "number" },
-    working_dir = { working_dir, "table" },
-    layout_opts = { layout_opts, "table", true },
-  })
-
   if not layout_opts then
     return vim.api.nvim_get_current_win()
   end

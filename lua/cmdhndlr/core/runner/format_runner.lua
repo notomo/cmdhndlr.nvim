@@ -10,7 +10,7 @@ function FormatRunner.new(opts)
     local err = handler
     return err
   end
-  vim.validate({ format = { handler.format, "function" } })
+  vim.validate("format", handler.format, "function")
 
   local tbl = {
     working_dir = handler.decided_working_dir,

@@ -1,8 +1,9 @@
 local M = {}
 M.__index = M
 
+--- @param bufnr integer
+--- @param raw_range {first:integer,last:integer}
 function M.new(bufnr, raw_range)
-  vim.validate({ bufnr = { bufnr, "number" }, raw_range = { raw_range, "table" } })
   local tbl = { _bufnr = bufnr, _range = raw_range }
   return setmetatable(tbl, M)
 end

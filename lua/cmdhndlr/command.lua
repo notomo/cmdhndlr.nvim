@@ -139,9 +139,9 @@ function M.retry()
   end)
 end
 
+--- @param text string
+--- @param raw_opts table?
 function M.input(text, raw_opts)
-  vim.validate({ text = { text, "string" } })
-
   local opts = require("cmdhndlr.core.option").InputOption.new(raw_opts)
   local state = State.find_running({ full_name = opts.full_name }, function(state)
     return opts.full_name == state.full_name
@@ -160,8 +160,8 @@ function M.input(text, raw_opts)
   require("cmdhndlr.vendor.misclib.message").info(("sent to %s: %s"):format(state.full_name, text))
 end
 
+--- @param config table
 function M.setup(config)
-  vim.validate({ config = { config, "table" } })
   require("cmdhndlr.core.custom").set(config)
 end
 

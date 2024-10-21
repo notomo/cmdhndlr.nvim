@@ -1,11 +1,9 @@
 local WorkingDir = {}
 WorkingDir.__index = WorkingDir
 
+--- @param working_dir string?
+--- @param marker string?
 function WorkingDir.new(working_dir, marker)
-  vim.validate({
-    working_dir = { working_dir, "string", true },
-    marker = { marker, "string", true },
-  })
   if marker then
     working_dir = vim.fn.fnamemodify(marker, ":h")
   end

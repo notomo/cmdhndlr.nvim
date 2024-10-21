@@ -10,10 +10,8 @@ function NormalRunner.new(opts)
     local err = handler
     return err
   end
-  vim.validate({
-    run_file = { handler.run_file, "function" },
-    run_string = { handler.run_string, "function", true },
-  })
+  vim.validate("run_file", handler.run_file, "function")
+  vim.validate("run_string", handler.run_string, "function", true)
 
   local tbl = {
     working_dir = handler.decided_working_dir,
@@ -25,8 +23,9 @@ function NormalRunner.new(opts)
   return setmetatable(tbl, NormalRunner)
 end
 
+--- @param observer table
+--- @param range table?
 function NormalRunner.execute(self, observer, range)
-  vim.validate({ range = { range, "table", true } })
   local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
   if range ~= nil then
     return self:_run_range(ctx, range)

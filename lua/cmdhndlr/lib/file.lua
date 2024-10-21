@@ -1,8 +1,7 @@
 local M = {}
 
+--- @param str string?
 function M.temporary(str)
-  vim.validate({ str = { str, "string", true } })
-
   local path = vim.fn.tempname()
   if not str then
     return path

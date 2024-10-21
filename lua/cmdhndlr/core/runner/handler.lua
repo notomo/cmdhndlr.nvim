@@ -5,11 +5,9 @@ local Handler = {}
 
 Handler.registered = {}
 
+--- @param typ string
+--- @param opts table
 function Handler.new(typ, opts)
-  vim.validate({
-    type = { typ, "string" },
-    opts = { opts, "table" },
-  })
   local full_name = Handler._full_name(typ, opts.name)
   return Handler.from_full_name(full_name, opts)
 end

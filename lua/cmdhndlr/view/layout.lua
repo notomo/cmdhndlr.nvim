@@ -38,8 +38,9 @@ end
 
 local Layout = {}
 
+--- @param bufnr integer
+--- @param opts table?
 function Layout.open(bufnr, opts)
-  vim.validate({ bufnr = { bufnr, "number" } })
   opts = opts or {}
 
   local typ = opts.type

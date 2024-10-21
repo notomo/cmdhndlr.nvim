@@ -1,15 +1,13 @@
 local JobFactory = {}
 JobFactory.__index = JobFactory
 
+--- @param observer table
+--- @param cwd string
+--- @param env table
+--- @param log_file_path string
+--- @param build_cmd function?
+--- @param build_cmd_ctx table
 function JobFactory.new(observer, cwd, env, log_file_path, build_cmd, build_cmd_ctx)
-  vim.validate({
-    observer = { observer, "table" },
-    cwd = { cwd, "string" },
-    env = { env, "table" },
-    log_file_path = { log_file_path, "string" },
-    build_cmd = { build_cmd, "function", true },
-    build_cmd_ctx = { build_cmd_ctx, "table" },
-  })
   local tbl = {
     _observer = observer,
     _cwd = cwd,

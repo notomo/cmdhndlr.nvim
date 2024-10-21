@@ -9,9 +9,7 @@ function TestRunner.new(opts)
     local err = handler
     return err
   end
-  vim.validate({
-    run_file = { handler.run_file, "function" },
-  })
+  vim.validate("run_file", handler.run_file, "function")
 
   local tbl = {
     working_dir = handler.decided_working_dir,
@@ -23,8 +21,10 @@ function TestRunner.new(opts)
   return setmetatable(tbl, TestRunner)
 end
 
+--- @param observer table
+--- @param raw_filter string
+--- @param is_leaf boolean
 function TestRunner.execute(self, observer, raw_filter, is_leaf)
-  vim.validate({ raw_filter = { raw_filter, "string" }, is_leaf = { is_leaf, "boolean" } })
   local path = vim.api.nvim_buf_get_name(self._bufnr)
   local filter = raw_filter ~= "" and raw_filter or nil
   local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
