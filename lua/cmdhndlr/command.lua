@@ -6,8 +6,7 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
   local runner = runner_factory()
   if type(runner) == "string" then
     local err = runner
-    require("cmdhndlr.vendor.misclib.message").error(err)
-    return
+    error("[cmdhndlr] " .. err, 0)
   end
 
   local bufnr
@@ -66,7 +65,7 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
       vim.bo[bufnr].bufhidden = "wipe"
     end)
     :catch(function(err)
-      require("cmdhndlr.vendor.misclib.message").warn(err)
+      vim.notify("[cmdhndlr] " .. err, vim.log.levels.WARN)
     end)
 end
 
@@ -74,8 +73,7 @@ function M.run(raw_opts)
   local opts = require("cmdhndlr.core.option").RunOption.new(raw_opts)
   if type(opts) == "string" then
     local err = opts
-    require("cmdhndlr.vendor.misclib.message").error(err)
-    return
+    error("[cmdhndlr] " .. err, 0)
   end
 
   local runner_factory = function()
@@ -89,8 +87,7 @@ function M.test(raw_opts)
   local opts = require("cmdhndlr.core.option").TestOption.new(raw_opts)
   if type(opts) == "string" then
     local err = opts
-    require("cmdhndlr.vendor.misclib.message").error(err)
-    return
+    error("[cmdhndlr] " .. err, 0)
   end
 
   local runner_factory = function()
@@ -103,8 +100,7 @@ function M.build(raw_opts)
   local opts = require("cmdhndlr.core.option").BuildOption.new(raw_opts)
   if type(opts) == "string" then
     local err = opts
-    require("cmdhndlr.vendor.misclib.message").error(err)
-    return
+    error("[cmdhndlr] " .. err, 0)
   end
 
   local runner_factory = function()
@@ -117,8 +113,7 @@ function M.format(raw_opts)
   local opts = require("cmdhndlr.core.option").FormatOption.new(raw_opts)
   if type(opts) == "string" then
     local err = opts
-    require("cmdhndlr.vendor.misclib.message").error(err)
-    return
+    error("[cmdhndlr] " .. err, 0)
   end
 
   local runner_factory = function()
@@ -131,8 +126,7 @@ function M.retry()
   local state = State.get()
   if type(state) == "string" then
     local err = state
-    require("cmdhndlr.vendor.misclib.message").error(err)
-    return
+    error("[cmdhndlr] " .. err, 0)
   end
   return execute_runner(state.runner_factory, state.args, { type = "no" }, state.hooks, function(_)
     return false
@@ -148,16 +142,14 @@ function M.input(text, raw_opts)
   end)
   if type(state) == "string" then
     local err = state
-    require("cmdhndlr.vendor.misclib.message").error(err)
-    return
+    error("[cmdhndlr] " .. err, 0)
   end
 
   local input_err = state.job:input(text)
   if input_err then
-    require("cmdhndlr.vendor.misclib.message").error(input_err)
-    return
+    error("[cmdhndlr] " .. input_err, 0)
   end
-  require("cmdhndlr.vendor.misclib.message").info(("sent to %s: %s"):format(state.full_name, text))
+  vim.notify(("[cmdhndlr] sent to %s: %s"):format(state.full_name, text))
 end
 
 --- @param config table
@@ -198,7 +190,7 @@ function M.execute(full_name, raw_opts)
     return M.format(raw_opts)
   end
 
-  require("cmdhndlr.vendor.misclib.message").error("unexpected runner name: " .. full_name)
+  error("[cmdhndlr] unexpected runner name: " .. full_name, 0)
 end
 
 function M.enabled(typ, raw_opts)
@@ -208,8 +200,7 @@ function M.enabled(typ, raw_opts)
     if err == "no handler" then
       return false
     end
-    require("cmdhndlr.vendor.misclib.message").error(err)
-    return false
+    error("[cmdhndlr] " .. err, 0)
   end
   local _, handler_err = require("cmdhndlr.core.runner.handler").new(typ, opts)
   return handler_err == nil
