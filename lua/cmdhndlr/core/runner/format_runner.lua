@@ -29,7 +29,7 @@ function FormatRunner.execute(self, observer)
   return _limitter:enqueue(function()
     return self._handler.format(ctx, path, stdout:collector()):next(function(ok, reload)
       if not ok then
-        return false
+        return { reuse = false }
       end
 
       if reload then
@@ -41,7 +41,7 @@ function FormatRunner.execute(self, observer)
         restore_cursor()
       end
 
-      return true
+      return { reuse = true }
     end)
   end)
 end

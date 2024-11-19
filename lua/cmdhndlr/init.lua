@@ -12,6 +12,10 @@ function M.build(opts)
   return require("cmdhndlr.command").build(opts)
 end
 
+function M.build_as_job(opts)
+  return require("cmdhndlr.command").build_as_job(opts)
+end
+
 function M.format(opts)
   return require("cmdhndlr.command").format(opts)
 end

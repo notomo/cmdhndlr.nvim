@@ -104,6 +104,20 @@ function BuildOption.new(raw_opts)
   return new(BuildOption.default, raw_opts, "build_runner")
 end
 
+local BuildAsJobOption = {}
+M.BuildAsJobOption = BuildAsJobOption
+M.BuildAsJobOption.default = vim.deepcopy(default)
+BuildAsJobOption.default.hooks = {
+  success = require("cmdhndlr.util.hook").echo_success(),
+  failure = require("cmdhndlr.util.hook").echo_failure(),
+  pre_execute = require("cmdhndlr.util.hook").echo_cmd(),
+  post_execute = function() end,
+}
+BuildAsJobOption.default.as_job = true
+function BuildAsJobOption.new(raw_opts)
+  return new(BuildAsJobOption.default, raw_opts, "build_runner")
+end
+
 local FormatOption = {}
 M.FormatOption = FormatOption
 M.FormatOption.default = vim.deepcopy(default)

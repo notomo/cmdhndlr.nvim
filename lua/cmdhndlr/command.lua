@@ -51,8 +51,9 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
   local info_factory = hooks:info_factory()
   return runner
     :execute(observer, unpack(args))
-    :next(function(ok, reuse)
-      if reuse then
+    :next(function(ok, result_ctx)
+      result_ctx = result_ctx or {}
+      if result_ctx.reuse then
         return
       end
 
@@ -63,6 +64,8 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
         hooks.failure(info)
       end
       vim.bo[bufnr].bufhidden = "wipe"
+
+      return result_ctx
     end)
     :catch(function(err)
       vim.notify("[cmdhndlr] " .. err, vim.log.levels.WARN)
@@ -107,6 +110,19 @@ function M.build(raw_opts)
     return require("cmdhndlr.core.runner.build_runner").new(opts)
   end
   return execute_runner(runner_factory, {}, opts.layout, opts.hooks, opts.reuse_predicate)
+end
+
+function M.build_as_job(raw_opts)
+  local opts = require("cmdhndlr.core.option").BuildAsJobOption.new(raw_opts)
+  if type(opts) == "string" then
+    local err = opts
+    error("[cmdhndlr] " .. err, 0)
+  end
+
+  local runner_factory = function()
+    return require("cmdhndlr.core.runner.build_runner").new(opts)
+  end
+  return execute_runner(runner_factory, {}, nil, opts.hooks, opts.reuse_predicate)
 end
 
 function M.format(raw_opts)
