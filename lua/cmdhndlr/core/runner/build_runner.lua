@@ -24,12 +24,22 @@ function BuildRunner.new(opts)
 end
 
 function BuildRunner.execute(self, observer)
-  local path = vim.api.nvim_buf_get_name(self._bufnr)
   local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
-  if self._as_job and self._handler.build_as_job then
-    return self._handler.build_as_job(ctx, path)
+
+  if not self._as_job then
+    local path = vim.api.nvim_buf_get_name(self._bufnr)
+    return self._handler.build(ctx, path)
   end
-  return self._handler.build(ctx, path)
+
+  local stdout = require("cmdhndlr.vendor.misclib.job.output").new()
+  return self._handler.build_as_job(ctx, stdout:collector()):next(function(ok, parse)
+    local lines = stdout:lines()
+    local parsed = vim.iter(lines):map(parse):totable()
+    if #lines ~= #parsed then
+      return ok, { raw_error = table.concat(lines, "\n") }
+    end
+    return ok, { errors = parsed }
+  end)
 end
 
 return BuildRunner

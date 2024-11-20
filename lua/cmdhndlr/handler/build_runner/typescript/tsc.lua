@@ -4,32 +4,29 @@ function M.build(ctx, path)
   return ctx.job_factory:create({ "npx", "tsc", "--noEmit", path })
 end
 
-function M.build_as_job(ctx, path)
-  local stdout = require("cmdhndlr.vendor.misclib.job.output").new()
+function M.build_as_job(ctx, stdout_collector)
   local working_dir_path = ctx.working_dir:get()
+
+  local parse = function(line)
+    local path, row, column, message = line:match("([^(]+)%((%d+),(%d+)%): (.+)")
+    if not path then
+      return nil
+    end
+    return {
+      path = vim.fs.joinpath(working_dir_path, path),
+      row = tonumber(row),
+      column = tonumber(column),
+      message = message,
+    }
+  end
+
   return ctx.job_factory
-    :create({ "npx", "tsc", "--pretty", "false", "--noEmit", path }, {
+    :create({ "npx", "tsc", "--pretty", "false", "--noEmit" }, {
       as_job = true,
-      on_stdout = stdout:collector(),
+      on_stdout = stdout_collector,
     })
     :next(function(ok)
-      local lines = stdout:lines()
-      local parsed = vim
-        .iter(lines)
-        :map(function(line)
-          local err_path, row, column, message = line:match("([^(]+)%((%d+),(%d+)%): (.+)")
-          if not err_path then
-            return nil
-          end
-          return {
-            path = vim.fs.joinpath(working_dir_path, err_path),
-            row = tonumber(row),
-            column = tonumber(column),
-            message = message,
-          }
-        end)
-        :totable()
-      return ok, { errors = parsed }
+      return ok, parse
     end)
 end
 
