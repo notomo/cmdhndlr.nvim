@@ -27,7 +27,7 @@ function BuildRunner.execute(self, observer)
   local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
 
   if not self._as_job then
-    local path = vim.api.nvim_buf_get_name(self._bufnr)
+    local path = self._handler.path_modifier(vim.api.nvim_buf_get_name(self._bufnr))
     return self._handler.build(ctx, path)
   end
 

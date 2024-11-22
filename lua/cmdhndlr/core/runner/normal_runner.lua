@@ -44,7 +44,7 @@ function NormalRunner._run_range(self, ctx, range)
 end
 
 function NormalRunner._run_buffer(self, ctx)
-  local path = vim.api.nvim_buf_get_name(self._bufnr)
+  local path = self._handler.path_modifier(vim.api.nvim_buf_get_name(self._bufnr))
   if path ~= "" then
     return self._handler.run_file(ctx, path)
   end

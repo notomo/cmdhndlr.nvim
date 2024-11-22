@@ -9,6 +9,9 @@ local default = {
   working_dir_marker = function()
     return nil
   end,
+  path_modifier = function(path)
+    return path
+  end,
   env = {},
   hooks = {
     success = function() end,

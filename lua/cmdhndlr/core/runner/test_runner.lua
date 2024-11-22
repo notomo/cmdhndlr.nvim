@@ -25,7 +25,7 @@ end
 --- @param raw_filter string
 --- @param is_leaf boolean
 function TestRunner.execute(self, observer, raw_filter, is_leaf)
-  local path = vim.api.nvim_buf_get_name(self._bufnr)
+  local path = self._handler.path_modifier(vim.api.nvim_buf_get_name(self._bufnr))
   local filter = raw_filter ~= "" and raw_filter or nil
   local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
   return self._handler.run_file(ctx, path, filter, is_leaf)

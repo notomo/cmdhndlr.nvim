@@ -32,6 +32,7 @@ function Handler.from_full_name(full_name, opts)
     opts.working_dir() or handler.working_dir(),
     opts.working_dir_marker() or handler.working_dir_marker()
   )
+  handler.path_modifier = opts.path_modifier
 
   return handler
 end
