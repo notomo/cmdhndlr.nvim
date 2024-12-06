@@ -21,12 +21,12 @@ function Limitter.enqueue(self, f)
 
   local p
   if self._limit < self._count then
-    p = require("cmdhndlr.vendor.promise").new(function(resolve)
-      table.insert(self._queue, 1, {
-        f = f,
-        resolve = resolve,
-      })
-    end)
+    local promise, resolve = require("cmdhndlr.vendor.promise").with_resolvers()
+    p = promise
+    table.insert(self._queue, 1, {
+      f = f,
+      resolve = resolve,
+    })
     self._start_worker()
   else
     p = f()
