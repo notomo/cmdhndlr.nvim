@@ -1,39 +1,20 @@
-local filelib = require("cmdhndlr.lib.file")
-
 local M = {}
 
 function M.upward_pattern(...)
-  local args = { ... }
+  local pattenrs = { ... }
   return function()
-    return M._upward_pattern(unpack(args))
+    local root = vim.fs.root(".", pattenrs)
+    return root or "."
   end
-end
-
-function M._upward_pattern(...)
-  for _, pattern in ipairs({ ... }) do
-    local dir = filelib.find_upward_dir(pattern)
-    if dir ~= nil then
-      return dir
-    end
-  end
-  return "."
 end
 
 function M.upward_marker(...)
-  local args = { ... }
+  local markers = { ... }
   return function()
-    return M._upward_marker(unpack(args))
+    return vim.fs.find(markers, {
+      upward = true,
+    })[1]
   end
-end
-
-function M._upward_marker(...)
-  for _, pattern in ipairs({ ... }) do
-    local file = filelib.find_upward_file(pattern)
-    if file ~= nil then
-      return file
-    end
-  end
-  return nil
 end
 
 return M
