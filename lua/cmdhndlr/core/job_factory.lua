@@ -64,9 +64,9 @@ function JobFactory.create(self, cmd, special_opts)
 
     local job
     if special_opts.as_job then
-      job = require("cmdhndlr.vendor.misclib.job").start(built_cmd, opts)
+      job = require("cmdhndlr.lib.job").start(built_cmd, opts)
     else
-      job = require("cmdhndlr.vendor.misclib.job").open_terminal(built_cmd, opts)
+      job = require("cmdhndlr.lib.job").open_terminal(built_cmd, opts)
     end
     if type(job) == "string" then
       local err = job

@@ -31,7 +31,7 @@ function BuildRunner.execute(self, observer)
     return self._handler.build(ctx, path)
   end
 
-  local stdout = require("cmdhndlr.vendor.misclib.job.output").new()
+  local stdout = require("cmdhndlr.lib.job.output").new()
   return self._handler.build_as_job(ctx, stdout:collector()):next(function(ok, parse)
     local lines = stdout:lines()
     local parsed = vim.iter(lines):map(parse):totable()

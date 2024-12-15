@@ -24,7 +24,7 @@ end
 
 function FormatRunner.execute(self, observer)
   local path = self._handler.path_modifier(vim.api.nvim_buf_get_name(self._bufnr))
-  local stdout = require("cmdhndlr.vendor.misclib.job.output").new()
+  local stdout = require("cmdhndlr.lib.job.output").new()
   local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
   return _limitter:enqueue(function()
     return self._handler.format(ctx, path, stdout:collector()):next(function(ok, reload)
