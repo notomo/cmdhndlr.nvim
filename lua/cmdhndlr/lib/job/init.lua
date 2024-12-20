@@ -43,7 +43,8 @@ end
 
 function M.open_terminal(cmd, opts)
   opts = opts or vim.empty_dict()
-  local ok, id_or_err = pcall(vim.fn.termopen, cmd, opts)
+  opts.term = true
+  local ok, id_or_err = pcall(vim.fn.jobstart, cmd, opts)
   if not ok then
     return tostring(id_or_err)
   end
