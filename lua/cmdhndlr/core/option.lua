@@ -2,7 +2,7 @@ local M = {}
 
 local default = {
   bufnr = 0,
-  name = "",
+  name = nil,
   working_dir = function()
     return nil
   end,
@@ -31,42 +31,43 @@ local default = {
 
 local new = function(defalt_opts, raw_opts, typ)
   raw_opts = raw_opts or {}
-  local name_hints = vim.tbl_deep_extend("force", {
-    name = defalt_opts.name,
-    bufnr = defalt_opts.bufnr,
-  }, {
-    name = raw_opts.name,
-    bufnr = raw_opts.bufnr,
-  })
 
-  if name_hints.bufnr == 0 then
-    name_hints.bufnr = vim.api.nvim_get_current_buf()
+  local bufnr = raw_opts.bufnr or 0
+  if bufnr == 0 then
+    bufnr = vim.api.nvim_get_current_buf()
   end
 
-  local filetype = vim.bo[name_hints.bufnr].filetype
+  local filetype = vim.bo[bufnr].filetype
   local global = require("cmdhndlr.core.custom").config
   local global_name = global[typ].default[filetype]
 
-  local buffer_local = (vim.b[name_hints.bufnr].cmdhndlr or {})
-  local buffer_local_name = buffer_local[typ]
+  local buffer_local = vim.b[bufnr].cmdhndlr or {}
+  local buffer_local_all = buffer_local["_"] or {}
+  local buffer_local_type_specific = buffer_local[typ] or {}
 
-  local name = name_hints.name
-  if name == "" and buffer_local_name then
-    name_hints.name = buffer_local_name
-  elseif name == "" and global_name then
-    name_hints.name = global_name
-  end
-
-  local custom_opts = vim.tbl_get(global.opts, typ, "_") or {}
-  local custom_opts_specific = vim.tbl_get(global.opts, typ, name_hints.name) or {}
-  local opts = vim.tbl_deep_extend("force", defalt_opts, custom_opts, custom_opts_specific, raw_opts, name_hints)
+  local name = raw_opts.name or buffer_local_type_specific.name or global_name or ""
+  local custom_opts_all = vim.tbl_get(global.opts, "_") or {}
+  local custom_opts_type_specific = vim.tbl_get(global.opts, typ, "_") or {}
+  local custom_opts_runner_specific = vim.tbl_get(global.opts, typ, name) or {}
+  local opts = vim.tbl_deep_extend(
+    "force",
+    defalt_opts,
+    custom_opts_all,
+    custom_opts_type_specific,
+    custom_opts_runner_specific,
+    buffer_local_all,
+    buffer_local_type_specific,
+    raw_opts,
+    {
+      name = name,
+      bufnr = bufnr,
+    }
+  )
 
   if opts.name == "" then
     return "no handler"
   end
 
-  opts.env = vim.tbl_deep_extend("force", global.env, buffer_local.env or {}, opts.env)
-  opts.runner_opts = vim.tbl_deep_extend("force", opts.runner_opts, vim.b[opts.bufnr].cmdhndlr_runner_opts or {})
   opts.hooks = require("cmdhndlr.core.hooks").new(opts.hooks)
 
   return opts

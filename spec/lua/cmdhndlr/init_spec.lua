@@ -53,9 +53,13 @@ describe("cmdhndlr.run()", function()
 
   it("can run with global environment variables", function()
     cmdhndlr.setup({
-      env = {
-        HOGE = "FOO",
-        BAR = "BAZ",
+      opts = {
+        _ = {
+          env = {
+            HOGE = "FOO",
+            BAR = "BAZ",
+          },
+        },
       },
     })
 
@@ -73,9 +77,11 @@ describe("cmdhndlr.run()", function()
 
   it("can run with buffer specific environment variables", function()
     vim.b.cmdhndlr = {
-      env = {
-        HOGE = "FOO",
-        BAR = "BAZ",
+      _ = {
+        env = {
+          HOGE = "FOO",
+          BAR = "BAZ",
+        },
       },
     }
 
@@ -312,7 +318,9 @@ bar"]])
   end)
 
   it("can use buffer local setting", function()
-    vim.b.cmdhndlr = { normal_runner = "_test/buffer_local" }
+    vim.b.cmdhndlr = {
+      normal_runner = { name = "_test/buffer_local" },
+    }
 
     local called = false
     helper.register_normal_runner("_test/buffer_local", {
@@ -328,7 +336,13 @@ bar"]])
   end)
 
   it("can use buffer local runner option", function()
-    vim.b.cmdhndlr_runner_opts = { called = true }
+    vim.b.cmdhndlr = {
+      _ = {
+        runner_opts = {
+          called = true,
+        },
+      },
+    }
 
     local called = false
     helper.register_normal_runner("_test/buffer_local", {
@@ -828,7 +842,9 @@ describe("cmdhndlr.enabled()", function()
   after_each(helper.after_each)
 
   it("returns true if the buffer has enabled runner", function()
-    vim.b.cmdhndlr = { format_runner = "_test/file" }
+    vim.b.cmdhndlr = {
+      format_runner = { name = "_test/file" },
+    }
 
     local got = cmdhndlr.enabled("format_runner")
     assert.is_true(got)

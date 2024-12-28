@@ -69,7 +69,6 @@ M.config = {
     },
   },
   log_file_path = vim.fs.joinpath(vim.fn.stdpath("log"), "cmdhndlr.log"),
-  env = {},
   opts = {},
 }
 
