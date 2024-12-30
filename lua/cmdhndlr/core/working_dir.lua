@@ -5,7 +5,7 @@ WorkingDir.__index = WorkingDir
 --- @param marker string?
 function WorkingDir.new(working_dir, marker)
   if marker then
-    working_dir = vim.fn.fnamemodify(marker, ":h")
+    working_dir = vim.fs.dirname(marker)
   end
   working_dir = working_dir or "."
   local tbl = { _working_dir = working_dir, _marker = marker }

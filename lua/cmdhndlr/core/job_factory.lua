@@ -20,7 +20,7 @@ function JobFactory.new(observer, cwd, env, log_file_path, build_cmd, build_cmd_
 end
 
 local log = function(cmd, log_file_path)
-  local log_dir = vim.fn.fnamemodify(log_file_path, ":h")
+  local log_dir = vim.fs.dirname(log_file_path)
   vim.fn.mkdir(log_dir, "p")
 
   local log_file = io.open(log_file_path, "a")
