@@ -6,6 +6,7 @@ M.config = {
       lua = "vim/lua",
       go = "go/go",
       sh = "shell/bash",
+      bash = "shell/bash",
       zsh = "shell/zsh",
       vim = "vim/source",
       python = "python/python",
