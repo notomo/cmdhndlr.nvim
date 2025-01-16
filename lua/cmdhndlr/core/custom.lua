@@ -21,6 +21,7 @@ M.config = {
       autohotkey = "autohotkey/autohotkey",
       sql = "sql/sqlite3",
       zip = "zip/unzip",
+      gz = "gz/gunzip",
       tar = "tar/tar_unarchive",
       ocaml = "ocaml/ocaml",
     },
