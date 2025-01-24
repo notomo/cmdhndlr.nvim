@@ -6,7 +6,7 @@ local setup_highlight_groups = function()
   }
 end
 
-local group = vim.api.nvim_create_augroup("cmdhndlr_color", {})
+local group = vim.api.nvim_create_augroup("cmdhndlr.highlight_group", {})
 vim.api.nvim_create_autocmd({ "ColorScheme" }, {
   group = group,
   pattern = { "*" },
