@@ -32,13 +32,13 @@ function BuildRunner.execute(self, observer)
   end
 
   local stdout = require("cmdhndlr.lib.job.output").new()
-  return self._handler.build_as_job(ctx, stdout:collector()):next(function(ok, parse)
+  return self._handler.build_as_job(ctx, stdout:collector()):next(function(result_ctx, parse)
     local lines = stdout:lines()
     local parsed = vim.iter(lines):map(parse):totable()
     if #lines ~= #parsed then
-      return ok, { raw_error = table.concat(lines, "\n") }
+      return vim.tbl_extend("force", result_ctx, { raw_error = table.concat(lines, "\n") })
     end
-    return ok, { errors = parsed }
+    return vim.tbl_extend("force", result_ctx, { errors = parsed })
   end)
 end
 

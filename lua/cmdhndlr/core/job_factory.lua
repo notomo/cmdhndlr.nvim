@@ -45,7 +45,7 @@ function JobFactory.create(self, cmd, special_opts)
     cwd = self._cwd,
     env = self._env,
     on_exit = function(_, exit_code)
-      resolve(exit_code == 0)
+      resolve({ ok = exit_code == 0 })
     end,
     on_stdout = special_opts.on_stdout,
   }
@@ -57,7 +57,10 @@ function JobFactory.create(self, cmd, special_opts)
 
     local reusable = self._observer.pre_start(built_cmd)
     if reusable then
-      return resolve(true, true)
+      return resolve({
+        ok = true,
+        reuse = true,
+      })
     end
 
     log(built_cmd, self._log_file_path)

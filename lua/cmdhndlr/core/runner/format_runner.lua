@@ -27,12 +27,12 @@ function FormatRunner.execute(self, observer)
   local stdout = require("cmdhndlr.lib.job.output").new()
   local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
   return _limitter:enqueue(function()
-    return self._handler.format(ctx, path, stdout:collector()):next(function(ok, reload)
-      if not ok then
-        return { reuse = false }
+    return self._handler.format(ctx, path, stdout:collector()):next(function(result_ctx)
+      if not result_ctx.ok then
+        return result_ctx
       end
 
-      if reload then
+      if result_ctx.reload then
         vim.cmd.checktime(self._bufnr)
       else
         local restore_cursor = require("cmdhndlr.lib.cursor").store_positions(self._bufnr)
@@ -41,7 +41,7 @@ function FormatRunner.execute(self, observer)
         restore_cursor()
       end
 
-      return { reuse = true }
+      return result_ctx
     end)
   end)
 end

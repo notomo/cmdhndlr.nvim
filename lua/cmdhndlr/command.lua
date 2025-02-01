@@ -51,14 +51,13 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
   local info_factory = hooks:info_factory()
   return runner
     :execute(observer, unpack(args))
-    :next(function(ok, result_ctx)
-      result_ctx = result_ctx or {}
+    :next(function(result_ctx)
       if result_ctx.reuse then
-        return
+        return result_ctx
       end
 
       local info = info_factory(window_id, executed_cmd)
-      if ok then
+      if result_ctx.ok then
         hooks.success(info)
       else
         hooks.failure(info)

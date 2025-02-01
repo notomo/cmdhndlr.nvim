@@ -15,9 +15,11 @@ function M.format(ctx, path)
     }, {
       as_job = true,
     })
-    :next(function()
+    :next(function(result_ctx)
       -- workaround: ignore lint failure
-      return true, true
+      result_ctx.ok = true
+      result_ctx.reload = true
+      return result_ctx
     end)
 end
 

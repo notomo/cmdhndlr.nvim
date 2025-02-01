@@ -25,8 +25,8 @@ function M.build_as_job(ctx, stdout_collector)
       as_job = true,
       on_stdout = stdout_collector,
     })
-    :next(function(ok)
-      return ok, parse
+    :next(function(result_ctx)
+      return result_ctx, parse
     end)
 end
 
