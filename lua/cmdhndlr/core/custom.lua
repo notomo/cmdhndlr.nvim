@@ -72,7 +72,7 @@ M.config = {
       zig = "zig/zig",
     },
   },
-  log_file_path = vim.fs.joinpath(vim.fn.stdpath("log"), "cmdhndlr.log"),
+  log_file_path = vim.fs.joinpath(tostring(vim.fn.stdpath("log")), "cmdhndlr.log"),
   opts = {},
 }
 
