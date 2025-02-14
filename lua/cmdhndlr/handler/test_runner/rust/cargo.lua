@@ -1,8 +1,11 @@
 local M = {}
 
-function M.run_file(ctx, _, filter)
-  local cmd = { "cargo", "test", "--all-features" }
+function M.run_file(ctx, _, filter, is_leaf)
+  local cmd = { "cargo", "test", "--all-features", "--" }
   if filter then
+    if is_leaf then
+      table.insert(cmd, "--exact")
+    end
     table.insert(cmd, filter)
   end
   return ctx.job_factory:create(cmd)
