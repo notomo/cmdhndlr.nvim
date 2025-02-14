@@ -1,7 +1,7 @@
 local M = {}
 
 function M.run_file(ctx, _, filter)
-  local cmd = { "cargo", "test" }
+  local cmd = { "cargo", "test", "--all-features" }
   if filter then
     table.insert(cmd, filter)
   end
