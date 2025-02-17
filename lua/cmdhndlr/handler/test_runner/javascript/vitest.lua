@@ -21,6 +21,6 @@ function M.run_file(ctx, path, filter, is_leaf)
   return ctx.job_factory:create(cmd)
 end
 
-M.working_dir = require("cmdhndlr.util.working_dir").upward_pattern("vitest.config.ts")
+M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker("vitest.config.ts")
 
 return M
