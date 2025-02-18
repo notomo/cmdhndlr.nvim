@@ -9,4 +9,6 @@ function M.run_string(ctx, str)
   return M.run_file(ctx, path)
 end
 
+M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker("deno.json", "deno.jsonc", "import_map.json")
+
 return M

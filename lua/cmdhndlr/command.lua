@@ -232,4 +232,26 @@ function M.runners()
   return require("cmdhndlr.core.runner.handler").all()
 end
 
+function M.use(opts)
+  local cmdhndlr = vim.b[opts.bufnr or 0].cmdhndlr or {}
+
+  local set = function(typ)
+    for _, runner in ipairs(opts[typ] or {}) do
+      local full_name = ("%s/%s"):format(typ, runner.name)
+      local handler = M.get(full_name)
+      if runner.is_default or handler.working_dir_marker() then
+        cmdhndlr[typ] = runner
+        return
+      end
+    end
+  end
+
+  set("normal_runner")
+  set("test_runner")
+  set("build_runner")
+  set("format_runner")
+
+  vim.b[opts.bufnr or 0].cmdhndlr = cmdhndlr
+end
+
 return M

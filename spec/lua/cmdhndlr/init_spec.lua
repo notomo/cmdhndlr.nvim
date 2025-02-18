@@ -871,3 +871,45 @@ describe("cmdhndlr.get()", function()
     assert.equal("format_runner/_test/file", got.full_name)
   end)
 end)
+
+describe("cmdhndlr.use()", function()
+  before_each(function()
+    helper.before_each()
+
+    helper.register_format_runner("_test1", {
+      format = function() end,
+    })
+    helper.register_format_runner("_test2", {
+      format = function() end,
+      working_dir_marker = function()
+        return "."
+      end,
+    })
+  end)
+  after_each(helper.after_each)
+
+  it("can set buffer config by working dir marker", function()
+    cmdhndlr.use({
+      format_runner = {
+        { name = "_test1" },
+        { name = "_test2" },
+      },
+    })
+
+    assert.same({
+      format_runner = { name = "_test2" },
+    }, vim.b.cmdhndlr)
+  end)
+
+  it("can set default runner", function()
+    cmdhndlr.use({
+      format_runner = {
+        { name = "_test1", is_default = true },
+      },
+    })
+
+    assert.same({
+      format_runner = { name = "_test1", is_default = true },
+    }, vim.b.cmdhndlr)
+  end)
+end)

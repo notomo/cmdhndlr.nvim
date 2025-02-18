@@ -52,4 +52,8 @@ function M.runners()
   return require("cmdhndlr.command").runners()
 end
 
+function M.use(opts)
+  return require("cmdhndlr.command").use(opts)
+end
+
 return M
