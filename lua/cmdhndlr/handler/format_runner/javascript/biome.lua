@@ -1,18 +1,23 @@
 local M = {}
 
+M.opts = {
+  extra_args = {},
+}
+
 function M.format(ctx, path)
+  local cmd = {
+    "npx",
+    "biome",
+    "check",
+    "--write",
+    "--formatter-enabled=true",
+    "--linter-enabled=true",
+  }
+  vim.list_extend(cmd, ctx.opts.extra_args)
+  table.insert(cmd, path)
+
   return ctx.job_factory
-    :create({
-      "npx",
-      "biome",
-      "check",
-      "--write",
-      "--unsafe",
-      "--organize-imports-enabled=true",
-      "--formatter-enabled=true",
-      "--linter-enabled=true",
-      path,
-    }, {
+    :create(cmd, {
       as_job = true,
     })
     :next(function(result_ctx)
