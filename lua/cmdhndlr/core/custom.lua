@@ -70,6 +70,7 @@ M.config = {
       cpp = "c/uncrustify",
       lua = "lua/stylua",
       zig = "zig/zig",
+      query = "query/format_queries",
     },
   },
   log_file_path = vim.fs.joinpath(vim.fn.stdpath("log"), "cmdhndlr.log"),
