@@ -12,7 +12,7 @@ function M.run_file(ctx, path, filter, is_leaf)
 
   if filter then
     local suffix = is_leaf and "$" or ""
-    table.insert(cmd, "--testNamePattern=" .. filter .. suffix)
+    table.insert(cmd, "--testNamePattern=" .. vim.fn.escape(filter, [=[^$.*+?[](){}|]=]) .. suffix)
   end
 
   vim.list_extend(cmd, ctx.opts.extra_args)
