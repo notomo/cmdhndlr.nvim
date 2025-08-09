@@ -21,7 +21,7 @@ function WorkingDir.marker(self)
 end
 
 function WorkingDir.set_current(self)
-  vim.cmd.lcd({ args = { self._working_dir }, mods = { silent = true } })
+  vim.fn.chdir(self._working_dir, "window")
 end
 
 return WorkingDir
