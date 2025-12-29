@@ -24,6 +24,7 @@ M.config = {
       gz = "gz/gunzip",
       tar = "tar/tar_unarchive",
       ocaml = "ocaml/ocaml",
+      moonbit = "moonbit/moon",
     },
   },
   test_runner = {
@@ -36,6 +37,7 @@ M.config = {
       typescript = "javascript/jest",
       typescriptreact = "javascript/jest",
       zig = "zig/zig",
+      moonbit = "moonbit/moon",
     },
   },
   build_runner = {
@@ -46,6 +48,7 @@ M.config = {
       typescriptreact = "javascript/npm",
       c = "c/clang",
       dockerfile = "dockerfile/docker",
+      moonbit = "moonbit/moon",
     },
   },
   format_runner = {
@@ -71,6 +74,7 @@ M.config = {
       lua = "lua/stylua",
       zig = "zig/zig",
       query = "query/format_queries",
+      moonbit = "moonbit/moon",
     },
   },
   log_file_path = vim.fs.joinpath(vim.fn.stdpath("log"), "cmdhndlr.log"),
