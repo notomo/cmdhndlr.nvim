@@ -75,6 +75,7 @@ M.config = {
       zig = "zig/zig",
       query = "query/format_queries",
       moonbit = "moonbit/moon",
+      toml = "toml/mise",
     },
   },
   log_file_path = vim.fs.joinpath(vim.fn.stdpath("log"), "cmdhndlr.log"),
