@@ -17,7 +17,7 @@ function M.run_file(ctx, path, filter, is_leaf)
 
   vim.list_extend(cmd, ctx.opts.extra_args)
 
-  table.insert(cmd, vim.fn.escape(path, "[]()$"))
+  table.insert(cmd, path)
   return ctx.job_factory:create(cmd)
 end
 
