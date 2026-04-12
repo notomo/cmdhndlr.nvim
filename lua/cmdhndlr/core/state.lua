@@ -26,7 +26,7 @@ function State.set(full_name, bufnr, job, runner_factory, args, hooks, executed_
   _states[bufnr] = self
 
   vim.api.nvim_create_autocmd({ "BufWipeout" }, {
-    buffer = bufnr,
+    buf = bufnr,
     callback = function()
       _states[bufnr] = nil
     end,
