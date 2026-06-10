@@ -4,7 +4,7 @@ M.opts = {
   extra_args = {},
 }
 
-function M.format(ctx, path)
+function M.format(ctx, path, stdout_collector)
   local cmd = {
     "npx",
     "biome",
@@ -12,18 +12,20 @@ function M.format(ctx, path)
     "--write",
     "--formatter-enabled=true",
     "--linter-enabled=true",
+    "--stdin-file-path=" .. path,
   }
   vim.list_extend(cmd, ctx.opts.extra_args)
-  table.insert(cmd, path)
 
+  local content = require("cmdhndlr.lib.file").read_all(path)
   return ctx.job_factory
     :create(cmd, {
+      input = content,
+      on_stdout = stdout_collector,
       as_job = true,
     })
     :next(function(result_ctx)
       -- workaround: ignore lint failure
       result_ctx.ok = true
-      result_ctx.reload = true
       return result_ctx
     end)
 end
