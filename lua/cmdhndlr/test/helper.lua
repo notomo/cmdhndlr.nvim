@@ -1,14 +1,17 @@
-local helper = require("vusted.helper")
+local helper = require("ntf.helper")
 local plugin_name = helper.get_module_root(...)
 
 helper.root = helper.find_plugin_root(plugin_name)
 vim.opt.packpath:prepend(vim.fs.joinpath(helper.root, "spec/.shared/packages"))
-require("assertlib").register(require("vusted.assert").register)
+require("assertlib").register(require("ntf.assert").register)
 
 local runtimepath = vim.o.runtimepath
 
 function helper.before_each()
-  helper.test_data = require("cmdhndlr.vendor.misclib.test.data_dir").setup(helper.root)
+  helper.test_data = require("cmdhndlr.vendor.misclib.test.data_dir").setup(
+    helper.root,
+    { base_dir = ("test_data_%d/"):format(vim.fn.getpid()) }
+  )
   vim.api.nvim_set_current_dir(helper.test_data.full_path)
   vim.o.runtimepath = runtimepath
   require("cmdhndlr").setup({
@@ -17,8 +20,6 @@ function helper.before_each()
 end
 
 function helper.after_each()
-  helper.cleanup()
-  helper.cleanup_loaded_modules(plugin_name)
   helper.test_data:teardown()
 end
 

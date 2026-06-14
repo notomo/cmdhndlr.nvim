@@ -1,6 +1,8 @@
+local ntf = require("ntf")
+local describe, it, before_each, after_each = ntf.describe, ntf.it, ntf.before_each, ntf.after_each
 local helper = require("cmdhndlr.test.helper")
-local cmdhndlr = helper.require("cmdhndlr")
-local assert = require("assertlib").typed(assert)
+local cmdhndlr = require("cmdhndlr")
+local assert = require("assertlib").typed(ntf.assert)
 
 describe("vim/lua runner", function()
   before_each(helper.before_each)

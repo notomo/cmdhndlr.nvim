@@ -1,6 +1,8 @@
+local ntf = require("ntf")
+local describe, it, before_each, after_each = ntf.describe, ntf.it, ntf.before_each, ntf.after_each
 local helper = require("cmdhndlr.test.helper")
-local Limitter = helper.require("cmdhndlr.lib.limitter")
-local assert = require("assertlib").typed(assert)
+local Limitter = require("cmdhndlr.lib.limitter")
+local assert = require("assertlib").typed(ntf.assert)
 
 describe("limitter", function()
   before_each(helper.before_each)

@@ -1,6 +1,8 @@
+local ntf = require("ntf")
+local describe, it, before_each, after_each, setup = ntf.describe, ntf.it, ntf.before_each, ntf.after_each, ntf.setup
 local helper = require("cmdhndlr.test.helper")
-local cmdhndlr = helper.require("cmdhndlr")
-local assert = require("assertlib").typed(assert)
+local cmdhndlr = require("cmdhndlr")
+local assert = require("assertlib").typed(ntf.assert)
 
 describe("cmdhndlr.run()", function()
   before_each(function()
