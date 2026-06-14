@@ -1,5 +1,5 @@
 local ntf = require("ntf")
-local describe, it, before_each, after_each, setup = ntf.describe, ntf.it, ntf.before_each, ntf.after_each, ntf.setup
+local describe, it, before_each, after_each = ntf.describe, ntf.it, ntf.before_each, ntf.after_each
 local helper = require("cmdhndlr.test.helper")
 local cmdhndlr = require("cmdhndlr")
 local assert = require("assertlib").typed(ntf.assert)
