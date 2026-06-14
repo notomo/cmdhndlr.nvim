@@ -39,6 +39,15 @@ function helper.search(pattern)
   return result
 end
 
+function helper.wait_pattern(pattern)
+  local ok = vim.wait(1000, function()
+    return vim.fn.search(pattern, "n") ~= 0
+  end)
+  if not ok then
+    error("wait timeout: does not exist pattern: " .. pattern)
+  end
+end
+
 function helper.register_normal_runner(name, handler)
   require("cmdhndlr.core.runner.handler").register("normal_runner", name, handler)
 end

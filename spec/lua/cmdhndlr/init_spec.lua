@@ -708,6 +708,7 @@ describe("cmdhndlr.input()", function()
       },
     })
     cmdhndlr.input("test_input", { full_name = "normal_runner/_test/file" })
+    helper.wait_pattern([[test_input]])
     cmdhndlr.input(vim.api.nvim_eval('"\\<C-c>"'), { full_name = "normal_runner/_test/file" })
 
     helper.wait(job)
