@@ -29,7 +29,7 @@ M.config = {
   },
   test_runner = {
     default = {
-      lua = "lua/vusted",
+      lua = "lua/ntf",
       go = "go/go",
       python = "python/pytest",
       rust = "rust/cargo",
