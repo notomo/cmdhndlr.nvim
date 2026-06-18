@@ -8,10 +8,7 @@ require("assertlib").register(require("ntf.assert").register)
 local runtimepath = vim.o.runtimepath
 
 function helper.before_each()
-  helper.test_data = require("cmdhndlr.vendor.misclib.test.data_dir").setup(
-    helper.root,
-    { base_dir = ("test_data_%d/"):format(vim.fn.getpid()) }
-  )
+  helper.test_data = require("cmdhndlr.vendor.misclib.test.data_dir").setup(helper.root, { base_dir = "spec/test_data/" })
   vim.api.nvim_set_current_dir(helper.test_data.full_path)
   vim.o.runtimepath = runtimepath
   require("cmdhndlr").setup({
