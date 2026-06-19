@@ -703,13 +703,19 @@ describe("cmdhndlr.input()", function()
       name = "_test/file",
       runner_opts = {
         f = function(self)
-          return self.job_factory:create({ "cat" })
+          -- `head -n 1` exits after reading one newline-terminated line, so the
+          -- job terminates deterministically once we send the newline below.
+          -- (Previously this used `cat` + <C-c>, but turning the <C-c> byte into
+          -- a SIGINT depends on the pty line discipline delivering it to the
+          -- foreground process group, which races under load and could leave the
+          -- job running forever.)
+          return self.job_factory:create({ "head", "-n", "1" })
         end,
       },
     })
     cmdhndlr.input("test_input", { full_name = "normal_runner/_test/file" })
     helper.wait_pattern([[test_input]])
-    cmdhndlr.input(vim.api.nvim_eval('"\\<C-c>"'), { full_name = "normal_runner/_test/file" })
+    cmdhndlr.input("\n", { full_name = "normal_runner/_test/file" })
 
     helper.wait(job)
 
