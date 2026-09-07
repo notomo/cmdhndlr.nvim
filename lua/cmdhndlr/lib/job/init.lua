@@ -16,6 +16,14 @@ function Job.stop(self)
   vim.fn.jobstop(self._id)
 end
 
+-- vim.async.Closable: closing the awaiting task stops the job
+function Job.close(self, callback)
+  vim.fn.jobstop(self._id)
+  if callback then
+    callback()
+  end
+end
+
 function Job.close_stdin(self)
   vim.fn.chanclose(self._id, "stdin")
 end

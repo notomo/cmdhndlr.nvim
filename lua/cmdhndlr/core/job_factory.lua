@@ -1,3 +1,5 @@
+local async = vim.async
+
 local JobFactory = {}
 JobFactory.__index = JobFactory
 
@@ -37,33 +39,36 @@ local log = function(cmd, log_file_path)
   log_file:close()
 end
 
+--- @async
 function JobFactory.create(self, cmd, special_opts)
   special_opts = special_opts or {}
-  local promise, resolve, reject = require("cmdhndlr.vendor.promise").with_resolvers()
 
-  local opts = {
-    cwd = self._cwd,
-    env = self._env,
-    on_exit = function(_, exit_code)
-      resolve({ ok = exit_code == 0 })
-    end,
-    on_stdout = special_opts.on_stdout,
-  }
+  local built_cmd = async.await(function(callback)
+    self._build_cmd(cmd, callback, self._build_cmd_ctx)
+  end)
+  if not built_cmd then
+    error("canceled", 0)
+  end
 
-  self._build_cmd(cmd, function(built_cmd)
-    if not built_cmd then
-      return reject("canceled")
-    end
+  local reusable = self._observer.pre_start(built_cmd)
+  if reusable then
+    return {
+      ok = true,
+      reuse = true,
+    }
+  end
 
-    local reusable = self._observer.pre_start(built_cmd)
-    if reusable then
-      return resolve({
-        ok = true,
-        reuse = true,
-      })
-    end
+  log(built_cmd, self._log_file_path)
 
-    log(built_cmd, self._log_file_path)
+  local exit_code = async.await(function(callback)
+    local opts = {
+      cwd = self._cwd,
+      env = self._env,
+      on_exit = function(_, code)
+        callback(code)
+      end,
+      on_stdout = special_opts.on_stdout,
+    }
 
     local job
     if special_opts.as_job then
@@ -73,7 +78,7 @@ function JobFactory.create(self, cmd, special_opts)
     end
     if type(job) == "string" then
       local err = job
-      return reject(err)
+      error(err, 0)
     end
 
     self._observer.post_start(job)
@@ -82,9 +87,11 @@ function JobFactory.create(self, cmd, special_opts)
       job:input(special_opts.input)
       job:close_stdin()
     end
-  end, self._build_cmd_ctx)
 
-  return promise
+    return job
+  end)
+
+  return { ok = exit_code == 0 }
 end
 
 return JobFactory

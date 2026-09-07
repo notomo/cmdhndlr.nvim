@@ -21,6 +21,7 @@ function TestRunner.new(opts)
   return setmetatable(tbl, TestRunner)
 end
 
+--- @async
 --- @param observer table
 --- @param raw_filter string
 --- @param is_leaf boolean

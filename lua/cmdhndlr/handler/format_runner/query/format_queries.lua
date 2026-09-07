@@ -5,23 +5,20 @@ function M.format(ctx, path, stdout_collector)
     return vim.endswith(vim.fs.normalize(x), "/nvim-treesitter")
   end)
   if not nvim_treesitter then
-    return require("cmdhndlr.vendor.promise").reject("no nivm-treesitter in runtimepath")
+    error("no nivm-treesitter in runtimepath", 0)
   end
 
-  return ctx.job_factory
-    :create({
-      "nvim",
-      "-l",
-      vim.fs.joinpath(nvim_treesitter, "scripts/format-queries.lua"),
-      path,
-    }, {
-      on_stdout = stdout_collector,
-      as_job = true,
-    })
-    :next(function(result_ctx)
-      result_ctx.reload = true
-      return result_ctx
-    end)
+  local result_ctx = ctx.job_factory:create({
+    "nvim",
+    "-l",
+    vim.fs.joinpath(nvim_treesitter, "scripts/format-queries.lua"),
+    path,
+  }, {
+    on_stdout = stdout_collector,
+    as_job = true,
+  })
+  result_ctx.reload = true
+  return result_ctx
 end
 
 return M

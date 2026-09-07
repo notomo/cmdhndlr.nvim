@@ -23,6 +23,7 @@ function BuildRunner.new(opts)
   return setmetatable(tbl, BuildRunner)
 end
 
+--- @async
 function BuildRunner.execute(self, observer)
   local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
 
@@ -32,14 +33,13 @@ function BuildRunner.execute(self, observer)
   end
 
   local stdout = require("cmdhndlr.lib.job.output").new()
-  return self._handler.build_as_job(ctx, stdout:collector()):next(function(result_ctx, parse)
-    local lines = stdout:lines()
-    local parsed = vim.iter(lines):map(parse):totable()
-    if #lines ~= #parsed then
-      return vim.tbl_extend("force", result_ctx, { raw_error = table.concat(lines, "\n") })
-    end
-    return vim.tbl_extend("force", result_ctx, { errors = parsed })
-  end)
+  local result_ctx, parse = self._handler.build_as_job(ctx, stdout:collector())
+  local lines = stdout:lines()
+  local parsed = vim.iter(lines):map(parse):totable()
+  if #lines ~= #parsed then
+    return vim.tbl_extend("force", result_ctx, { raw_error = table.concat(lines, "\n") })
+  end
+  return vim.tbl_extend("force", result_ctx, { errors = parsed })
 end
 
 return BuildRunner

@@ -1,5 +1,5 @@
 local Handler = require("cmdhndlr.core.runner.handler")
-local _limitter = require("cmdhndlr.lib.limitter").new(100, 500)
+local _semaphore = vim.async.semaphore(100)
 
 local FormatRunner = {}
 FormatRunner.__index = FormatRunner
@@ -22,27 +22,27 @@ function FormatRunner.new(opts)
   return setmetatable(tbl, FormatRunner)
 end
 
+--- @async
 function FormatRunner.execute(self, observer)
   local path = self._handler.path_modifier(vim.api.nvim_buf_get_name(self._bufnr))
   local stdout = require("cmdhndlr.lib.job.output").new()
   local ctx = require("cmdhndlr.core.runner.context").new(self._handler, self._global_opts, observer)
-  return _limitter:enqueue(function()
-    return self._handler.format(ctx, path, stdout:collector()):next(function(result_ctx)
-      if not result_ctx.ok then
-        return result_ctx
-      end
-
-      if result_ctx.reload then
-        vim.cmd.checktime(self._bufnr)
-      else
-        local restore_cursor = require("cmdhndlr.lib.cursor").store_positions(self._bufnr)
-        local lines = stdout:lines()
-        vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, false, lines)
-        restore_cursor()
-      end
-
+  return _semaphore:with(function()
+    local result_ctx = self._handler.format(ctx, path, stdout:collector())
+    if not result_ctx.ok then
       return result_ctx
-    end)
+    end
+
+    if result_ctx.reload then
+      vim.cmd.checktime(self._bufnr)
+    else
+      local restore_cursor = require("cmdhndlr.lib.cursor").store_positions(self._bufnr)
+      local lines = stdout:lines()
+      vim.api.nvim_buf_set_lines(self._bufnr, 0, -1, false, lines)
+      restore_cursor()
+    end
+
+    return result_ctx
   end)
 end
 

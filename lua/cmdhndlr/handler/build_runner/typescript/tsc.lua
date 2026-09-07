@@ -20,14 +20,11 @@ function M.build_as_job(ctx, stdout_collector)
     }
   end
 
-  return ctx.job_factory
-    :create({ "npx", "tsc", "--pretty", "false", "--noEmit" }, {
-      as_job = true,
-      on_stdout = stdout_collector,
-    })
-    :next(function(result_ctx)
-      return result_ctx, parse
-    end)
+  local result_ctx = ctx.job_factory:create({ "npx", "tsc", "--pretty", "false", "--noEmit" }, {
+    as_job = true,
+    on_stdout = stdout_collector,
+  })
+  return result_ctx, parse
 end
 
 M.working_dir_marker = require("cmdhndlr.util.working_dir").upward_marker("tsconfig.json")

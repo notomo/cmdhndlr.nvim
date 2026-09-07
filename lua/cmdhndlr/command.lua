@@ -49,13 +49,18 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
   }
 
   local info_factory = hooks:info_factory()
-  return runner
-    :execute(observer, unpack(args))
-    :next(function(result_ctx)
-      if result_ctx.reuse then
-        return result_ctx
-      end
+  --- @async
+  --- @return table?
+  local execute = function()
+    local ok, result_ctx = pcall(function()
+      return runner:execute(observer, unpack(args))
+    end)
 
+    if not ok then
+      local err = result_ctx
+      vim.notify("[cmdhndlr] " .. tostring(err), vim.log.levels.WARN)
+      result_ctx = nil
+    elseif not result_ctx.reuse then
       local info = info_factory(window_id, executed_cmd)
       if result_ctx.ok then
         hooks.success(info)
@@ -63,12 +68,11 @@ local execute_runner = function(runner_factory, args, layout, hooks, reuse_predi
         hooks.failure(info)
       end
       vim.bo[bufnr].bufhidden = "wipe"
+    end
 
-      return result_ctx
-    end)
-    :catch(function(err)
-      vim.notify("[cmdhndlr] " .. err, vim.log.levels.WARN)
-    end)
+    return result_ctx
+  end
+  return vim.async.run(execute)
 end
 
 function M.run(raw_opts)

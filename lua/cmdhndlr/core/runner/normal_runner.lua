@@ -23,6 +23,7 @@ function NormalRunner.new(opts)
   return setmetatable(tbl, NormalRunner)
 end
 
+--- @async
 --- @param observer table
 --- @param range table?
 function NormalRunner.execute(self, observer, range)
@@ -36,7 +37,7 @@ end
 function NormalRunner._run_range(self, ctx, range)
   if not self._handler.run_string then
     local err = ("`%s` does not support range"):format(self._handler.full_name)
-    return require("cmdhndlr.vendor.promise").reject(err)
+    error(err, 0)
   end
 
   local str = require("cmdhndlr.lib.buffer_range").new(self._bufnr, range):to_string()
