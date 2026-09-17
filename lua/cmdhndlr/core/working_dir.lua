@@ -20,8 +20,11 @@ function WorkingDir.marker(self)
   return self._marker
 end
 
-function WorkingDir.set_current(self)
-  vim.fn.chdir(self._working_dir, "window")
+--- @param bufnr integer
+function WorkingDir.set_to_buffer(self, bufnr)
+  vim.api.nvim_buf_call(bufnr, function()
+    vim.fn.chdir(self._working_dir, "buffer")
+  end)
 end
 
 return WorkingDir

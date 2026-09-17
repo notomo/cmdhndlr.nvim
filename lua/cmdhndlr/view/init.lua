@@ -6,6 +6,8 @@ local M = {}
 --- @param working_dir table
 --- @param layout_opts table?
 function M.open(bufnr, working_dir, layout_opts)
+  working_dir:set_to_buffer(bufnr)
+
   if not layout_opts then
     return vim.api.nvim_get_current_win()
   end
@@ -18,7 +20,6 @@ function M.open(bufnr, working_dir, layout_opts)
     vim.cmd.startinsert({ bang = true })
   end)
 
-  working_dir:set_current()
   vim.bo[bufnr].filetype = "cmdhndlr"
 
   return window_id
