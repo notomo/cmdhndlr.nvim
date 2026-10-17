@@ -1,7 +1,7 @@
 local M = {}
 
 function M.format(ctx, path, stdout_collector)
-  local nvim_treesitter = vim.iter(vim.opt.runtimepath:get()):find(function(x)
+  local nvim_treesitter = vim.iter(vim.api.nvim_list_runtime_paths()):find(function(x)
     return vim.endswith(vim.fs.normalize(x), "/nvim-treesitter")
   end)
   if not nvim_treesitter then
